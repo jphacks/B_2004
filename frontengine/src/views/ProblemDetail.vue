@@ -1,4 +1,5 @@
 <template>
+  <body class="problemArea">
   <div class="problemdetail">
       <b-form-textarea
       id="textarea"
@@ -8,6 +9,7 @@
     ></b-form-textarea>
     <b-button @click="getDom(text)">送信</b-button>
   </div>
+  </body>
 </template>
 
 <script>
@@ -29,3 +31,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.problemArea {
+  margin: 40px 40px 40px;
+}
+</style>
