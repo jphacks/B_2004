@@ -2,15 +2,9 @@
   <div>
   <b-navbar toggleable="lg" type="dark" variant="info">
     <b-navbar-brand href="/">front Engine</b-navbar-brand>
-
-    <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
-
-    <b-collapse id="nav-collapse" is-nav>
-      <!-- Right allgned nav items -->
-      <b-navbar-nav class="LoginBtn">
-        <b-nav-item href="#"><LoginButton :loginType="'login'"/></b-nav-item>
-      </b-navbar-nav>
-    </b-collapse>
+    <b-navbar-nav class="ml-auto">
+      <b-nav-item class="ssq"><LoginButton/></b-nav-item>
+    </b-navbar-nav>
   </b-navbar>
 </div>
 </template>
@@ -39,6 +33,7 @@ ul {
   padding: 0;
 }
 li {
+  align-items: right;
   display: inline-block;
   margin: 0 10px;
 }
