@@ -1,16 +1,16 @@
 <template>
   <div>
   <b-navbar toggleable="lg" type="dark" variant="info">
-    <b-navbar-brand href="#">front Engine</b-navbar-brand>
+    <b-navbar-brand href="/">front Engine</b-navbar-brand>
 
     <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
-    <b-cllapse id="nav^collapse" is-nav>
+    <b-collapse id="nav-collapse" is-nav>
       <!-- Right allgned nav items -->
       <b-navbar-nav class="LoginBtn">
-        <b-nav-item href="#"><LoginButton/></b-nav-item>
+        <b-nav-item href="#"><LoginButton :loginType="'login'"/></b-nav-item>
       </b-navbar-nav>
-    </b-cllapse>
+    </b-collapse>
   </b-navbar>
 </div>
 </template>
