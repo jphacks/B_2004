@@ -1,7 +1,6 @@
 <template>
   <div class="home">
     <img alt="frontEngine logo" src="../assets/frontEngineLogo.png">
-    <LoginButton loginType="login"/>
     <HelloWorld msg="frontEngineへようこそ"/>
   </div>
 </template>
