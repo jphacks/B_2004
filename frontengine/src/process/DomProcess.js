@@ -19,6 +19,9 @@ export default function (text) {
       const info = DOMAnalysis(str)
       if (info.name && info.name.length > 0) {
         tags[unique] = info
+        if (!unique || !info) {
+          console.log('check err?', info, unique)
+        }
         unique++
         if (parentId) {
           tags[unique].parentId = parentId
