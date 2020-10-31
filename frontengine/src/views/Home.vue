@@ -1,8 +1,8 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
+    <img alt="frontEngine logo" src="../assets/frontEngineLogo.png">
     <LoginButton loginType="login"/>
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <HelloWorld msg="frontEngineへようこそ"/>
   </div>
 </template>
 

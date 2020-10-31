@@ -2,8 +2,8 @@
   <div id="app">
     <Header></Header>
     <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
+      <router-link to="/">ホーム</router-link> |
+      <router-link to="/problemList">問題一覧</router-link>
     </div>
     <router-view/>
   </div>
