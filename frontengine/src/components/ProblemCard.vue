@@ -10,7 +10,7 @@
 
 <script>
 export default {
-  name: 'Card',
+  name: 'ProblemCard',
   props: {
     problemNumber: String,
     problemStatement: String
