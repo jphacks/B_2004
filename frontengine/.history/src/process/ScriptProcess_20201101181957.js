@@ -1,3 +1,9 @@
+var esprima = require('esprima')
+var code = 'console.log("Hello, World!")'
+var ast = esprima.parse(code)
+// var ast2 = esprima.parse(script)
+console.log(ast)
+// console.log(ast2)
 function findBlock (text, firstIndex) {
   let cntFirst = 0
   let cntEnd = 0
@@ -28,5 +34,5 @@ export default function (text) {
   const dataBlock = findBlock(text, dataFirst)
   const methodBlock = findBlock(text, methodFirst)
 
-  console.log(dataBlock, methodBlock)
+  // console.log(dataBlock, methodBlock)
 }

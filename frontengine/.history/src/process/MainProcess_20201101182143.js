@@ -14,5 +14,5 @@ export default function (text) {
   // let domTree = DomProcess(templates)
   // console.log(script)
   const scriptTree = ScriptProcess(script)
-  CreateAST(script)
+  // CreateAST(script)
 }

@@ -28,5 +28,5 @@ export default function (text) {
   const dataBlock = findBlock(text, dataFirst)
   const methodBlock = findBlock(text, methodFirst)
 
-  console.log(dataBlock, methodBlock)
+  // console.log(dataBlock, methodBlock)
 }

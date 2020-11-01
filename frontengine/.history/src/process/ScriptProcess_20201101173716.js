@@ -30,3 +30,4 @@ export default function (text) {
 
   console.log(dataBlock, methodBlock)
 }
+
