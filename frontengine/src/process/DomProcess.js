@@ -48,8 +48,10 @@ function DOMAnalysis (dom) {
   info.open = true // 閉じられているか
   const others = []
   const candidatetag = []
+  let nameLength = 0
   if (dom.substr(0, 2) === '</') {
     info.close = true
+    nameLength++
   } else {
     info.close = false
   }
@@ -58,12 +60,12 @@ function DOMAnalysis (dom) {
   if (tags.length === 1) {
     // tag一つのみ
     const tag = tags[0]
-    info.name = tag.substr(1, tag.length - 2)
+    info.name = tag.substr(1 + nameLength, tag.length - 2 - nameLength)
     if (tag.substr(tag.length - 2, 2) === '/>') {
       info.open = false
     }
   } else {
-    info.name = tags[0].substr(1, tags[0].length)
+    info.name = tags[0].substr(1 + nameLength, tags[0].length - nameLength)
     // let blank = false
     // let blanckCount = []
     const candidateOthers = []
