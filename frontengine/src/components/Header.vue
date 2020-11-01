@@ -2,7 +2,6 @@
   <div>
   <b-navbar toggleable="lg" type="dark" variant="info">
     <b-navbar-brand href="/">front Engine</b-navbar-brand>
-    <PageMoveMenu/>
     <b-navbar-nav class="ml-auto">
       <b-nav-item class="ssq"><LoginButton/></b-nav-item>
     </b-navbar-nav>
@@ -12,7 +11,6 @@
 
 <script>
 import LoginButton from './LoginButton.vue'
-import PageMoveMenu from './PageMoveMenu.vue'
 
 export default {
   name: 'Header',
@@ -20,8 +18,7 @@ export default {
     msg: String
   },
   components: {
-    LoginButton,
-    PageMoveMenu
+    LoginButton
   }
 }
 </script>
