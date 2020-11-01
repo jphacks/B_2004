@@ -9,11 +9,9 @@ function findBlock (text, firstIndex) {
     }
     if (text.charAt(i) === '{') {
       cntFirst++
-      continue
     }
     if (text.charAt(i) === '}') {
       cntEnd++
-      continue
     }
     slice.push(text.charAt(i))
   }
@@ -27,5 +25,5 @@ export default function (text) {
   const methodFirst = text.indexOf('methods:') + methodLength
   const dataBlock = findBlock(text, dataFirst)
   const methodBlock = findBlock(text, methodFirst)
-  console.log(dataBlock, methodBlock)
+  console.log('file', dataBlock, methodBlock)
 }

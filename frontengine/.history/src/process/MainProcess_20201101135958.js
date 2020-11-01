@@ -11,5 +11,5 @@ export default function (text) {
   const script = text.substr(text.indexOf('<script>') + scriptLength, text.indexOf('</script>') - scriptLength)
   const style = text.substr(text.indexOf('<style scoped>') + styleLength, text.indexOf('</style>') - styleLength)
   // let domTree = DomProcess(templates)
-  const scriptTree = ScriptProcess(script)
+  let scriptTree = ScriptProcess(script)
 }
