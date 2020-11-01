@@ -1,4 +1,5 @@
 <template>
+  <body class="problemArea">
   <div class="problemdetail">
     <b-button variant="outline-primary" @click="sumplePush()">サンプルを設置する</b-button>
       <b-form-textarea
@@ -9,6 +10,7 @@
     ></b-form-textarea>
     <b-button @click="getDom()">送信</b-button>
   </div>
+  </body>
 </template>
 
 <script>
@@ -76,3 +78,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.problemArea {
+  margin: 40px 40px 40px;
+}
+</style>

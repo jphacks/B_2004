@@ -126,10 +126,10 @@ function DOMAnalysis (dom) {
       // >
     }
   }
+  info.others = []
   for (const other of others) {
-    otherAnalysis(other)
+    info.others.push(otherAnalysis(other))
   }
-  info.other = others
   console.log('analysis', tags, info, dom)
   return info
 }
@@ -147,12 +147,30 @@ function otherAnalysis (other) {
   if (otherSplit.length > 1) {
     target.left = otherSplit[0].split('=')[0]
     target.right = otherSplit[1]
-    if (otherSplit[1].match('(') && otherSplit[1].match(')')) {
+    if (target.left.indexOf(':') === 0) {
+      target.directive = true
+    } else {
+      target.directive = false
+    }
+    if (otherSplit[1].indexOf('(') > 0 && otherSplit[1].indexOf(')') > 0) {
       // function
       target.type = 'function'
+      target.right = otherSplit[1].split('(')[0]
+      const argument = otherSplit[1].split('(')[1].substr(0, otherSplit[1].split('(')[1].length - 1)
+      console.log('arguments', argument)
+      target.functionArgument = argument.split(',')
     } else {
       // variable
       target.type = 'variable'
+      if ((otherSplit[1].match(/'/g) || []).length > 2 || target.left.indexOf(':') !== 0) {
+        target.variableType = 'String'
+      } else if ((otherSplit[1].match(/[0-9]/g) || []).length === otherSplit[1].length) {
+        target.variableType = 'Integer'
+      } else if (otherSplit[1] === 'true' || otherSplit[1] === 'false') {
+        target.variableType = 'boolean'
+      } else {
+        target.variableType = 'global'
+      }
     }
   } else {
     // length == 1
