@@ -44,6 +44,7 @@ export default function (text) {
 }
 
 function DOMAnalysis (dom) {
+  console.log('getDom', dom)
   const info = {}
   info.open = true // 閉じられているか
   const others = []
@@ -55,7 +56,13 @@ function DOMAnalysis (dom) {
   } else {
     info.close = false
   }
-  const tags = dom.split(' ')
+  const tags = []
+  const candidateTags = dom.split(' ')
+  for (const tag of candidateTags) {
+    console.log('tag', tag, tag.split('\n'))
+    tags.push(...tag.split('\n'))
+  }
+  console.log('tags', tags, candidateTags)
   // const info = {}
   if (tags.length === 1) {
     // tag一つのみ
@@ -68,6 +75,7 @@ function DOMAnalysis (dom) {
     info.name = tags[0].substr(1 + nameLength, tags[0].length - nameLength)
     // let blank = false
     // let blanckCount = []
+    console.log('name:getDom', info.name, tags[0])
     const candidateOthers = []
     for (let i = 1; i < tags.length - 1; i++) {
       const tag = tags[i]
@@ -127,6 +135,7 @@ function DOMAnalysis (dom) {
     }
   }
   info.others = []
+  console.log('others', others)
   for (const other of others) {
     info.others.push(otherAnalysis(other))
   }
