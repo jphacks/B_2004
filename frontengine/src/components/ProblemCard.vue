@@ -1,9 +1,13 @@
 <template>
   <div class="b-card">
     <b-card bg-variant="white" text-variant="black" class="text-left">
-      <h2>{{problemNumber}}</h2>
-      <b-card-text>{{problemStatement}}</b-card-text>
-      <router-link to="/problemDetail">この問題を解く</router-link>
+      <b-card-header header-bg-variant="success">
+        <h1>{{problemNumber}}</h1>
+      </b-card-header>
+      <b-card-body>
+        <b-card-text>{{problemStatement}}</b-card-text>
+        <router-link to="/problemDetail">この問題を解く</router-link>
+      </b-card-body>
     </b-card>
   </div>
 </template>
