@@ -30,3 +30,7 @@ export default function (text) {
 
   console.log(dataBlock, methodBlock)
 }
+var esprima = require('esprima')
+  var code = 'console.log("Hello, World!")'
+  var ast = esprima.parse(code)
+  console.log(ast)
