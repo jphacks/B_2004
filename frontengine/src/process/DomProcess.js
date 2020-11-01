@@ -82,7 +82,7 @@ function DOMAnalysis (dom) {
       const candidateKey = candidatetag[i]
       const other = candidateOthers[candidateKey]
       console.log('確認', other)
-      const quoteLength = other.match(/"/g).length
+      const quoteLength = (other.match(/"/g) || []).length
       // console.log('奇数', other.match(/"/g).length)
       if (kisu) {
         rensei.push(' '.repeat(candidateKey - candidatetag[i - 1]))
@@ -126,8 +126,41 @@ function DOMAnalysis (dom) {
       // >
     }
   }
+  for (const other of others) {
+    otherAnalysis(other)
+  }
   info.other = others
-  info.candidatetag = candidatetag
   console.log('analysis', tags, info, dom)
   return info
+}
+
+function otherAnalysis (other) {
+  /*
+    directive: true or false
+    type: 'function' or variable
+    variableType:
+    functionArgument:
+  */
+  const target = {}
+  target.left = ''
+  const otherSplit = other.split('"')
+  if (otherSplit.length > 1) {
+    target.left = otherSplit[0].split('=')[0]
+    target.right = otherSplit[1]
+    if (otherSplit[1].match('(') && otherSplit[1].match(')')) {
+      // function
+      target.type = 'function'
+    } else {
+      // variable
+      target.type = 'variable'
+    }
+  } else {
+    // length == 1
+    target.left = otherSplit[0].split('\n')[0]
+    target.right = true
+    target.type = 'variable'
+    target.variableType = 'bool'
+  }
+  console.log('target', target)
+  return target
 }
