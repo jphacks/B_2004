@@ -23,7 +23,8 @@ export default function (text) {
           console.log('check err?', info, unique)
         }
         unique++
-        if (parentId) {
+        if (parentId && tags && tags[unique]) {
+          console.log('parentId', parentId, tags, unique)
           tags[unique].parentId = parentId
         }
         if (info.open) {
@@ -46,6 +47,7 @@ function DOMAnalysis (dom) {
   const info = {}
   info.open = true // 閉じられているか
   const others = []
+  const candidatetag = []
   if (dom.substr(0, 2) === '</') {
     info.close = true
   } else {
@@ -62,9 +64,51 @@ function DOMAnalysis (dom) {
     }
   } else {
     info.name = tags[0].substr(1, tags[0].length)
+    // let blank = false
+    // let blanckCount = []
+    const candidateOthers = []
     for (let i = 1; i < tags.length - 1; i++) {
       const tag = tags[i]
-      others.push(tag)
+      candidateOthers.push(tag)
+      if (tag.length > 0) {
+        candidatetag.push(candidateOthers.length - 1)
+      }
+    }
+    let rensei = []
+    let kisu = false
+    for (let i = 0; i < candidatetag.length; i++) {
+      const candidateKey = candidatetag[i]
+      const other = candidateOthers[candidateKey]
+      console.log('確認', other)
+      const quoteLength = other.match(/"/g).length
+      // console.log('奇数', other.match(/"/g).length)
+      if (kisu) {
+        rensei.push(' '.repeat(candidateKey - candidatetag[i - 1]))
+      }
+      if (quoteLength % 2 !== 0) {
+        // 貰ったのが奇数
+        if (kisu) {
+          kisu = false
+          rensei.push(other)
+          others.push(rensei.join(''))
+          rensei = []
+          continue
+        } else {
+          console.log('奇数', quoteLength)
+          kisu = true
+          rensei.push(other)
+          continue
+        }
+      } else {
+        // 貰ったのが偶数
+        if (kisu) {
+          rensei.push(other)
+          continue
+        } else {
+          others.push(other)
+          continue
+        }
+      }
     }
     const lastTag = tags[tags.length - 1]
     if (lastTag.substr(lastTag.length - 2, 2) === '/>') {
@@ -81,6 +125,7 @@ function DOMAnalysis (dom) {
     }
   }
   info.other = others
+  info.candidatetag = candidatetag
   console.log('analysis', tags, info, dom)
   return info
 }
