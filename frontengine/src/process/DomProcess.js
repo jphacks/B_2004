@@ -57,6 +57,33 @@ export default function (text) {
         depths[tags[unique].depth][unique] = tags[unique]
         unique++
       }
+    } else {
+      const slice = []
+      for (; ; i++) {
+        slice.push(text.charAt(i))
+        if (i + 1 === text.length || text.charAt(i + 1) === '<') {
+          break
+        }
+      }
+      if ((slice.join('').match(/\s/g) || []).length === slice.length) {
+        continue
+      }
+      const preText = slice
+      const texts = textAnalysis(preText)
+      if (!texts) {
+        continue
+      }
+      texts.parentId = parentId
+      tags[unique] = texts
+      tags[unique].unique = unique
+      tags[unique].depth = depth
+      tags[unique].name = 'reserveText'
+      if (!depths[tags[unique].depth]) {
+        depths[tags[unique].depth] = {}
+      }
+      depths[tags[unique].depth][unique] = tags[unique]
+      unique++
+      console.log('textSlice', slice)
     }
   }
   const tree = createDomTree(depths)
@@ -231,4 +258,50 @@ function createDomTree (depths) {
       return seed
     }
   }
+}
+function textAnalysis (text) {
+  // 配列で受け取る?
+  const output = {}
+  output.value = text.join('')
+  output.reserves = {}
+  let targetText = ''
+  for (let i = 0; i < text.length; i++) {
+    targetText = text[i]
+    // console.log('output', targetText)
+    if (targetText === '{' && text[i + 1] === '{') {
+      // {{ <- これ
+      // ホントは正規表現でいい感じにしたいね...
+      const target = {}
+      target.start = i
+      const targetTexts = []
+      i += 2
+      for (; ; i++) {
+        targetText = text[i]
+        if (targetText === '/s' || targetText === ' ') {
+          continue
+        }
+        if (targetText === '}' && text[i + 1] === '}') {
+          target.end = i + 1
+          break
+        }
+        targetTexts.push(targetText)
+      }
+      const targetCheck = targetTexts.join('')
+      target.text = targetCheck
+      if (targetTexts.indexOf('(') > 0 && targetTexts.indexOf(')') > 0) {
+        // function
+        target.type = 'function'
+        target.text = targetCheck.split('(')[0]
+        const argument = targetCheck.split('(')[1].substr(0, targetCheck.split('(')[1].length - 1)
+        console.log('arguments', argument)
+        target.functionArgument = argument.split(',')
+      } else {
+        // variable
+        target.type = 'variable'
+        target.variableType = 'global'
+      }
+      output.reserves[target.text] = target
+    }
+  }
+  return output
 }
