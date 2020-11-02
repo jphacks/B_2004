@@ -2,8 +2,10 @@
   <div>
   <b-navbar toggleable="lg" type="dark" variant="info">
     <b-navbar-brand href="/">front Engine</b-navbar-brand>
+    <PageMoveMenu/>
     <b-navbar-nav class="ml-auto">
-      <b-nav-item class="ssq"><LoginButton/></b-nav-item>
+      <b-button @click="signOut()">ログアウト</b-button>
+      <b-nav-item class="ssq"><LoginButton :loginType="'login'"/></b-nav-item>
     </b-navbar-nav>
   </b-navbar>
 </div>
@@ -11,6 +13,8 @@
 
 <script>
 import LoginButton from './LoginButton.vue'
+import PageMoveMenu from './PageMoveMenu.vue'
+import firebase from 'firebase'
 
 export default {
   name: 'Header',
@@ -18,7 +22,15 @@ export default {
     msg: String
   },
   components: {
-    LoginButton
+    LoginButton,
+    PageMoveMenu
+  },
+  methods: {
+    signOut: function () {
+      firebase.auth().signOut().then(a => {
+        console.log('a')
+      })
+    }
   }
 }
 </script>

@@ -16,41 +16,33 @@
         ></b-form-input>
       </b-form-group>
 
-      <b-form-group id="input-group-2" label="Your Name:" label-for="input-2">
+      <b-form-group id="input-group-2" label="Your Password:" label-for="input-2">
         <b-form-input
           id="input-2"
-          v-model="form.name"
+          v-model="form.password"
           required
-          placeholder="Enter name"
+          placeholder="Enter password"
         ></b-form-input>
       </b-form-group>
-
-      <b-form-group id="input-group-3" label="Food:" label-for="input-3">
-        <b-form-select
-          id="input-3"
-          v-model="form.food"
-          :options="foods"
-          required
-        ></b-form-select>
-      </b-form-group>
-
-      <b-form-group id="input-group-4">
-        <b-form-checkbox-group v-model="form.checked" id="checkboxes-4">
-          <b-form-checkbox value="me">Check me out</b-form-checkbox>
-          <b-form-checkbox value="that">Check that out</b-form-checkbox>
-        </b-form-checkbox-group>
-      </b-form-group>
-
-      <b-button type="submit" variant="primary">Submit</b-button>
+      <div v-if="loginType === 'login'" >
+        <b-button type="ok" variant="primary" >ログイン</b-button>
+      </div>
+      <div v-else>
+        <b-button type="submit" variant="primary" >登録</b-button>
+      </div>
       <b-button type="reset" variant="danger">Reset</b-button>
     </b-form>
     <b-card class="mt-3" header="Form Data Result">
       <pre class="m-0">{{ form }}</pre>
     </b-card>
+    <div v-if="loginType === 'login'" >
+      <b-button @click="onChangeLoginType()">未登録の方はこちら</b-button>
+    </div>
   </div>
 </template>
 
 <script>
+import firebase from 'firebase'
 
 export default {
   data () {
@@ -58,17 +50,25 @@ export default {
       form: {
         email: '',
         name: '',
+        password: '',
         food: null,
         checked: []
       },
       foods: [{ text: 'Select One', value: null }, 'Carrots', 'Beans', 'Tomatoes', 'Corn'],
-      show: true
+      show: true,
+      loginType: 'login'
     }
   },
   methods: {
     onSubmit (evt) {
       evt.preventDefault()
-      alert(JSON.stringify(this.form))
+      // alert(JSON.stringify(this.form))
+      this.createOrRegist(this.form.email, this.form.password)
+    },
+    onOk (evt) {
+      evt.preventDefault()
+      // alert(JSON.stringify(this.form))
+      this.createOrRegist(this.form.email, this.form.password)
     },
     onReset (evt) {
       evt.preventDefault()
@@ -82,6 +82,38 @@ export default {
       this.$nextTick(() => {
         this.show = true
       })
+    },
+    onChangeLoginType () {
+      if (this.loginType === 'login') {
+        this.loginType = 'regist'
+      } else {
+        this.loginType = 'login'
+      }
+    },
+    createOrRegist (email, password) {
+      console.log('check', email, password)
+      if (this.loginType === 'login') {
+        // login
+        firebase.auth().signInWithEmailAndPassword(email, password).then(
+          user => {
+            console.log('user', user)
+            alert('Success!')
+            // this.$router.push('/')
+          },
+          err => {
+            alert(err.message)
+          })
+      } else {
+        // regist
+        firebase.auth().createUserWithEmailAndPassword(email, password)
+          .then(user => {
+            console.log('user', user)
+            alert('Create account: ', user.email)
+          })
+          .catch(error => {
+            alert(error.message)
+          })
+      }
     }
   }
 }

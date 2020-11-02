@@ -6,7 +6,6 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import firebase from 'firebase'
-
 Vue.config.productionTip = false
 // console.log('apikey', process.env)
 const firebaseConfig = {
