@@ -60,6 +60,7 @@ export default function (text) {
     }
   }
   const tree = createDomTree(depths)
+  console.log('tree', tree)
   console.log('file', text, text.charAt(1), text.length, tags, tree)
 }
 
@@ -216,7 +217,7 @@ function createDomTree (depths) {
   const length = Object.keys(depths).length - 1
   for (let i = length; i > 0; i--) {
     for (const seed of Object.values(depths[i])) {
-      if (!seed.close && seed.parentId && seed.parentId >= 0) {
+      if (!seed.close && seed.parentId >= 0) {
         if (!depths[i - 1][seed.parentId].children) {
           depths[i - 1][seed.parentId].children = {}
         }
