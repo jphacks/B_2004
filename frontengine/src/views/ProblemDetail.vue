@@ -1,11 +1,17 @@
 <template>
   <body class="problemArea">
+  <div class="ploblemBody">
+    <span>{{ getExam.name }}</span>
+  </div>
+
+  <!-- Answer Form Area -->
   <div class="problemdetail">
     <b-button variant="outline-primary" @click="sumplePush()">サンプルを設置する</b-button>
       <b-form-textarea
       id="textarea"
       v-model="text"
-      placeholder="Enter something..."
+      :state="text.length > 0"
+      placeholder="解答を入力してください。"
       rows="6"
     ></b-form-textarea>
     <b-button @click="getDom()">送信</b-button>
@@ -16,6 +22,7 @@
 <script>
 // @ is an alias to /src
 import MainProcess from '@/process/MainProcess.js'
+import { mapGetters } from 'vuex'
 export default {
   name: 'Home',
   components: {
@@ -24,6 +31,8 @@ export default {
     return {
       text: ''
     }
+  },
+  props: {
   },
   methods: {
     getDom: function () {
@@ -34,8 +43,13 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['getExams']),
     getText () {
       return "''"
+    },
+    getExam () {
+      const examId = this.$route.params.examId
+      return this.getExams[examId]
     },
     getSumpleText () {
       const output = []
