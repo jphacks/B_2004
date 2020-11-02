@@ -61,6 +61,7 @@ export default {
       output.push('placeholder="Enter something..."')
       output.push('rows="6"')
       output.push('></b-form-textarea>')
+      output.push(' {{ text }} ')
       output.push('<img src="./peace.jpg"/>')
       output.push('<b-button @click="getDom(text)"><span class="goto">送信</span></b-button>')
       output.push('</div>')
