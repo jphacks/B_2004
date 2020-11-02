@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import ProblemList from '@/views/ProblemList.vue'
 import ProblemDetail from '@/views/ProblemDetail.vue'
+import Entry from '@/views/Entry.vue'
 Vue.use(VueRouter)
 
 const routes = [
@@ -23,6 +24,11 @@ const routes = [
     path: '/problemDetail',
     name: 'ProblemDetail',
     component: ProblemDetail
+  },
+  {
+    path: '/entry',
+    name: 'Entry',
+    component: Entry
   }
 ]
 
