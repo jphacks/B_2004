@@ -21,7 +21,7 @@ const routes = [
     component: ProblemList // () => import(/* webpackChunkName: "about" */ '../views/ProblemList.vue')
   },
   {
-    path: '/problemDetail',
+    path: '/problemDetail/:examId',
     name: 'ProblemDetail',
     component: ProblemDetail
   },

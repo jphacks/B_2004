@@ -6,7 +6,7 @@
       </b-card-header>
       <b-card-body>
         <b-card-text>{{problemStatement}}</b-card-text>
-        <router-link to="/problemDetail">この問題を解く</router-link>
+        <router-link :to="{name: 'ProblemDetail', params: {examId: problemId}}">この問題を解く</router-link>
       </b-card-body>
     </b-card>
   </div>
@@ -17,7 +17,8 @@ export default {
   name: 'ProblemCard',
   props: {
     problemNumber: String,
-    problemStatement: String
+    problemStatement: String,
+    problemId: String
   }
 }
 </script>
