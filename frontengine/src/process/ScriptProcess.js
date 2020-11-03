@@ -1,3 +1,4 @@
+import CreateAST from './CreateAST.js'
 function findBlock (text, firstIndex) {
   let cntFirst = 0
   let cntEnd = 0
@@ -21,6 +22,7 @@ function findBlock (text, firstIndex) {
 }
 
 export default function (text) {
+  CreateAST(text)
   const dataLength = 'data ()'.length
   const methodLength = 'methods:'.length
   const dataFirst = text.indexOf('data ()') + dataLength

@@ -3,7 +3,6 @@
   <div class="ploblemBody">
     <span>{{ getExam ? getExam.name : 'testmode' }}</span>
   </div>
-
   <!-- Answer Form Area -->
   <div class="problemdetail">
     <b-button variant="outline-primary" @click="sumplePush()">サンプルを設置する</b-button>
