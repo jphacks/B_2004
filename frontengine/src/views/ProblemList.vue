@@ -2,6 +2,7 @@
   <div class="problemList">
     <h1 v-on:click="fetchExams()">問題一覧</h1>
     {{ getExamViews }}
+    <ProblemCard :problemNumber="'No.' + String(2)" :problemId="'vho02QWOCy9IsjgqhiEG'"/>
     <ProblemCard v-for="(problemId, index) in Object.keys(getExamViews)" :key="index" :problemNumber="'No.' + String(index+1)" :problemId="problemId"/>
   </div>
 </template>

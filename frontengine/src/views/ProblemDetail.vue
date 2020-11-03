@@ -1,9 +1,8 @@
 <template>
   <body class="problemArea">
   <div class="ploblemBody">
-    <span>{{ getExam.name }}</span>
+    <span>{{ getExam ? getExam.name : 'testmode' }}</span>
   </div>
-
   <!-- Answer Form Area -->
   <div class="problemdetail">
     <b-button variant="outline-primary" @click="sumplePush()">サンプルを設置する</b-button>
@@ -24,7 +23,7 @@
 import MainProcess from '@/process/MainProcess.js'
 import { mapGetters } from 'vuex'
 export default {
-  name: 'Home',
+  name: 'ProblemDetail',
   components: {
   },
   data () {
@@ -49,6 +48,9 @@ export default {
     },
     getExam () {
       const examId = this.$route.params.examId
+      if (this.getExams[examId]) {
+        return { name: 'testmode' }
+      }
       return this.getExams[examId]
     },
     getSumpleText () {
@@ -67,20 +69,33 @@ export default {
       output.push('</div>')
       output.push('</template>')
       output.push('<script>')
-      output.push('import MainProcess from \'@/process/MainProcess.js\'')
+      // output.push('import MainProcess from \'@/process/MainProcess.js\'')
       output.push('export default {')
       output.push('  name: \'Home\',')
       output.push('  components: {')
       output.push('  },')
+      output.push('props: {')
+      output.push('input: String,')
+      output.push('testCase: {')
+      output.push('type: String,')
+      output.push('default: \'testcase\'')
+      output.push(' }')
+      output.push('},')
       output.push('  data () {')
       output.push('    return {')
-      output.push('      text: \'\'')
+      output.push('      text: \'\',')
+      output.push('      number: 0,')
+      output.push('      obj: {a: {}, c:{d:50, e:{}}},')
+      output.push('      array: [0,1,2]')
       output.push('    }')
       output.push('  },')
       output.push('  methods: {')
       output.push('    getDom: function (text) {')
       output.push('      MainProcess(text)')
-      output.push('    }')
+      output.push('    },')
+      output.push('    test: function () {')
+      output.push('      this.getDom()')
+      output.push('     }')
       output.push('  },')
       output.push('  computed: {')
       output.push('    getText () {')
@@ -88,7 +103,7 @@ export default {
       output.push('    },')
       output.push('  }')
       output.push('}')
-      output.push('</ ' + 'script>')
+      output.push('</' + 'script>')
       return output.join('\n')
     }
   }
