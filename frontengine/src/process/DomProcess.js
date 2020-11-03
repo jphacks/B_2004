@@ -219,7 +219,7 @@ function otherAnalysis (other) {
     } else {
       // variable
       target.type = 'variable'
-      if ((otherSplit[1].match(/'/g) || []).length > 2 || target.left.indexOf(':') !== 0) {
+      if (((otherSplit[1].match(/'/g) || []).length > 2 || target.left.indexOf(':') !== 0) && (target.left !== 'v-if' && target.left !== 'v-for')) {
         target.variableType = 'String'
       } else if ((otherSplit[1].match(/[0-9]/g) || []).length === otherSplit[1].length) {
         target.variableType = 'Integer'
