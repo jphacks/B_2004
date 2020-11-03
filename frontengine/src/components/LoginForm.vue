@@ -43,6 +43,7 @@
 
 <script>
 import firebase from 'firebase'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
   data () {
@@ -98,6 +99,7 @@ export default {
           user => {
             console.log('user', user)
             alert('Success!')
+            
             // this.$router.push('/')
           },
           err => {
@@ -114,7 +116,10 @@ export default {
             alert(error.message)
           })
       }
-    }
+    },
+    ...mapActions(['login']),
+     user
+
   }
 }
 </script>
