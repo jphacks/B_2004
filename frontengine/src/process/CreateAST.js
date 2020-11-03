@@ -3,7 +3,7 @@ export default function (script) {
   const code = 'console.log("Hello, World!")'
   console.log('script', script)
   const { parse } = require('@babel/parser')
-  const ast = parse('const a = 1')
+  const ast = parse(script)
   console.log('ast', JSON.stringify(ast, null, 2))
   // 引数のコードをASTに変換する
   // var ast = esprima.parseModule(script)

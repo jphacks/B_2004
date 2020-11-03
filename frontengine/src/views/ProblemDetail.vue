@@ -69,7 +69,7 @@ export default {
       output.push('</div>')
       output.push('</template>')
       output.push('<script>')
-      output.push('import MainProcess from \'@/process/MainProcess.js\'')
+      // output.push('import MainProcess from \'@/process/MainProcess.js\'')
       output.push('export default {')
       output.push('  name: \'Home\',')
       output.push('  components: {')
@@ -90,7 +90,7 @@ export default {
       output.push('    },')
       output.push('  }')
       output.push('}')
-      output.push('</ ' + 'script>')
+      output.push('</' + 'script>')
       return output.join('\n')
     }
   }
