@@ -5,6 +5,7 @@ export default function (script) {
   const { parse } = require('@babel/parser')
   const ast = parse(script, { sourceType: 'module' })
   console.log('ast', JSON.stringify(ast, null, 2))
+  return ast
   // 引数のコードをASTに変換する
   // var ast = esprima.parseModule(script)
   // console.log(JSON.stringify(ast))
