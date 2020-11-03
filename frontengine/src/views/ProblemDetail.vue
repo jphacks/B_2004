@@ -1,7 +1,7 @@
 <template>
   <body class="problemArea">
   <div class="ploblemBody">
-    <span>{{ getExam.name }}</span>
+    <span>{{ getExam ? getExam.name : 'testmode' }}</span>
   </div>
 
   <!-- Answer Form Area -->
@@ -24,7 +24,7 @@
 import MainProcess from '@/process/MainProcess.js'
 import { mapGetters } from 'vuex'
 export default {
-  name: 'Home',
+  name: 'ProblemDetail',
   components: {
   },
   data () {
@@ -49,6 +49,9 @@ export default {
     },
     getExam () {
       const examId = this.$route.params.examId
+      if (this.getExams[examId]) {
+        return { name: 'testmode' }
+      }
       return this.getExams[examId]
     },
     getSumpleText () {
