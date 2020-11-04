@@ -1,8 +1,14 @@
 <template>
-  <div class="problemList">
-    <h1 v-on:click="fetchExams()">問題一覧</h1>
-    {{ getExamViews }}
-    <ProblemCard v-for="(problemId, index) in Object.keys(getExamViews)" :key="index" :problemNumber="'No.' + String(index+1)" :problemId="problemId"/>
+  <div class="problemList" >
+    <h1 >問題一覧</h1>
+    {{ exams }}
+    <ProblemCard :problemNumber="'No.' + 'test'" :problemId="'vho02QWOCy9IsjgqhiEG'"/>
+    <div v-if="getExamViews.length !== 0">
+      <ProblemCard v-for="(problemId, index) in Object.keys(exams || {})" :key="index" :problemNumber="'No.' + String(index+1)" :problemId="problemId"/>
+    </div>
+    <div v-else>
+      読み込み中...
+    </div>
   </div>
 </template>
 
@@ -17,16 +23,16 @@ export default {
   components: {
     ProblemCard
   },
+  data () {
+    return {
+      exams: {}
+    }
+  },
   mounted: function () {
-    firebase.firestore().collection('exams').get().then(snapsshot => {
-      console.log('ss', snapsshot)
-      snapsshot.forEach(doc => {
-        console.log('doc', doc)
-      })
-    })
+    this.fetchFirebaseExams()
   },
   methods: {
-    ...mapActions(['fetchExams']),
+    ...mapActions(['fetchExams', 'setExams']),
     onfirebase: function () {
       console.log('check', firebase.firestore())
       firebase.firestore().collection('exams').get().then(snapsshot => {
@@ -35,18 +41,41 @@ export default {
           console.log('doc', doc)
         })
       })
+    },
+    renderExam: function () {
+      if (Object.keys(this.getExams || {}).length === 0) {
+        this.fetchExams().then(a => {
+          console.log('check', a)
+          this.exams = a
+        })
+      }
+    },
+    fetchFirebaseExams: function () {
+      const output = {}
+      return firebase.firestore().collection('exams').get().then(snapsshot => {
+        console.log('ss', snapsshot)
+        snapsshot.forEach(doc => {
+          this.setExams(doc)
+          output[doc.id] = doc.data()
+        })
+        this.exams = output
+      })
     }
   },
   computed: {
     ...mapGetters(['getExams']),
     getExamViews () {
-      console.log('this.getExams')
-      return this.getExams
+      return this.fetchFirebaseExams()
     }
     // ex:
     // hogehoge = []
     // hogehoge.push(...[1,2,3,4,5])
     // hogehoge = [1,2,3,4,5]
+  },
+  watch: {
+    getExamViews: function (o) {
+      console.log('chek', o)
+    }
   }
 }
 
