@@ -1,4 +1,5 @@
 import { CheckProperty } from './utility.js'
+import { global } from '../moduleProcess.js'
 export { execScript }
 function execScript (body, array) {
   // name,valueは予約されている??
@@ -8,6 +9,7 @@ function execScript (body, array) {
   const error = []
   let access = body
   // 引数をとる
+  console.log('global', global)
   console.log('ast', JSON.stringify(body, null, 2))
   // console.log(Object.values(access.type))
   // 実際に読み込む
@@ -23,6 +25,7 @@ function execScript (body, array) {
   }
   for (let i = 0; i < row; i++) {
     // console.log(access.body[i].type)
+    console.log('これ見る', access.body[i], access)
     switch (access.body[i].type) {
       // 宣言
       case 'VariableDeclaration':
@@ -40,8 +43,8 @@ function execScript (body, array) {
         console.log(access.body[i].expression.type)
         if (access.body[i].expression && access.body[i].expression.type === 'CallExpression') {
           const target = access.body[i].expression.callee
-          if (target.object.type === 'ThisExpression') {
-            execScript(global.target.property.name, global.target.arguments.name)
+          if (target.object && target.object.type === 'ThisExpression') {
+            execScript(global[target.property.name], access.body[i].expression.arguments)
           }
           /* // 組み込み関数のとき
           let kumikomiFuncName = ''

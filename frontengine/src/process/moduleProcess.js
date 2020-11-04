@@ -2,8 +2,8 @@ import propsProcess from './ScriptUtility/propsProcess.js'
 import dataProcess from './ScriptUtility/dataProcess.js'
 import methodsProcess from './ScriptUtility/methodsProcess.js'
 import { execScript } from './ScriptUtility/execScript.js'
-
 const global = {}
+export { global }
 export default function (ast) {
   // console.log('ast', ast)
   const firstBody = ast.program.body[0].declaration.properties
@@ -30,7 +30,7 @@ export default function (ast) {
     }
   }
   // console.log('srhjeosije', global.text)
-  execScript(global.getDom, global.text)
+  execScript(global.test, global.text)
   // console.log('moduleOutput', global, modules)
 }
 function mergeObject (obj) {
