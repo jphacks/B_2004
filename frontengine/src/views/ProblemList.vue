@@ -1,9 +1,9 @@
 <template>
   <div class="problemList">
-    <h1 v-on:click="fetchExams()">問題一覧</h1>
+    <h1 >問題一覧</h1>
     {{ getExamViews }}
-    <ProblemCard :problemNumber="'No.' + String(2)" :problemId="'vho02QWOCy9IsjgqhiEG'"/>
-    <ProblemCard v-for="(problemId, index) in Object.keys(getExamViews)" :key="index" :problemNumber="'No.' + String(index+1)" :problemId="problemId"/>
+    <!--<ProblemCard :problemNumber="'No.' + 1" :problemId="'vho02QWOCy9IsjgqhiEG'"/>-->
+    <ProblemCard v-for="(problemId, index) in Object.keys(getExams)" :key="index" :problemNumber="'No.' + String(index+1)" :problemId="problemId"/>
   </div>
 </template>
 
@@ -18,13 +18,12 @@ export default {
   components: {
     ProblemCard
   },
+  data () {
+    return {
+    }
+  },
   mounted: function () {
-    firebase.firestore().collection('exams').get().then(snapsshot => {
-      console.log('ss', snapsshot)
-      snapsshot.forEach(doc => {
-        console.log('doc', doc)
-      })
-    })
+    this.fetchExams()
   },
   methods: {
     ...mapActions(['fetchExams']),
@@ -42,12 +41,22 @@ export default {
     ...mapGetters(['getExams']),
     getExamViews () {
       console.log('this.getExams')
-      return this.getExams
+      const self = this
+      let output = {}
+      output = this.getExams
+      return output
     }
     // ex:
     // hogehoge = []
     // hogehoge.push(...[1,2,3,4,5])
     // hogehoge = [1,2,3,4,5]
+  },
+  watch: {
+    getExams: function (data) {
+      if (Object.keys(this.data).length === 0) {
+        this.fetchExams
+      }
+    }
   }
 }
 
