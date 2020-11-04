@@ -29,7 +29,6 @@ export default function (ast) {
         break
     }
   }
-  // console.log('srhjeosije', global.text)
   execScript(global.getDom, global.text)
   // console.log('moduleOutput', global, modules)
 }

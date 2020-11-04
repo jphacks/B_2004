@@ -30,7 +30,7 @@ export default function (ast) {
     }
   }
   // console.log('srhjeosije', global.text)
-  execScript(global.getDom, global.text)
+  execScript(global.getDom.body, global.text)
   // console.log('moduleOutput', global, modules)
 }
 function mergeObject (obj) {

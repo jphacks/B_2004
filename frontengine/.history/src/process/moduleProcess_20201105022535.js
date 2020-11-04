@@ -29,9 +29,9 @@ export default function (ast) {
         break
     }
   }
-  // console.log('srhjeosije', global.text)
   execScript(global.getDom, global.text)
   // console.log('moduleOutput', global, modules)
+  console.log(global.text)
 }
 function mergeObject (obj) {
   Object.keys(obj).forEach(key => {

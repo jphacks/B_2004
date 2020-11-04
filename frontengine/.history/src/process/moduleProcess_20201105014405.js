@@ -5,7 +5,7 @@ import { execScript } from './ScriptUtility/execScript.js'
 
 const global = {}
 export default function (ast) {
-  // console.log('ast', ast)
+  console.log('ast', ast)
   const firstBody = ast.program.body[0].declaration.properties
   const modules = {}
   for (const body of firstBody) {
@@ -29,7 +29,6 @@ export default function (ast) {
         break
     }
   }
-  // console.log('srhjeosije', global.text)
   execScript(global.getDom, global.text)
   // console.log('moduleOutput', global, modules)
 }
