@@ -88,7 +88,7 @@ export default function (text) {
   }
   const tree = createDomTree(depths)
   console.log('tree', tree)
-  console.log('file', text, text.charAt(1), text.length, tags, tree)
+  console.log('file', depths, tree, tags)
 }
 
 function DOMAnalysis (dom) {
@@ -206,10 +206,43 @@ function otherAnalysis (other) {
     target.right = otherSplit[1]
     if (target.left.indexOf(':') === 0) {
       target.directive = true
+      target.left = otherSplit[0].split('=')[0].split(':')[1]
     } else {
       target.directive = false
     }
-    if (otherSplit[1].indexOf('(') > 0 && otherSplit[1].indexOf(')') > 0) {
+    if (target.left === 'v-if') {
+      target.directive = true
+    }
+    if (target.left === 'v-for') {
+      target.directive = true
+      let splitTarget = target.right.split(' of ')
+      if (splitTarget.length === 1) {
+        splitTarget = target.right.split(' in ')
+      }
+      target.target = {}
+      if (splitTarget[0].indexOf('(') >= 0 && splitTarget[0].indexOf(')') >= 0) {
+        const catchCandidate = []
+        let candidate = []
+        const catchTargets = splitTarget[0].substr(1, splitTarget[0].length - 2).split(',')
+        console.log('catchTarget', catchTargets)
+        for (const tarKey of catchTargets) {
+          tarKey.split('').forEach(mozi => {
+            if (mozi !== ' ' && mozi !== '/n') {
+              candidate.push(mozi)
+            }
+          })
+          catchCandidate.push(candidate.join(''))
+          candidate = []
+        }
+        target.target.value = catchCandidate[0]
+        target.target.index = catchCandidate[1]
+      } else {
+        target.target.value = splitTarget[0]
+      }
+      target.right = splitTarget[1]
+      console.log('見る後', target, splitTarget)
+    }
+    if (target.right.indexOf('(') > 0 && target.right.indexOf(')') > 0) {
       // function
       target.type = 'function'
       target.right = otherSplit[1].split('(')[0]
@@ -219,13 +252,24 @@ function otherAnalysis (other) {
     } else {
       // variable
       target.type = 'variable'
-      if ((otherSplit[1].match(/'/g) || []).length > 2 || target.left.indexOf(':') !== 0) {
+      if (((target.right.match(/'/g) || []).length >= 2 || !target.directive)) {
         target.variableType = 'String'
-      } else if ((otherSplit[1].match(/[0-9]/g) || []).length === otherSplit[1].length) {
+      } else if ((target.right.match(/\[/g) || []).length >= 1 && (target.right.match(/\]/g) || []).length >= 1) {
+        target.variableType = 'Array'
+      } else if ((target.right.match(/\{/g) || []).length >= 1 && (target.right.match(/\}/g) || []).length >= 1) {
+        target.variableType = 'Object'
+      } else if ((target.right.match(/[0-9]/g) || []).length === target.right.length) {
         target.variableType = 'Integer'
-      } else if (otherSplit[1] === 'true' || otherSplit[1] === 'false') {
+        target.right = Number(target.right)
+      } else if (target.right === 'true' || target.right === 'false') {
         target.variableType = 'boolean'
+        if (target.right === 'true') {
+          target.right = true
+        } else {
+          target.right = false
+        }
       } else {
+        console.log('見る後', target.right.match(/\[/g) || [], target)
         target.variableType = 'global'
       }
     }
@@ -248,7 +292,10 @@ function createDomTree (depths) {
         if (!depths[i - 1][seed.parentId].children) {
           depths[i - 1][seed.parentId].children = {}
         }
-        depths[i - 1][seed.parentId].children[seed.name] = seed
+        if (!depths[i - 1][seed.parentId].children[seed.name]) {
+          depths[i - 1][seed.parentId].children[seed.name] = []
+        }
+        depths[i - 1][seed.parentId].children[seed.name].push(seed)
       } else {
       }
     }

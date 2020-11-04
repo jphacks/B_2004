@@ -48,7 +48,8 @@ export default {
     },
     getExam () {
       const examId = this.$route.params.examId
-      if (this.getExams[examId]) {
+      console.log('getExam', examId, this.getExams)
+      if (!this.getExams || !this.getExams[examId]) {
         return { name: 'testmode' }
       }
       return this.getExams[examId]
@@ -64,6 +65,12 @@ export default {
       output.push('rows="6"')
       output.push('></b-form-textarea>')
       output.push(' {{ text }} ')
+      output.push('<div v-if="text">')
+      output.push('')
+      output.push('</div>')
+      output.push('<div v-else>')
+      output.push('</div>')
+      output.push('<div v-for="(value, index) of Array" :key="index" />')
       output.push('<img src="./peace.jpg"/>')
       output.push('<b-button @click="getDom(text)"><span class="goto">送信</span></b-button>')
       output.push('</div>')
