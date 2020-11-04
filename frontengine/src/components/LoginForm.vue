@@ -24,19 +24,20 @@
           placeholder="Enter password"
         ></b-form-input>
       </b-form-group>
-      <div v-if="loginType === 'login'" >
-        <b-button type="ok" variant="primary" >ログイン</b-button>
+      <div class="loginReset">
+        <div v-if="loginType === 'login'" >
+          <b-button type="ok" variant="primary" >submit</b-button>
+        </div>
+        <div v-else>
+          <b-button type="submit" variant="primary" >submit</b-button>
+        </div>
       </div>
-      <div v-else>
-        <b-button type="submit" variant="primary" >登録</b-button>
-      </div>
-      <b-button type="reset" variant="danger">Reset</b-button>
     </b-form>
-    <b-card class="mt-3" header="Form Data Result">
-      <pre class="m-0">{{ form }}</pre>
-    </b-card>
     <div v-if="loginType === 'login'" >
-      <b-button @click="onChangeLoginType()">未登録の方はこちら</b-button>
+      <span v-on:click="onChangeLoginType()" class="LoginModeChange">未登録の方はこちら</span>
+    </div>
+    <div v-else>
+      <span v-on:click="onChangeLoginType()" class="LoginModeChange">ログインはこちら</span>
     </div>
   </div>
 </template>
@@ -46,6 +47,12 @@ import firebase from 'firebase'
 import { mapActions, mapGetters } from 'vuex'
 
 export default {
+  props: {
+    loginType: {
+      type: String,
+      default: 'login'
+    }
+  },
   data () {
     return {
       form: {
@@ -56,8 +63,7 @@ export default {
         checked: []
       },
       foods: [{ text: 'Select One', value: null }, 'Carrots', 'Beans', 'Tomatoes', 'Corn'],
-      show: true,
-      loginType: 'login'
+      show: true
     }
   },
   methods: {
@@ -88,8 +94,10 @@ export default {
     onChangeLoginType () {
       if (this.loginType === 'login') {
         this.loginType = 'regist'
+        this.$emit('loginType', 'regist')
       } else {
         this.loginType = 'login'
+        this.$emit('loginType', 'login')
       }
     },
     createOrRegist (email, password) {
@@ -121,3 +129,13 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.loginReset {
+  display: flex;
+}
+.LoginModeChange {
+  float: right;
+  cursor: pointer;
+}
+</style>

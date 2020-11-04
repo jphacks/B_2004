@@ -23,6 +23,10 @@ export default new Vuex.Store({
       state.user = changeUser
       console.log('checkstate', state)
     },
+    logOutMutation (state) {
+      state.login = false
+      state.user = {}
+    },
     examMutation (state, exam) {
       state.exams[exam.id] = exam.data
       console.log('checkstate', state)
@@ -31,6 +35,9 @@ export default new Vuex.Store({
   actions: {
     login ({ commit }, user) {
       commit('loginMutation', user)
+    },
+    logOut ({ commit }) {
+      commit('logOutMutation')
     },
     fetchExams ({ commit }) {
       console.log('actioned')
@@ -54,6 +61,20 @@ export default new Vuex.Store({
     getExams: (state) => {
       console.log('exams', state.exams)
       return state.exams
+    },
+    getLogin: (state) => {
+      const output = {}
+      output.status = state.login
+      if (state.login) {
+        output.user = state.user
+      }
+      return output
+    },
+    getLoginState: (state) => {
+      return state.login
+    },
+    getEmailState: (state) => {
+      return state.user.email
     }
   }
 })

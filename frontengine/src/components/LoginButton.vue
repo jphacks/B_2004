@@ -1,8 +1,8 @@
 <template>
   <div>
-    <b-button class="b-botton" @click="modalShow = !modalShow">{{loginText}}</b-button>
+    <span class="b-botton" v-on:click="modalShow = !modalShow">{{loginText}}</span>
 
-    <b-modal v-model="modalShow"><LoginForm/></b-modal>
+    <b-modal v-model="modalShow" :title="loginTitle" id="bv-modal-example" hide-footer><LoginForm :loginType="loginType" @loginType="loginChange"/></b-modal>
   </div>
 </template>
 
@@ -15,10 +15,6 @@ export default {
     LoginForm
   },
   props: {
-    loginType: {
-      type: String,
-      default: 'login'
-    }
   },
   computed: {
     loginText () {
@@ -27,11 +23,24 @@ export default {
       } else {
         return '未登録'
       }
+    },
+    loginTitle () {
+      if (this.loginType === 'login') {
+        return 'ログイン'
+      } else {
+        return '登録'
+      }
+    }
+  },
+  methods: {
+    loginChange: function (loginType) {
+      this.loginType = loginType
     }
   },
   data () {
     return {
-      modalShow: false
+      modalShow: false,
+      loginType: 'login'
     }
   }
 }
