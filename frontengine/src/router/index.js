@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import ProblemList from '@/views/ProblemList.vue'
 import ProblemDetail from '@/views/ProblemDetail.vue'
+import MyProfile from '@/views/MyProfile.vue'
 import Entry from '@/views/Entry.vue'
 Vue.use(VueRouter)
 
@@ -24,6 +25,14 @@ const routes = [
     path: '/problemDetail/:examId',
     name: 'ProblemDetail',
     component: ProblemDetail
+  },
+  {
+    path: '/myProfile',
+    name: 'myProfile',
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: MyProfile // () => import(/* webpackChunkName: "about" */ '../views/MyProfile.vue')
   },
   {
     path: '/entry',
