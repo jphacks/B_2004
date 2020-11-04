@@ -2,7 +2,7 @@
   <div class="problemList" >
     <h1 >問題一覧</h1>
     {{ exams }}
-    <!--<ProblemCard :problemNumber="'No.' + 1" :problemId="'vho02QWOCy9IsjgqhiEG'"/>-->
+    <ProblemCard :problemNumber="'No.' + 'test'" :problemId="'vho02QWOCy9IsjgqhiEG'"/>
     <div v-if="getExamViews.length !== 0">
       <ProblemCard v-for="(problemId, index) in Object.keys(exams || {})" :key="index" :problemNumber="'No.' + String(index+1)" :problemId="problemId"/>
     </div>

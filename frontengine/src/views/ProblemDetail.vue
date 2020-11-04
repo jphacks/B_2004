@@ -48,7 +48,8 @@ export default {
     },
     getExam () {
       const examId = this.$route.params.examId
-      if (this.getExams[examId]) {
+      console.log('getExam', examId, this.getExams)
+      if (!this.getExams || !this.getExams[examId]) {
         return { name: 'testmode' }
       }
       return this.getExams[examId]
