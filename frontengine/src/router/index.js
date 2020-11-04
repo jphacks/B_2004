@@ -4,6 +4,7 @@ import Home from '../views/Home.vue'
 import ProblemList from '@/views/ProblemList.vue'
 import ProblemDetail from '@/views/ProblemDetail.vue'
 import Entry from '@/views/Entry.vue'
+import ProblemResult from '@/views/ProblemResult.vue'
 Vue.use(VueRouter)
 
 const routes = [
@@ -29,6 +30,11 @@ const routes = [
     path: '/entry',
     name: 'Entry',
     component: Entry
+  },
+  {
+    path: '/problemResult',
+    name: 'ProblemResult',
+    component: ProblemResult
   }
 ]
 
