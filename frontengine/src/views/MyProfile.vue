@@ -1,7 +1,7 @@
 <template>
     <b-container class="bv-example-row">
     <b-tabs pills content-class="mt-3">
-      <b-tab title="Tab 1" active>
+      <b-tab title="プロフィール" active>
         <b-row>
           <b-col class="userState">
           <h2>
@@ -20,7 +20,7 @@
           </b-col>
         </b-row>
       </b-tab>
-      <b-tab title="Tab 2">
+      <b-tab title="コンテスト実績">
           <b-card-text>Tab contents 2</b-card-text>
         </b-tab>
     </b-tabs>
