@@ -6,7 +6,7 @@
     <b-navbar-brand class="examList" to="/ProblemDetail">examList</b-navbar-brand>
     </div>
     <b-navbar-nav class="ml-auto">
-      <b-nav-item class="email" @click="myPro()">{{ getEmail }}</b-nav-item>
+      <b-nav-item class="email"> {{ getEmail }}</b-nav-item>
       <b-nav-item class="ssq" v-if="!getLoginStatus"><LoginButton :loginType="'login'"/></b-nav-item>
       <b-nav-item v-else @click="signOut()">ログアウト</b-nav-item>
     </b-navbar-nav>
@@ -33,11 +33,6 @@ export default {
         console.log('logout', user)
         this.logOut()
       })
-    },
-    myPro: function () {
-      if (this.$route.path !== '/myProfile') {
-        this.$router.push('/myProfile')
-      }
     }
   },
   computed: {

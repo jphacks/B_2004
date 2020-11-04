@@ -1,17 +1,17 @@
 <template>
     <b-container class="bv-example-row">
     <b-tabs pills content-class="mt-3">
-      <b-tab title="プロフィール" active>
+      <b-tab title="Tab 1" active>
         <b-row>
           <b-col class="userState">
           <h2>
                <b>{{myRate}}点</b>
                 <br>
-                <span class="userAsset">{{userName}}</span>
+                <span class="user-aset">{{userName}}</span>
           </h2>
           <img src="../assets/logo.png">
           </b-col>
-          <b-col class="userPerform" cols="9">
+          <b-col class="userPerform" cols="8">
           <h2>
               <p>実績</p>
               <br>
@@ -20,7 +20,7 @@
           </b-col>
         </b-row>
       </b-tab>
-      <b-tab title="成績表">
+      <b-tab title="Tab 2">
           <b-card-text>Tab contents 2</b-card-text>
         </b-tab>
     </b-tabs>
@@ -50,14 +50,9 @@ export default {
 
 <style scoped>
 .userState {
-    padding: 0;
     text-align: left;
 }
 .userPerform {
-    padding: 0;
     text-align: left;
-}
-.userAsset {
-    text-align: center;
 }
 </style>
