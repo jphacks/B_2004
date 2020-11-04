@@ -61,6 +61,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['login']),
     onSubmit (evt) {
       evt.preventDefault()
       // alert(JSON.stringify(this.form))
@@ -98,8 +99,7 @@ export default {
         firebase.auth().signInWithEmailAndPassword(email, password).then(
           user => {
             console.log('user', user)
-            alert('Success!')
-
+            this.login(user.user)
             // this.$router.push('/')
           },
           err => {
@@ -110,16 +110,14 @@ export default {
         firebase.auth().createUserWithEmailAndPassword(email, password)
           .then(user => {
             console.log('user', user)
+            this.login(user.user)
             alert('Create account: ', user.email)
           })
           .catch(error => {
             alert(error.message)
           })
       }
-    },
-    ...mapActions(['login']),
-    user
-
+    }
   }
 }
 </script>

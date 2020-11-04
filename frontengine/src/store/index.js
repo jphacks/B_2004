@@ -6,15 +6,21 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    currentId: [],
+    currentId: '',
     login: false,
     user: {
     },
     exams: {}
   },
   mutations: {
-    loginMutation (state, loginInfo) {
-      state.login = state
+    loginMutation (state, user) {
+      state.login = true
+      state.currentId = user.uid
+      const changeUser = {}
+      changeUser.uid = user.uid
+      changeUser.email = user.email || 'example@email.com'
+      changeUser.name = user.name || 'exampleName'
+      state.user = changeUser
       console.log('checkstate', state)
     },
     examMutation (state, exam) {
@@ -23,10 +29,8 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    login ({ commit }) {
-      commit('loginInfo')
-      console.log('loginActioneed')
-      commit('loginMutation')
+    login ({ commit }, user) {
+      commit('loginMutation', user)
     },
     fetchExams ({ commit }) {
       console.log('actioned')
