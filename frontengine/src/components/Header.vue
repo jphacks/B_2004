@@ -1,11 +1,14 @@
 <template>
   <div>
-  <b-navbar toggleable="lg" type="dark" variant="info">
-    <b-navbar-brand href="/">front Engine</b-navbar-brand>
-    <PageMoveMenu/>
+  <b-navbar toggleable="lg" type="dark" variant="info">>
+    <b-navbar-brand to="/">front Engine</b-navbar-brand>
+    <div class="menu">
+    <b-navbar-brand class="examList" to="/ProblemDetail">examList</b-navbar-brand>
+    </div>
     <b-navbar-nav class="ml-auto">
-      <b-button @click="signOut()">ログアウト</b-button>
-      <b-nav-item class="ssq"><LoginButton :loginType="'login'"/></b-nav-item>
+      <b-nav-item class="email"> {{ getEmail }}</b-nav-item>
+      <b-nav-item class="ssq" v-if="!getLoginStatus"><LoginButton :loginType="'login'"/></b-nav-item>
+      <b-nav-item v-else @click="signOut()">ログアウト</b-nav-item>
     </b-navbar-nav>
   </b-navbar>
 </div>
@@ -13,23 +16,35 @@
 
 <script>
 import LoginButton from './LoginButton.vue'
-import PageMoveMenu from './PageMoveMenu.vue'
 import firebase from 'firebase'
-
+import { mapGetters, mapActions } from 'vuex'
 export default {
   name: 'Header',
   props: {
     msg: String
   },
   components: {
-    LoginButton,
-    PageMoveMenu
+    LoginButton
   },
   methods: {
+    ...mapActions(['logOut']),
     signOut: function () {
-      firebase.auth().signOut().then(a => {
-        console.log('a')
+      firebase.auth().signOut().then(user => {
+        console.log('logout', user)
+        this.logOut()
       })
+    }
+  },
+  computed: {
+    ...mapGetters(['getLogin', 'getLoginState', 'getEmailState']),
+    getLoginInfo () {
+      return this.getLogin
+    },
+    getLoginStatus () {
+      return this.getLoginState
+    },
+    getEmail () {
+      return this.getEmailState
     }
   }
 }
@@ -49,7 +64,10 @@ li {
   display: inline-block;
   margin: 0 10px;
 }
-a {
-  color: #42b983;
+.menu {
+  padding-left: 50px;
+}
+.examList {
+
 }
 </style>
