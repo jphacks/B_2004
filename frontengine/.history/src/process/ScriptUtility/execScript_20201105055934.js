@@ -41,7 +41,7 @@ function execScript (body, array) {
         if (access.body[i].expression && access.body[i].expression.type === 'CallExpression') {
           const target = access.body[i].expression.callee
           if (target.object.type === 'ThisExpression') {
-            execScript(global.target.property.name, global.target.arguments.name)
+            execScript(global.target.name, global.access.body[i].expression.arguments.name)
           }
           /* // 組み込み関数のとき
           let kumikomiFuncName = ''

@@ -40,7 +40,7 @@ function execScript (body, array) {
         console.log(access.body[i].expression.type)
         if (access.body[i].expression && access.body[i].expression.type === 'CallExpression') {
           const target = access.body[i].expression.callee
-          if (target.object.type === 'ThisExpression') {
+          if(target.object.type === 'ThisExpression') {
             execScript(global.target.property.name, global.target.arguments.name)
           }
           /* // 組み込み関数のとき
