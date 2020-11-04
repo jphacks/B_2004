@@ -4,15 +4,15 @@
     <p>
       このアプリではフロントエンジニア向けの問題を提供しています。
     </p>
-    <h3>なんども問題を解いていくことでスキルがみにつく。<br>
-      レーティングシステムによって自分がどの位置にいるのかすぐわかる
+    <h3>なんども何度でも問題を解いていくことでスキルがみにつく。<br>
+      レーティングシステムによって自分のレベルを可視化
     </h3>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'HelloWorld',
+  name: 'HomeDesigin',
   props: {
     msg: String
   }
@@ -25,11 +25,4 @@ h3 {
   margin: 40px 0 0;
 }
 
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
 </style>
