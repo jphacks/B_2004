@@ -3,7 +3,7 @@
   <b-navbar toggleable="lg" type="dark" variant="info">>
     <b-navbar-brand to="/">front Engine</b-navbar-brand>
     <div class="menu">
-    <b-navbar-brand class="examList" to="/ProblemDetail">examList</b-navbar-brand>
+    <b-navbar-brand class="examList" to="/ProblemList">examList</b-navbar-brand>
     </div>
     <b-navbar-nav class="ml-auto">
       <b-nav-item class="email"> {{ getEmail }}</b-nav-item>
