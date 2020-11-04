@@ -26,7 +26,7 @@ function execScript (body, array) {
     switch (access.body[i].type) {
       // 宣言
       case 'VariableDeclaration':
-        // console.log(access.body[i].type)
+        console.log(access.body[i].type)
         for (const decalate of access.body[i].declations) {
           if (local[decalate.id.name]) {
             error.push(decalate)
@@ -35,13 +35,13 @@ function execScript (body, array) {
           local[decalate.id.name] = decalate.init ? CheckProperty(decalate.init) : null
           localInfo[decalate.id.name] = access[i].kind
         }
+        console.log(access.body[0].expression.type)
         break
       case 'ExpressionStatement':
-        console.log(access.body[i].expression.type)
         if (access.body[i].expression && access.body[i].expression.type === 'CallExpression') {
-          const target = access.body[i].expression.callee.object
+          const target = access[i].expression.callee.object
           let kumikomiFuncName = ''
-          if (access.body[i].expression.callee && access.body[i].expression.callee.property) {
+          if (access[i].expression.callee && access[i].expression.callee.property) {
             kumikomiFuncName = access.body[i].expression.callee.property.name
           }
           if (access.body[i].expression.arguments.type === 'ArrowFunctionExpression') {

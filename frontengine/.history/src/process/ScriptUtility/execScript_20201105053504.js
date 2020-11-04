@@ -37,11 +37,11 @@ function execScript (body, array) {
         }
         break
       case 'ExpressionStatement':
-        console.log(access.body[i].expression.type)
+        console.log(access.body[1].expression.type)
         if (access.body[i].expression && access.body[i].expression.type === 'CallExpression') {
-          const target = access.body[i].expression.callee.object
+          const target = access[i].expression.callee.object
           let kumikomiFuncName = ''
-          if (access.body[i].expression.callee && access.body[i].expression.callee.property) {
+          if (access[i].expression.callee && access[i].expression.callee.property) {
             kumikomiFuncName = access.body[i].expression.callee.property.name
           }
           if (access.body[i].expression.arguments.type === 'ArrowFunctionExpression') {
