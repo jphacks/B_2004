@@ -99,7 +99,7 @@ export default {
           user => {
             console.log('user', user)
             alert('Success!')
-            
+
             // this.$router.push('/')
           },
           err => {
@@ -118,7 +118,7 @@ export default {
       }
     },
     ...mapActions(['login']),
-     user
+    user
 
   }
 }
