@@ -86,6 +86,9 @@ function execScript (body, array, preLocal) {
               local[key] = get.returnLocal[key]
             }
           })
+          if (get.returnOrder === 'break') {
+            break
+          }
           // updateFunc
           if (initName === updateName) {
             initIndex = calculation(updateCalculation, { ...local, [initName]: initIndex })
@@ -93,9 +96,16 @@ function execScript (body, array, preLocal) {
             local[updateName] = calculation(updateCalculation, { ...local, [initName]: initIndex })
           }
         }
+        break
+      case 'BreakStatement':
+        let output = { returnArguments: {}, returnLocal: { ...preLocal }, returnOrder: 'break' }
+        Object.keys(preLocal || {}).forEach(key => {
+          output.returnLocal[key] = local[key]
+        })
+        return output
     }
   }
-  let output = { returnArguments: {}, returnLocal: { ...preLocal } }
+  let output = { returnArguments: {}, returnLocal: { ...preLocal }, returnOrder: 'end' }
   Object.keys(preLocal || {}).forEach(key => {
     output.returnLocal[key] = local[key]
   })
