@@ -6,6 +6,7 @@ const global = {}
 export { global }
 export default function (ast) {
   // console.log('ast', ast)
+  console.log('getkakuninn!!', ast.program.body)
   const firstBody = ast.program.body[0].declaration.properties
   const modules = {}
   for (const body of firstBody) {

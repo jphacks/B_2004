@@ -76,7 +76,8 @@
       "no-unused-vars": "off",
       "no-unused-expressions": "off",
       "no-eval": "off",
-      "no-prototype-builtins": "off"
+      "no-prototype-builtins": "off",
+      "prefer-const": "off"
     }
   },
   "browserslist": [
