@@ -5,12 +5,12 @@ export { CheckProperty, getProperty }
 function CheckProperty (body) {
   // name,valueは予約されている??
   // output {name: name, value: value}
-  console.log('getpppp', body)
+  console.log('get', body)
   const output = {}
   if (body && body.key && body.key.name) {
     output.name = body.key.name
   }
-  let bodyType = body.value.type || body.type
+  let bodyType = body.value ? body.value.type : body.type
   if (bodyType === 'ArrayExpression') {
     output.value = []
     const targetElement = body.value.elements || body.elements
@@ -30,7 +30,7 @@ function CheckProperty (body) {
     }
   } else {
     // 配列でもオブジェクトでもない型
-    if (body.value.extra) {
+    if (body.value && body.value.extra) {
       output.value = body.value.extra.rawValue
     } else if (body.extra) {
       output.value = body.extra.rawValue

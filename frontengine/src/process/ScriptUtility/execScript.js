@@ -31,7 +31,7 @@ function execScript (body, array, preLocal) {
     if (!access || !access.body[i] || !access.body[i].type) {
       continue
     }
-    console.log('これ見る', access.body[i], access, access.body[i].type)
+    console.log('これ見る', access.body[i], access.body[i].type, local)
     switch (access.body[i].type) {
       // 宣言
       case 'VariableDeclaration':
@@ -67,12 +67,40 @@ function execScript (body, array, preLocal) {
           }
         }
         break
-      case '':
-        break
+      case 'ForStatement':
+        console.log('forstate:start', body, access.body[i])
+        const target = access.body[i]
+        const initTarget = target.init.declarations[0]
+        const initName = initTarget.id.name
+        let initIndex = calculation(initTarget.init, local)
+        const readyupdate = target.update
+        const updateCalculation = target.update.right
+        const updateName = readyupdate.left.name
+        const readyBool = target.test
+        console.log('forstate:update', initTarget, { ...local, [initName]: initIndex }, readyBool)
+        console.log('forstate', readyBool)
+        while (isBool(readyBool, { ...local, [initName]: initIndex })) {
+          let get = execScript(target.body, array, { ...local, [initName]: initIndex })
+          Object.keys(get.returnLocal || {}).forEach(key => {
+            if (key !== initName) {
+              local[key] = get.returnLocal[key]
+            }
+          })
+          // updateFunc
+          if (initName === updateName) {
+            initIndex = calculation(updateCalculation, { ...local, [initName]: initIndex })
+          } else {
+            local[updateName] = calculation(updateCalculation, { ...local, [initName]: initIndex })
+          }
+        }
     }
   }
-
+  let output = { returnArguments: {}, returnLocal: { ...preLocal } }
+  Object.keys(preLocal || {}).forEach(key => {
+    output.returnLocal[key] = local[key]
+  })
   console.log('local', local, global)
+  return output
 }
 
 function calculation (body, local, params, err, type) {
@@ -80,20 +108,24 @@ function calculation (body, local, params, err, type) {
   if (err) {
     return 'err'
   }
+  if (!local) {
+    console.log('check:calculation', body, local)
+    return 'err'
+  }
   if (body.left && body.right) {
     switch (body.operator) {
       case '+':
-        return calculation(body.left, params, err, type) + calculation(body.right, params, err, type)
+        return calculation(body.left, local, params, err, type) + calculation(body.right, local, params, err, type)
       case '-':
-        return calculation(body.left, params, err, type) - calculation(body.right, params, err, type)
+        return calculation(body.left, local, params, err, type) - calculation(body.right, local, params, err, type)
       case '/':
-        return calculation(body.left, params, err, type) / calculation(body.right, params, err, type)
+        return calculation(body.left, local, params, err, type) / calculation(body.right, local, params, err, type)
       case '*':
-        return calculation(body.left, params, err, type) * calculation(body.right, params, err, type)
+        return calculation(body.left, local, params, err, type) * calculation(body.right, local, params, err, type)
       case '%':
-        return calculation(body.left, params, err, type) % calculation(body.right, params, err, type)
+        return calculation(body.left, local, params, err, type) % calculation(body.right, local, params, err, type)
       case '**':
-        return calculation(body.left, params, err, type) ** calculation(body.right, params, err, type)
+        return calculation(body.left, local, params, err, type) ** calculation(body.right, local, params, err, type)
     }
   }
   console.log('getdata', getProperty(body, local))
@@ -105,4 +137,43 @@ function naibuKansu (body, local) {
   if (body.object && body.property) {
     return getProperty(body.object, local)
   }
+}
+
+function isBool (body, local, params, err, type) {
+  console.log('get!!', body, local)
+  if (err) {
+    return 'err'
+  }
+  if (!local) {
+    console.log('check:isBool', body, local)
+    return 'err'
+  }
+  if (body.operator) {
+    switch (body.operator) {
+      case '!':
+        return !isBool(body.argument, local, params, err, type)
+      case '>':
+        return isBool(body.left, local, params, err, type) > isBool(body.right, local, params, err, type)
+      case '>=':
+        return isBool(body.left, local, params, err, type) >= isBool(body.right, local, params, err, type)
+      case '<':
+        return isBool(body.left, local, params, err, type) < isBool(body.right, local, params, err, type)
+      case '<=':
+        return isBool(body.left, local, params, err, type) <= isBool(body.right, local, params, err, type)
+      case '||':
+        return isBool(body.left, local, params, err, type) || isBool(body.right, local, params, err, type)
+      case '===':
+        return isBool(body.left, local, params, err, type) === isBool(body.right, local, params, err, type)
+      case '==':
+        return isBool(body.left, local, params, err, type) == isBool(body.right, local, params, err, type)
+      case '|':
+        return isBool(body.left, local, params, err, type) | isBool(body.right, local, params, err, type)
+      case '&&':
+        return isBool(body.left, local, params, err, type) && isBool(body.right, local, params, err, type)
+      case '&':
+        return isBool(body.left, local, params, err, type) & isBool(body.right, local, params, err, type)
+    }
+    return getProperty(body, local)
+  }
+  return getProperty(body, local)
 }
