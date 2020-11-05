@@ -5,7 +5,7 @@ export { CheckProperty, getProperty }
 function CheckProperty (body) {
   // name,valueは予約されている??
   // output {name: name, value: value}
-  console.log('get', body)
+  console.log('get: CheckProperty', body)
   const output = {}
   if (body && body.key && body.key.name) {
     output.name = body.key.name
@@ -74,59 +74,7 @@ function getProperty (body, local) {
     return getProperty(body.object, local)
   } else {
     const key = Object.keys(CheckProperty(body))[0]
-    console.log('aa', CheckProperty(body), key)
+    console.log('aa:getProperty', CheckProperty(body), key)
     return CheckProperty(body)[key]
   }
-}
-
-function getCreate (body) {
-  // name,valueは予約されている??
-  // output {name: name, value: value}
-  console.log('get', body)
-  const output = {}
-  if (body && body.key && body.key.name) {
-    output.name = body.key.name
-  }
-  let bodyType = body.value.type || body.type
-  let bodyValue = body.value || body
-  if (bodyType === 'ArrayExpression') {
-    output.value = []
-    for (const element of bodyValue.elements) {
-      const get = CheckProperty(element)
-      output.value.push(Object.values(get || {})[0])
-    }
-  } else if (bodyType === 'ObjectExpression') {
-    for (const property of bodyValue.properties) {
-      const get = CheckProperty(property)
-      for (const key of Object.keys(get || {})) {
-        output[key] = get[key]
-      }
-    }
-    if (body.value.properties.length === 0) {
-      output.value = {}
-    }
-  } else {
-    // 配列でもオブジェクトでもない型
-    if (body.value.extra) {
-      output.value = body.value.extra.rawValue
-    } else if (body.extra) {
-      output.value = body.extra.rawValue
-    } else {
-      console.log('why? err')
-    }
-  }
-  let out
-  if (output.hasOwnProperty('value')) {
-    out = output.value
-  } else {
-    out = {}
-  }
-  for (const key of Object.keys(output)) {
-    if (key === 'd') {
-    }
-    if (key !== 'name' && key !== 'value') {
-      out[key] = output[key]
-    }
-  }
-  return { [output.name || 'name']: out }
 }

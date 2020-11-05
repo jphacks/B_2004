@@ -58,8 +58,8 @@ function execScript (body, array, preLocal) {
             execScript(global[target.property.name], access.body[i].expression.arguments)
           }
         } else if (access.body[i].expression && access.body[i].expression.type === 'AssignmentExpression') {
-          console.log('get!!ugoiteruu', local, access.body[i])
-          if (access.body[i].expression.left.name && local[access.body[i].expression.left.name]) {
+          if (access.body[i].expression.left.name && local.hasOwnProperty(access.body[i].expression.left.name)) {
+            console.log('check:dasdasd', local, access.body[i], access.body[i].expression)
             local[access.body[i].expression.left.name] = calculation(access.body[i].expression.right, local)
           } else if (access.body[i].expression.left.property && access.body[i].expression.left.property.name) {
             console.log('global', calculation(access.body[i].expression.right, local))
@@ -103,7 +103,36 @@ function execScript (body, array, preLocal) {
           output.returnLocal[key] = local[key]
         })
         return output
-      case '':
+      case 'IfStatement':
+        let targetGO = access.body[i]
+        let targetDo = null
+        while (true) {
+          if (!targetGO.hasOwnProperty('test')) {
+            // else
+            // -> つまりifでないものが全てとおる
+            targetDo = targetGO
+            break
+          }
+          if (!isBool(targetGO.test, local)) {
+            // false
+            if (targetGO.alternate) {
+              targetGO = targetGO.alternate
+            } else {
+              break
+            }
+          } else {
+            // true
+            targetDo = targetGO.consequent
+            break
+          }
+        }
+        if (targetDo) {
+          let get = execScript(targetDo, array, local)
+          console.log('done!!', targetDo, local, get)
+          Object.keys(get.returnLocal || {}).forEach(key => {
+            local[key] = get.returnLocal[key]
+          })
+        }
         break
     }
   }
@@ -111,7 +140,7 @@ function execScript (body, array, preLocal) {
   Object.keys(preLocal || {}).forEach(key => {
     output.returnLocal[key] = local[key]
   })
-  console.log('local', local, global)
+  console.log('local:end', local, global, output)
   return output
 }
 
