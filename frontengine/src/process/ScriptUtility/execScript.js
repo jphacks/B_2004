@@ -103,6 +103,8 @@ function execScript (body, array, preLocal) {
           output.returnLocal[key] = local[key]
         })
         return output
+      case '':
+        break
     }
   }
   let output = { returnArguments: {}, returnLocal: { ...preLocal }, returnOrder: 'end' }
