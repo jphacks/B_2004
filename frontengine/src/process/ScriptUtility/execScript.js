@@ -143,6 +143,13 @@ function execScript (body, array, preLocal) {
         })
         console.log('return!!', outputReturn)
         return outputReturn
+      case 'ContinueStatement':
+        let ContinueOutput = { returnArguments: {}, returnLocal: { ...preLocal }, returnOrder: 'break' }
+        console.log('ContinueStatement', ContinueOutput)
+        Object.keys(preLocal || {}).forEach(key => {
+          ContinueOutput.returnLocal[key] = local[key]
+        })
+        return ContinueOutput
     }
   }
   let output = { returnArguments: {}, returnLocal: { ...preLocal }, returnOrder: 'end' }

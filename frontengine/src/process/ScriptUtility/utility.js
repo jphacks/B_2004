@@ -11,22 +11,28 @@ function CheckProperty (body) {
     output.name = body.key.name
   }
   let bodyType = body.value ? body.value.type : body.type
+  let bodyValue = body.value || body
   if (bodyType === 'ArrayExpression') {
     output.value = []
-    const targetElement = body.value.elements || body.elements
+    const targetElement = bodyValue.elements || body.elements
     for (const element of targetElement) {
       const get = CheckProperty(element)
       output.value.push(Object.values(get || {})[0])
     }
   } else if (bodyType === 'ObjectExpression') {
-    for (const property of body.value.properties) {
+    for (const property of bodyValue.properties) {
       const get = CheckProperty(property)
       for (const key of Object.keys(get || {})) {
         output[key] = get[key]
       }
     }
-    if (body.value.properties.length === 0) {
+    if (bodyValue.properties.length === 0) {
       output.value = {}
+    }
+  } else if (bodyType === 'CallExpression') {
+    let argument = []
+    if (bodyValue.hasOwnProperty('arguments')) {
+      argument = bodyValue.argument
     }
   } else {
     // 配列でもオブジェクトでもない型
