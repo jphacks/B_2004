@@ -1,13 +1,16 @@
 import propsProcess from './ScriptUtility/propsProcess.js'
 import dataProcess from './ScriptUtility/dataProcess.js'
 import methodsProcess from './ScriptUtility/methodsProcess.js'
+import { execScript } from './ScriptUtility/execScript.js'
 const global = {}
+export { global }
 export default function (ast) {
-  console.log('ast', ast)
+  // console.log('ast', ast)
+  console.log('getkakuninn!!', ast.program.body)
   const firstBody = ast.program.body[0].declaration.properties
   const modules = {}
   for (const body of firstBody) {
-    console.log('body', body)
+    // console.log('body', body)
     modules[body.key.name] = body
   }
   for (const key of Object.keys(modules)) {
@@ -27,9 +30,10 @@ export default function (ast) {
         break
     }
   }
-  console.log('moduleOutput', global, modules)
+  // console.log('srhjeosije', global.text)
+  execScript(global.test, global.text)
+  // console.log('moduleOutput', global, modules)
 }
-
 function mergeObject (obj) {
   Object.keys(obj).forEach(key => {
     global[key] = obj[key]
