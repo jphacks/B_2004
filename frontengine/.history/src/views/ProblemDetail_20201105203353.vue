@@ -4,7 +4,7 @@
     <span>{{ getExam ? getExam.name : 'testmode' }}</span>
   </div>
   <div class="problemView">
-    <Exam1/>
+    <Exam1>
   </div>
   <!-- Answer Form Area -->
   <div class="problemdetail">
