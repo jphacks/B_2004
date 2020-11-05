@@ -6,19 +6,28 @@
       </b-card-header>
       <b-card-body>
         <b-card-text>{{problemStatement}}</b-card-text>
-        <router-link :to="{name: 'ProblemDetail', params: {examId: problemId}}">この問題を解く</router-link>
+        <router-link @click="sss" :to="{name: 'ProblemDetail', params: {examId: problemId}}">参加登録</router-link>
       </b-card-body>
     </b-card>
   </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 export default {
   name: 'ProblemCard',
   props: {
     problemNumber: String,
     problemStatement: String,
-    problemId: String
+    problemId: String,
+    exams: Object
+  },
+  conputed: {
+    ...mapGetters(['getUserId']),
+    getLoginId () {
+      return this.getLogId
+    }
+
   }
 }
 </script>

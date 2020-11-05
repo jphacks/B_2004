@@ -4,7 +4,7 @@
     {{ exams }}
     <ProblemCard :problemNumber="'No.' + 'test'" :problemId="'vho02QWOCy9IsjgqhiEG'"/>
     <div v-if="getExamViews.length !== 0">
-      <ProblemCard v-for="(problemId, index) in Object.keys(exams || {})" :key="index" :problemNumber="'No.' + String(index+1)" :problemId="problemId"/>
+      <ProblemCard v-for="(problemId, index) in Object.keys(exams || {})" :key="index" :problemNumber="'No.' + String(index+1)" :problemId="problemId" :exams="exams[problemId]"/>
     </div>
     <div v-else>
       読み込み中...
