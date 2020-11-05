@@ -134,6 +134,15 @@ function execScript (body, array, preLocal) {
           })
         }
         break
+      case 'ReturnStatement':
+        const argument = access.body[i].argument
+        let outputReturn = { returnArguments: {}, returnLocal: { ...preLocal }, returnOrder: 'return' }
+        outputReturn.returnArguments = getProperty(argument, local)
+        Object.keys(preLocal || {}).forEach(key => {
+          outputReturn.returnLocal[key] = local[key]
+        })
+        console.log('return!!', outputReturn)
+        return outputReturn
     }
   }
   let output = { returnArguments: {}, returnLocal: { ...preLocal }, returnOrder: 'end' }
