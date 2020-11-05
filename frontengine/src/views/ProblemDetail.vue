@@ -15,7 +15,10 @@
     ></b-form-textarea>
     <b-button @click="getDom()">送信</b-button>
 
+    <!--↓以下2行の処理は最終的に送信ボタンで行う-->
     <br><br><br><router-link :to="{name: 'ProblemResult', params: {examId: $route.params.examId}}">問題結果画面に遷移します。</router-link>
+    <b-button @click="updateUserLog()">ユーザー情報更新</b-button>
+
   </div>
   </body>
 </template>
@@ -41,6 +44,11 @@ export default {
     },
     sumplePush: function () {
       this.text = this.getSumpleText
+    },
+    updateUserLog: function() {
+      firebase.firestore().collection('users').doc(uid).set({
+        email: user.user.email
+      })
     }
   },
   computed: {
