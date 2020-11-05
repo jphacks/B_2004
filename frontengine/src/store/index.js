@@ -64,9 +64,7 @@ export default new Vuex.Store({
       }
     },
     getExams: (state) => {
-      if (Object.keys(state.exams).length === 0) {
-        return state.exams
-      }
+      return state.exams
     },
     getLogin: (state) => {
       const output = {}

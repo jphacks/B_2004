@@ -1,7 +1,9 @@
 <template>
   <div class="problemResult">
     <h1>結果</h1>
-    <h3>今回の結果はこちら</h3>
+    <span>
+      <h3>今回の結果はこちら：問題No.{{ getExam ? getExam.name : 'testmode' }}</h3>
+    </span>
     <b-container class="bv-example-row">
       <b-row cols="2" cols-sm="1" cols-md="1" cols-lg="2">
         <b-col>
@@ -21,8 +23,8 @@
 
 <script>
 // @ is an alias to /src
-// import firebase from 'firebase'
-// import { mapActions, mapGetters } from 'vuex'
+import firebase from 'firebase'
+import { mapActions, mapGetters } from 'vuex'
 import ResultCard from '@/components/ResultCard.vue'
 import OutputCard from '@/components/OutputCard.vue'
 
@@ -58,6 +60,25 @@ export default {
         { expectations: 'helloWORLD', answer: 'helloWORLD' },
         { expectations: 'goodbye', answer: 'goodbye' }
       ]
+    }
+  },
+  props: {
+    examId: String
+  },
+  method: {
+  },
+  computed: {
+    ...mapGetters(['getExams']),
+    getText () {
+      return "''"
+    },
+    getExam () {
+      const examId = this.$route.params.examId
+      console.log('getExam', examId, this.getExams)
+      if (!this.getExams || !this.getExams[examId]) {
+        return { name: 'testmode' }
+      }
+      return this.getExams[examId]
     }
   }
 }
