@@ -119,6 +119,16 @@ export default {
           .then(user => {
             console.log('user', user)
             this.login(user.user)
+            const uid = user.user.uid
+            firebase.firestore().collection('users').doc(uid).set({
+              email: user.user.email
+            })
+              .then(function () {
+                console.log('Document successfully written!')
+              })
+              .catch(function (error) {
+                console.error('Error writing document: ', error)
+              })
             alert('Create account: ', user.email)
           })
           .catch(error => {
