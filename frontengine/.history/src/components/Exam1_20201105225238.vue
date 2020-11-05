@@ -40,7 +40,7 @@
     </tbody>
 </table>
 <h3>用いるデータは以下の形式である。<br><br>
-"要素としてuserId,userNameの２つを持つObject型,すべての要素は一致することはない。"<br><br>
+"要素としてuserId,userNameの２つを持つObject型"<br><br>
 例として用いたデータを以下に示す。
 </h3>
     <b-card

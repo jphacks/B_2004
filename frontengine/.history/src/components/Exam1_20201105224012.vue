@@ -40,7 +40,7 @@
     </tbody>
 </table>
 <h3>用いるデータは以下の形式である。<br><br>
-"要素としてuserId,userNameの２つを持つObject型,すべての要素は一致することはない。"<br><br>
+"要素としてuserId,userNameの２つを持つObject型"<br><br>
 例として用いたデータを以下に示す。
 </h3>
     <b-card
@@ -51,7 +51,7 @@
         { userId: '123', userName: 'Takahashi' },
         { userId: '221', userName: 'Ueda' },
         { userId: '212', userName: 'Katou' },
-        { userId: '213', userName: 'Itou' },
+        { userId: '212', userName: 'Itou' },
         { userId: '412', userName: 'Okubo' },
         { userId: '1', userName: 'Gotou' }
       ]
@@ -72,7 +72,7 @@ export default {
         { userId: '123', userName: 'Takahashi' },
         { userId: '221', userName: 'Ueda' },
         { userId: '212', userName: 'Katou' },
-        { userId: '213', userName: 'Itou' },
+        { userId: '212', userName: 'Itou' },
         { userId: '412', userName: 'Okubo' },
         { userId: '1', userName: 'Gotou' }
       ]
