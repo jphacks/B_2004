@@ -14,7 +14,7 @@
       id="textarea"
       v-model="text"
       :state="text.length > 0"
-      placeholder="解答を入力してください。"
+      placeholder="解答を入力してくださいss。"
       rows="6"
     ></b-form-textarea>
     <b-button @click="getDom()">送信</b-button>

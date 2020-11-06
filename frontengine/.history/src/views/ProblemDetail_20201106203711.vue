@@ -4,8 +4,7 @@
     <span>{{ getExam ? getExam.name : 'testmode' }}</span>
   </div>
   <div class="problemView">
-    <!-- <Exam1/> -->
-    <Exam2/>
+    <Exam1/>
   </div>
   <!-- Answer Form Area -->
   <div class="problemdetail">
@@ -21,6 +20,7 @@
 
     <br><br><br><router-link :to="{name: 'ProblemResult', params: {examId: $route.params.examId}}">問題結果画面に遷移します。</router-link>
   </div>
+  <Exam2/>
   </body>
 </template>
 
@@ -28,13 +28,12 @@
 // @ is an alias to /src
 import MainProcess from '@/process/MainProcess.js'
 import { mapGetters } from 'vuex'
-// import Exam1 from '@/components/Exam1.vue'
+import Exam1 from '@/components/Exam1.vue'
 import Exam2 from '@/components/Exam2.vue'
 export default {
   name: 'ProblemDetail',
   components: {
-    // Exam1,
-    Exam2
+    Exam1
   },
   data () {
     return {
