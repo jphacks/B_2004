@@ -44,7 +44,7 @@ export default {
 
 <style scoped>
 .b-card {
-  border: 10px ridge #00adb5;
+  border: 0.5px ridge gray;
   margin: 10px 10px ;
 }
 </style>

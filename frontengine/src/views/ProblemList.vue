@@ -1,16 +1,17 @@
 <template>
   <div class="problemList" >
-    <h1 >問題一覧</h1>
     <!--{{ exams }}-->
     <b-container class="bv-example-row">
       <b-row cols="2" cols-sm="1" cols-md="1" cols-lg="2">
         <b-col>
+          <br><br><br><br>
           <b-card class="leftList">
             <img alt="frontEngine logo" src="../assets/frontEngineLogo.png">
             <h4><br>よく解かれる問題<br>No.1</h4>
           </b-card>
         </b-col>
         <b-col>
+          <h1>問題一覧</h1>
           <ProblemCard :problemNumber="'No.' + 'test'" :problemId="'vho02QWOCy9IsjgqhiEG'"/>
           <div v-if="getExamViews.length !== 0">
           <ProblemCard v-for="(problemId, index) in Object.keys(exams || {})" :key="index" :problemNumber="'No.' + String(index+1)" :problemId="problemId" :exam="exams[problemId]"/>

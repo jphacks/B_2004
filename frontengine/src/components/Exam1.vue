@@ -5,10 +5,10 @@
       {{name}}
     </h1>
     <b-card class="exam1Card">
-      <v-text>あなたは業務で、社員ID、社員名がセットになったデータを”社員ID”が昇順になるように出力するようなタスクを依頼されました。<br>
+      <b-card-text>あなたは業務で、社員ID、社員名がセットになったデータを”社員ID”が昇順になるように出力するようなタスクを依頼されました。<br>
         以下に、コードを入力し、データ名のボタンをクリックするとそれをキーとしてカラムを並べ替えるようにしてください。<br><br>
-      </v-text>
-      <v-text>＜例＞IdとNameをキーとして並べ替えるようにしたもの</v-text>
+      </b-card-text>
+      <b-card-text>＜例＞IdとNameをキーとして並べ替えるようにしたもの</b-card-text>
       <!-- こっちは動的に表をソートするバージョン。methodを用いて並べ替えてる。 -->
       <!-- ソートが各１回しかできない。。なぜ -->
       <table class="exam1Table">
@@ -25,9 +25,9 @@
           </tr>
         </tbody>
       </table>
-      <v-text><br>用いるデータは以下の形式である。<br><br></v-text>
-      <v-text class="format">"要素としてuserId,userNameの２つを持つObject型,すべての要素は一致することはない。"<br><br></v-text>
-      <v-text>例として用いたデータを以下に示す。</v-text>
+      <b-card-text><br>用いるデータは以下の形式である。<br><br></b-card-text>
+      <b-card-text class="format">"要素としてuserId,userNameの２つを持つObject型,すべての要素は一致することはない。"<br><br></b-card-text>
+      <b-card-text>例として用いたデータを以下に示す。</b-card-text>
       <b-card title="入力例">
         <b-card-text>
           items: [
