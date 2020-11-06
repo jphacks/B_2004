@@ -6,19 +6,40 @@
       </b-card-header>
       <b-card-body>
         <b-card-text>{{problemStatement}}</b-card-text>
-        <router-link :to="{name: 'ProblemDetail', params: {examId: problemId}}">この問題を解く</router-link>
+        <b-card-text>{{ getLoginId }}</b-card-text>
+        <router-link :to="{name: 'ProblemDetail', params: {examId: problemId}}" @click.native="chk()">参加登録</router-link>
       </b-card-body>
     </b-card>
   </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+import firebase from 'firebase'
 export default {
   name: 'ProblemCard',
   props: {
     problemNumber: String,
     problemStatement: String,
-    problemId: String
+    problemId: String,
+    exam: Object
+  },
+  methods: {
+    chk () {
+      firebase.firestore().collection('users').doc(this.getLoginId).collection('join').doc(this.problemId).set({
+        difficult: this.exam.difficult,
+        name: this.exam.name
+        // startAt: this.exam.startAt
+      })
+    }
+  },
+  computed: {
+    ...mapGetters(['getUserId']),
+    getLoginId () {
+      console.log('check', this.getUserId)
+      return this.getUserId
+    }
+
   }
 }
 </script>
