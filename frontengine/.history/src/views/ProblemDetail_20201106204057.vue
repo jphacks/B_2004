@@ -33,7 +33,7 @@ import Exam2 from '@/components/Exam2.vue'
 export default {
   name: 'ProblemDetail',
   components: {
-    // Exam1,
+    Exam1,
     Exam2
   },
   data () {

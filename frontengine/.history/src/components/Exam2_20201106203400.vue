@@ -1,0 +1,129 @@
+<template>
+  <div class="exam1">
+    <!-- <h1>{{ msg }}</h1> -->
+    <h1>
+      問題2
+    </h1>
+    <h3>あなたは、文字列を結合する仕事をしています。ある日、お得意先から大量の文字列が与えられたため、
+      先輩のもじもじ君と一緒に結合することにしました。<br> <br>　複数の文字列が与えられるので、それらを結合して出力してください。<br><br>
+
+    </h3>
+    <!-- こっちはお手本みたいなもの。固定？したいのでわかる人なおしてください。暫定的にコメントアウト -->
+<!--     <table>
+    <thead>
+        <tr>
+            <th>id</th>
+            <th>name</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr v-for="item in items" :key="item.userId">
+            <td>{{ item.userId }}</td>
+            <td>{{ item.userName }}</td>
+        </tr>
+    </tbody>
+</table> -->
+    <h3>＜例＞与えられた文字列を結合して出力する。</h3>
+    <!-- こっちは動的に表をソートするバージョン。methodを用いて並べ替えてる。 -->
+    <!-- ソートが各１回しかできない。。なぜ -->
+    <h2>pen , pineapple , apple , pen <b-badge>文字列：５個</b-badge></h2>
+    <table>
+    <thead>
+        <tr>
+            <th @click="sort('userId')">id</th>
+            <th @click="sort('userName')">name</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr v-for="item in items" :key="item.userId">
+            <td>{{ item.userId }}</td>
+            <td>{{ item.userName }}</td>
+        </tr>
+    </tbody>
+</table>
+<h3>用いるデータは以下の形式である。<br><br>
+"要素としてuserId,userNameの２つを持つObject型,すべての要素は一致することはない。"<br><br>
+例として用いたデータを以下に示す。
+</h3>
+    <b-card
+    title="入力例"
+  >
+    <b-card-text>
+      items: [
+        { userId: '123', userName: 'Takahashi' },
+        { userId: '221', userName: 'Ueda' },
+        { userId: '212', userName: 'Katou' },
+        { userId: '213', userName: 'Itou' },
+        { userId: '412', userName: 'Okubo' },
+        { userId: '1', userName: 'Gotou' }
+      ]
+    </b-card-text>
+
+    <b-button href="#" variant="primary">Go somewhere</b-button>
+  </b-card>
+
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'Exam1',
+  data () {
+    return {
+      items: [
+        { userId: '123', userName: 'Takahashi' },
+        { userId: '221', userName: 'Ueda' },
+        { userId: '212', userName: 'Katou' },
+        { userId: '213', userName: 'Itou' },
+        { userId: '412', userName: 'Okubo' },
+        { userId: '1', userName: 'Gotou' }
+      ]
+    }
+  },
+  props: {
+    input: Array
+  },
+  methods: {
+    sort (index) {
+      switch (index) {
+        case 'userId':
+          this.items.sort(function (a, b) {
+            if (a.userId < b.userId) return -1
+            if (a.userId > b.userId) return 1
+            return 0
+          })
+          break
+        case 'userName':
+          this.items.sort(function (a, b) {
+            if (a.userName < b.userName) return -1
+            if (a.userName > b.userName) return 1
+            return 0
+          })
+          break
+        default:
+      }
+    }
+
+  }
+}
+</script>
+<style>
+h1{
+  margin: 40px 40px 40px;
+  text-align: center;
+
+}
+    table{
+        border-collapse: collapse;
+        width:100%
+    }
+    td, th {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+    }
+    th {
+        color:white;
+        background-color: #a4bacf;
+    }
+</style>

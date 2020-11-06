@@ -12,17 +12,21 @@
 要素としてString列, strPart[]が与えられるのでこれらの要素をすべて結合したものを出力してください。<br><br>
 ＜例＞要素が４つの場合
 </h3>
-
+<h2>pen , pineapple , apple , pen <b-badge>文字列：4個</b-badge></h2>
     <b-card
     title="入力例"
   >
     <b-card-text>
-      <h2>pen , pineapple , apple , pen <b-badge>文字列：4個</b-badge></h2>
+      items: [
+        { userId: '123', userName: 'Takahashi' },
+        { userId: '221', userName: 'Ueda' },
+        { userId: '212', userName: 'Katou' },
+        { userId: '213', userName: 'Itou' },
+        { userId: '412', userName: 'Okubo' },
+        { userId: '1', userName: 'Gotou' }
+      ]
     </b-card-text>
-    <h3>出力例</h3>
-    <b-card-text>
-      {{ jointStr(items) }}
-    </b-card-text>
+
   </b-card>
 
   </div>
@@ -34,10 +38,12 @@ export default {
   data () {
     return {
       items: [
-        'pen',
-        'pineapple',
-        'apple',
-        'pen'
+        { userId: '123', userName: 'Takahashi' },
+        { userId: '221', userName: 'Ueda' },
+        { userId: '212', userName: 'Katou' },
+        { userId: '213', userName: 'Itou' },
+        { userId: '412', userName: 'Okubo' },
+        { userId: '1', userName: 'Gotou' }
       ]
     }
   },
@@ -45,13 +51,26 @@ export default {
     input: Array
   },
   methods: {
-    jointStr (items) {
-      let output = ''
-      for (let i = 0; i < Object.keys(items).length; i++) {
-        output = output + items[i]
+    sort (index) {
+      switch (index) {
+        case 'userId':
+          this.items.sort(function (a, b) {
+            if (a.userId < b.userId) return -1
+            if (a.userId > b.userId) return 1
+            return 0
+          })
+          break
+        case 'userName':
+          this.items.sort(function (a, b) {
+            if (a.userName < b.userName) return -1
+            if (a.userName > b.userName) return 1
+            return 0
+          })
+          break
+        default:
       }
-      return output
     }
+
   }
 }
 </script>

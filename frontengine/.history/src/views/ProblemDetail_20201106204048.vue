@@ -28,12 +28,12 @@
 // @ is an alias to /src
 import MainProcess from '@/process/MainProcess.js'
 import { mapGetters } from 'vuex'
-// import Exam1 from '@/components/Exam1.vue'
+import Exam1 from '@/components/Exam1.vue'
 import Exam2 from '@/components/Exam2.vue'
 export default {
   name: 'ProblemDetail',
   components: {
-    // Exam1,
+    Exam1,
     Exam2
   },
   data () {
