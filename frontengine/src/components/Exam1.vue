@@ -25,7 +25,7 @@
     <h3>＜例＞IdとNameをキーとして並べ替えるようにしたもの</h3>
     <!-- こっちは動的に表をソートするバージョン。methodを用いて並べ替えてる。 -->
     <!-- ソートが各１回しかできない。。なぜ -->
-    <table>
+    <table id="table">
     <thead>
         <tr>
             <th @click="sort('userId')">id</th>

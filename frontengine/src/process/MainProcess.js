@@ -2,7 +2,7 @@
 import CreateAST from './CreateAST.js'
 import ScriptProcess from './ScriptProcess.js'
 import DomProcess from './DomProcess.js'
-
+import { global } from './moduleProcess.js'
 export default function (text) {
   const templateLength = '<template>'.length
   const scriptLength = '<script>'.length
@@ -10,9 +10,10 @@ export default function (text) {
   const templates = text.substr(text.indexOf('<template>') + templateLength, text.indexOf('</template>') - templateLength)
   const script = text.substr(text.indexOf('<script>') + scriptLength, text.indexOf('</script>') - scriptLength - text.indexOf('<script>'))
   const style = text.substr(text.indexOf('<style scoped>') + styleLength, text.indexOf('</style>') - styleLength - text.indexOf('<style scoped>'))
-  // console.log('解析 template:', templates, 'script:', script, 'style:', style)
-  // console.log('解析script ', script)
-  // const domTree = DomProcess(templates)
-  const scriptTree = ScriptProcess(script)
+  // ('解析 template:', templates, 'script:', script, 'style:', style)
+  // ('解析script ', script)
+  const domTree = DomProcess(templates)
+  const scriptRe = ScriptProcess(script)
+  console.log('scriptRe', global)
   // CreateAST(script)
 }

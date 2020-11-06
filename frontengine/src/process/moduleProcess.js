@@ -31,8 +31,11 @@ export default function (ast) {
     }
   }
   // console.log('srhjeosije', global.text)
-  execScript(global.test, global.text)
+  console.log('output!!!!!', global)
+  const output = execScript(global.test, global.text)
+  console.log('output!!!', output, global)
   // console.log('moduleOutput', global, modules)
+  return modules
 }
 function mergeObject (obj) {
   Object.keys(obj).forEach(key => {

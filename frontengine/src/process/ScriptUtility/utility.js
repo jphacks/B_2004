@@ -5,7 +5,7 @@ export { CheckProperty, getProperty }
 function CheckProperty (body) {
   // name,valueは予約されている??
   // output {name: name, value: value}
-  console.log('get: CheckProperty', body)
+
   const output = {}
   if (body && body.key && body.key.name) {
     output.name = body.key.name
@@ -34,6 +34,18 @@ function CheckProperty (body) {
     if (bodyValue.hasOwnProperty('arguments')) {
       argument = bodyValue.argument
     }
+    let target = bodyValue
+    let couho = []
+    while (true) {
+      const flag = false
+
+      if (!flag) {
+        break
+      }
+    }
+  } else if (bodyType === 'BooleanLiteral') {
+    // true or false
+    output.value = body.value
   } else {
     // 配列でもオブジェクトでもない型
     if (body.value && body.value.extra) {
@@ -41,7 +53,7 @@ function CheckProperty (body) {
     } else if (body.extra) {
       output.value = body.extra.rawValue
     } else {
-      console.log('why? err')
+
     }
   }
   let out
@@ -57,9 +69,8 @@ function CheckProperty (body) {
       out[key] = output[key]
     }
   }
-  console.log('getoutput', out, output)
+
   if (output.name) {
-    console.log('output', output)
     return { [output.name || 'name']: out }
   } else {
     return { name: out }
@@ -68,7 +79,7 @@ function CheckProperty (body) {
 
 function getProperty (body, local) {
   const key = Object.keys(body)[0]
-  console.log('get', body, local, CheckProperty(body))
+
   if (body.object && body.object.type === 'ThisExpression') {
     return global[body.property.name]
   } else if (body.type && body.type === 'Identifier' && body.name) {
@@ -80,7 +91,7 @@ function getProperty (body, local) {
     return getProperty(body.object, local)
   } else {
     const key = Object.keys(CheckProperty(body))[0]
-    console.log('aa:getProperty', CheckProperty(body), key)
+
     return CheckProperty(body)[key]
   }
 }

@@ -19,24 +19,23 @@ function findBlock (text, firstIndex) {
     }
     slice.push(text.charAt(i))
   }
-  console.log('Error')
 }
 
 export default function (text) {
   const generate = require('@babel/generator').default
   const ast = CreateAST(text)
-  moduleProcess(ast)
+  const module = moduleProcess(ast)
   // const generated = generate(ast)
-  // console.log('interpre', myInterpreter, myInterpreter.run())
-  // console.log('generate', generate.code(ast, { sourceType: 'module', sourceMaps: true }))
+  // ('interpre', myInterpreter, myInterpreter.run())
+  // ('generate', generate.code(ast, { sourceType: 'module', sourceMaps: true }))
   const dataLength = 'data ()'.length
   const methodLength = 'methods:'.length
   const dataFirst = text.indexOf('data ()') + dataLength
   const methodFirst = text.indexOf('methods:') + methodLength
   const dataBlock = findBlock(text, dataFirst)
   const methodBlock = findBlock(text, methodFirst)
-
-  // console.log(dataBlock, methodBlock)
+  return module
+  // (dataBlock, methodBlock)
 }
 
 function strict (text) {
