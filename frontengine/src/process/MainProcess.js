@@ -16,6 +16,6 @@ export default function (text) {
   const domTree = DomProcess(templates)
   const scriptRe = ScriptProcess(script)
   const data = execScript(global.testObject, ['userId'])
-  console.log('scriptRe', data)
+  console.log('scriptRe', scriptRe, global)
   // CreateAST(script)
 }
