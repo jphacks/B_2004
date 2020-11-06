@@ -56,7 +56,7 @@ function execScript (body, array, preLocal) {
         }
         break
       case 'ExpressionStatement':
-
+        console.log('argument', access.body[i])
         if (access.body[i].expression && access.body[i].expression.type === 'CallExpression') {
           const target = access.body[i].expression.callee
           if (target.object && target.object.type === 'ThisExpression') {
@@ -67,6 +67,16 @@ function execScript (body, array, preLocal) {
             local[access.body[i].expression.left.name] = calculation(access.body[i].expression.right, local)
           } else if (access.body[i].expression.left.property && access.body[i].expression.left.property.name) {
             global[access.body[i].expression.left.property.name] = calculation(access.body[i].expression.right, local)
+          }
+        } else if (access.body[i].expression && access.body[i].expression.type === 'UpdateExpression') {
+          console.log('update:argument')
+          const targetUpate = access.body[i].expression.argument
+          if (targetUpate.name && local.hasOwnProperty(targetUpate.name)) {
+            console.log('update:argument:local', calculation(targetUpate, local))
+            local[targetUpate.name] = calculation(access.body[i].expression, local)
+          } else if (targetUpate.name && global.hasOwnProperty(targetUpate.name)) {
+            console.log('update:argument:glbal')
+            global[targetUpate.name] = calculation(access.body[i].expression, local)
           }
         }
         break

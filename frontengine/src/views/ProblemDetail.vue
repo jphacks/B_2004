@@ -17,7 +17,6 @@
       rows="6"
     ></b-form-textarea>
     <b-button @click="getDom()">送信</b-button>
-
     <br><br><br><router-link :to="{name: 'ProblemResult', params: {examId: $route.params.examId}}">問題結果画面に遷移します。</router-link>
   </div>
   </body>
@@ -137,9 +136,7 @@ export default {
       output.push('    },')
       output.push('    testObject: function () {')
       output.push('    let k = 0')
-      output.push('         for(let i=0; i > -5; i = i - 1) {')
-      output.push('          k = k + 1')
-      output.push('         }')
+      output.push('          k++')
       output.push('       return k')
       output.push('      },')
       output.push('    test: function () {')
