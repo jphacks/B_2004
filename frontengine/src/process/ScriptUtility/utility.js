@@ -1,8 +1,8 @@
 import { global } from '../moduleProcess.js'
+import { execScript } from './execScript.js'
 export { CheckProperty, getProperty }
-
 // データの代入を支援するfunction {name: value}の形で返される
-function CheckProperty (body) {
+function CheckProperty (body, option) {
   // name,valueは予約されている??
   // output {name: name, value: value}
 
@@ -22,8 +22,11 @@ function CheckProperty (body) {
   } else if (bodyType === 'ObjectExpression') {
     for (const property of bodyValue.properties) {
       const get = CheckProperty(property)
+      console.log('getter', get)
       for (const key of Object.keys(get || {})) {
-        output[key] = get[key]
+        if (key !== 'noneDataEDEKQWLDCOLASXMW') {
+          output[key] = get[key]
+        }
       }
     }
     if (bodyValue.properties.length === 0) {
@@ -46,6 +49,8 @@ function CheckProperty (body) {
   } else if (bodyType === 'BooleanLiteral') {
     // true or false
     output.value = body.value
+  } else if (bodyType === 'ThisExpression') {
+    output.value = global
   } else {
     // 配列でもオブジェクトでもない型
     if (body.value && body.value.extra) {
@@ -60,12 +65,13 @@ function CheckProperty (body) {
   if (output.hasOwnProperty('value')) {
     out = output.value
   } else {
-    out = { noneData: true }
+    // noneDataEDEKQWLDCOLASXMW はdataがない時のやつ
+    out = {}
   }
   for (const key of Object.keys(output || {})) {
     if (key === 'd') {
     }
-    if (key !== 'name' && key !== 'value') {
+    if (key !== 'name' && key !== 'value' && key !== 'noneDataEDEKQWLDCOLASXMW') {
       out[key] = output[key]
     }
   }
@@ -77,25 +83,73 @@ function CheckProperty (body) {
   }
 }
 
-function getProperty (body, local) {
+function getProperty (body, local, funcArguments) {
+  console.log('first', body, local)
   if (!body) {
-    console.log('maybe body is null or undifiend?')
+    console.error('maybe body is null or undifiend?', body, local)
     return false
   }
-  const key = Object.keys(body)[0]
-
-  if (body.object && body.object.type === 'ThisExpression') {
-    return global[body.property.name]
+  const key = Object.keys(body || {})[0]
+  if (body && body.type === 'ThisExpression') {
+    return global
   } else if (body.type && body.type === 'Identifier' && body.name) {
-    return local[body.name]
+    console.log('first:maybe', body, local)
+    if (local[body.name]) {
+      return local[body.name]
+    } else {
+      // maybe javascript default item
+      switch (body.name) {
+        case 'Object':
+          return Object
+        case 'Array':
+          return Array
+        case 'Number':
+          return Number
+        case 'String':
+          return String
+        case 'Boolean':
+          return Boolean
+      }
+    }
   } else if (body.type && body.type === 'MemberExpression' && body.object) {
     if (body.name) {
       return getProperty(body.object, local)[body.name]
+    } else if (body.property) {
+      const outputData = getProperty(body.object, local)
+      // console.log('join?', body, outputData, body.property.name, outputData[body.property.name](''), funcArguments)
+      // console.log('join', outputData[body.property.name](...funcArguments), !!funcArguments)
+      if (!!funcArguments) {
+        return outputData[body.property.name](...funcArguments)
+      } else {
+        return outputData[body.property.name]
+      }
     }
     return getProperty(body.object, local)
+  } else if (body.type === 'CallExpression') {
+    let propertyArguments = []
+    if (body.arguments) {
+      for (let param of body.arguments) {
+        if (param.type === 'FunctionExpression') {
+          console.error('sorry!! argument dont use function!!')
+          return false
+        } else {
+          propertyArguments.push(getProperty(param, local))
+        }
+      }
+      if (body.callee) {
+        console.log('callee', propertyArguments)
+        const outputData = getProperty(body.callee, local, propertyArguments)
+        console.log('getter', outputData)
+        return outputData
+      }
+    }
   } else {
-    const key = Object.keys(CheckProperty(body))[0]
-
-    return CheckProperty(body)[key]
+    let data = CheckProperty(body)
+    let key = 'key'
+    if (typeof data === 'object') {
+      key = Object.keys(data || {})[0]
+    }
+    console.log('return', data[key], data)
+    return data[key]
   }
 }

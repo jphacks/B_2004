@@ -25,17 +25,17 @@
     <h3>＜例＞IdとNameをキーとして並べ替えるようにしたもの</h3>
     <!-- こっちは動的に表をソートするバージョン。methodを用いて並べ替えてる。 -->
     <!-- ソートが各１回しかできない。。なぜ -->
-    <table id="table">
+    <table>
     <thead>
         <tr>
-            <th @click="sort('userId')">id</th>
-            <th @click="sort('userName')">name</th>
+            <th id="sortButtonId" @click="sort('userId')">id</th>
+            <th id="sortButtonName" @click="sort('userName')">name</th>
         </tr>
     </thead>
     <tbody>
         <tr v-for="item in items" :key="item.userId">
-            <td>{{ item.userId }}</td>
-            <td>{{ item.userName }}</td>
+            <td id="id">{{ item.userId }}</td>
+            <td id="name">{{ item.userName }}</td>
         </tr>
     </tbody>
 </table>
@@ -82,19 +82,27 @@ export default {
     input: Array
   },
   methods: {
-    sort (index) {
+    sort: function (index) {
       switch (index) {
         case 'userId':
           this.items.sort(function (a, b) {
-            if (a.userId < b.userId) return -1
-            if (a.userId > b.userId) return 1
+            if (a.userId < b.userId) {
+              return -1
+            }
+            if (a.userId > b.userId) {
+              return 1
+            }
             return 0
           })
           break
         case 'userName':
           this.items.sort(function (a, b) {
-            if (a.userName < b.userName) return -1
-            if (a.userName > b.userName) return 1
+            if (a.userName < b.userName) {
+              return -1
+            }
+            if (a.userName > b.userName) {
+              return 1
+            }
             return 0
           })
           break

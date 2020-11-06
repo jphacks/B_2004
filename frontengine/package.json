@@ -79,7 +79,8 @@
       "no-prototype-builtins": "off",
       "prefer-const": "off",
       "eqeqeq": "off",
-      "no-case-declarations": "off"
+      "no-case-declarations": "off",
+      "no-extra-boolean-cast": "off"
     }
   },
   "browserslist": [

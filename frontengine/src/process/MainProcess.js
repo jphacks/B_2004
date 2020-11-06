@@ -3,6 +3,7 @@ import CreateAST from './CreateAST.js'
 import ScriptProcess from './ScriptProcess.js'
 import DomProcess from './DomProcess.js'
 import { global } from './moduleProcess.js'
+import { execScript } from './ScriptUtility/execScript.js'
 export default function (text) {
   const templateLength = '<template>'.length
   const scriptLength = '<script>'.length
@@ -14,6 +15,7 @@ export default function (text) {
   // ('解析script ', script)
   const domTree = DomProcess(templates)
   const scriptRe = ScriptProcess(script)
-  console.log('scriptRe', global)
+  const data = execScript(global.testObject, ['userId'])
+  console.log('scriptRe', data)
   // CreateAST(script)
 }

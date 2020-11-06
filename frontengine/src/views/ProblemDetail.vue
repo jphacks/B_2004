@@ -109,11 +109,10 @@ export default {
       output.push('    getDom: function (text) {')
       output.push('      MainProcess(text)')
       output.push('    },')
-      output.push('  sort (index) {')
+      output.push('  sort: function (index) {')
       output.push('    switch (index) {')
       output.push('        case \'userId\':')
       output.push('          this.items.sort(function (a, b) {')
-      output.push('    test: function () {')
       output.push('            if (a.userId < b.userId) {')
       output.push('              return -1')
       output.push('            }')
@@ -134,9 +133,12 @@ export default {
       output.push('            return 0')
       output.push('          })')
       output.push('          break')
-      output.push('        default:')
       output.push('      }')
-      output.push('    }')
+      output.push('    },')
+      output.push('    testObject: function () {')
+      output.push('         return Object.keys(this.obj).length')
+      output.push('      },')
+      output.push('    test: function () {')
       output.push('      let a = 30 + 30')
       output.push('      a = 30 + 50')
       output.push('      let sakurai = {a:30, b:30, c:30}')
@@ -182,11 +184,12 @@ export default {
       return output.join('\n')
     },
     getClearModel () {
-      output = {}
-      output.exists = [] //eventに対応したやつ
-      output.events = [] //event
-      output.events.push({id: 'sortButtonId', event: 'click'})
-      output.events.push({id: 'sortButtonName', event: 'click'})
+      let output = {}
+      output.exists = [] // eventに対応したやつ
+      output.events = [] // event
+      output.events.push({ id: 'sortButtonId', event: 'click' })
+      output.events.push({ id: 'sortButtonName', event: 'click' })
+      return output
     }
   }
 }

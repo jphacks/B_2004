@@ -6,6 +6,7 @@ function execScript (body, array, preLocal) {
   // output {name: name, value: value}
   let local = {}
   if (preLocal) {
+    console.log('local', local, preLocal)
     local = Object.assign(local, preLocal)
   }
   const localInfo = {}
@@ -139,10 +140,10 @@ function execScript (body, array, preLocal) {
         const argument = access.body[i].argument
         let outputReturn = { returnArguments: {}, returnLocal: { ...preLocal }, returnOrder: 'return' }
         outputReturn.returnArguments = getProperty(argument, local)
+        console.log('getter', outputReturn, argument, outputReturn.returnArguments)
         Object.keys(preLocal || {}).forEach(key => {
           outputReturn.returnLocal[key] = local[key]
         })
-
         return outputReturn
       case 'ContinueStatement':
         let ContinueOutput = { returnArguments: {}, returnLocal: { ...preLocal }, returnOrder: 'break' }
