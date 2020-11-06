@@ -2,8 +2,9 @@
 <b-container class="bv-example-row">
  <b-row>
    <b-col class="userState" >
-     <b class="nameSize">{{ difficultSum }}点</b>
-     <h2>{{this.getEmailState}}</h2>
+     <img src="../assets/frontEngineIcon.png">
+      <h2 class="nameSize">{{this.getEmailState}}</h2>
+     <b>合計 {{ difficultSum }}点</b>
      <br>
   </b-col>
   <b-col class="userPerform" cols="8">
@@ -91,6 +92,7 @@ export default {
     text-align: left;
 }
 .nameSize {
-    font-size: 50px;
+    padding-top: 25px;
+    font-size: 25px;
 }
 </style>
