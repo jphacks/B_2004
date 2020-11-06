@@ -37,7 +37,8 @@ export default function (text, props, clear, option) {
       const targets = []
       targets.push(domTree)
       while (targets.length > 0) {
-        const tar = targets.shift()
+        const getTar = targets.shift()
+        const tar = Object.assign({}, getTar)
         if (tar.params) {
           console.log('targets!!', tar.params, tar)
         }
@@ -57,12 +58,15 @@ export default function (text, props, clear, option) {
                   for (let i = 0; i < global[target.right].length; i++) {
                     // tar.params = {}
                     let nextTarget = Object.assign({}, tar)
-                    nextTarget.params = {}
+                    const params = {}
                     if (target && target.target && target.target.index) {
-                      nextTarget.params.index = i
+                      params.index = i
                     } else {
                     }
-                    nextTarget.params.value = global[target.right][i]
+                    nextTarget.paramIndex = i
+                    nextTarget.paramValue = global[target.right][i]
+                    params.value = global[target.right][i]
+                    nextTarget.params = Object.assign({}, params)
                     console.log('nextTarget', nextTarget)
                     delete nextTarget['v-for']
                     targets.push(nextTarget)
@@ -95,9 +99,13 @@ export default function (text, props, clear, option) {
                   args.push(global[argument])
                 }
               }
-              console.log('getter', global, reserve.text)
+              console.log('getterqq', global, tar, args)
+              if (!global.hasOwnProperty(reserve.text)) {
+                return { status: 'WA', reason: 'funtion no' }
+              }
               const getReturn = getScript(global[reserve.text], args)
               const toStr = String(getReturn)
+              console.log('getter', global, getReturn, args, toStr)
               tar.value = strValueStart + toStr + strValueEnd
             } else if (reserve.type === 'variable') {
               // tar.value = global[reserve.text]
@@ -108,7 +116,7 @@ export default function (text, props, clear, option) {
         }
         if (tar.answer && tar.name === 'reserveText') {
           // とりあえずexistStringなので....
-          console.log('tarValue', tar.value)
+          console.log('tarValue', tar, targetIndex)
           if (tar.value === clear[targetIndex]) {
             checkClear++
           } else {
@@ -127,7 +135,10 @@ export default function (text, props, clear, option) {
             let nextObject = {}
             nextObject = Object.assign({}, value)
             if (tar.hasOwnProperty('params')) {
-              nextObject.params = tar.params
+              nextObject.params = Object.assign({}, tar.params)
+            }
+            if (tar.hasOwnProperty('paramIndex')) {
+              nextObject.paramIndex = tar.paramIndex
             }
             if (tar.name === 'answer') {
               nextObject.answer = true
