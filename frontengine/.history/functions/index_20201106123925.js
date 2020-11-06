@@ -5,5 +5,5 @@ const items = 'tesutetuett';
 //
 exports.submitExam = functions.https.onCall((data, context) => {
     console.log('request', data, context);
-    return data;
+    return items;
   });
