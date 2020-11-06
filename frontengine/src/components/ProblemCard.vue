@@ -1,10 +1,8 @@
 <template>
   <div class="b-card">
     <b-card bg-variant="white" text-variant="black" class="text-left">
-      <b-card-header header-bg-variant="success">
-        <h1>{{problemNumber}}</h1>
-      </b-card-header>
       <b-card-body>
+        <h1>{{problemNumber}}</h1>
         <b-card-text>{{problemStatement}}</b-card-text>
         <b-card-text>{{ getLoginId }}</b-card-text>
         <router-link :to="{name: 'ProblemDetail', params: {examId: problemId}}" @click.native="chk()">参加登録</router-link>

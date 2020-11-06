@@ -28,6 +28,7 @@
 import MainProcess from '@/process/MainProcess.js'
 import { mapGetters } from 'vuex'
 import Exam1 from '@/components/Exam1.vue'
+import firebase from 'firebase'
 export default {
   name: 'ProblemDetail',
   components: {
@@ -42,14 +43,20 @@ export default {
   },
   methods: {
     getDom: function () {
-      MainProcess(this.text)
+      // MainProcess(this.text)
+      const submitExam = firebase.functions().httpsCallable('submitExam')
+      const examId = this.$route.params.examId
+      return submitExam({ userId: this.getLoginId, examId: examId, examText: this.text })
+        .then(function (res) {
+          console.log(res)
+        })
     },
     sumplePush: function () {
       this.text = this.getSumpleText
     }
   },
   computed: {
-    ...mapGetters(['getExams']),
+    ...mapGetters(['getExams', 'getUserId']),
     getText () {
       return "''"
     },
@@ -60,6 +67,10 @@ export default {
         return { name: 'testmode' }
       }
       return this.getExams[examId]
+    },
+    getLoginId () {
+      console.log('check', this.getUserId)
+      return this.getUserId
     },
     getSumpleText () {
       const output = []
