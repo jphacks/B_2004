@@ -4,64 +4,6 @@
     <h1>
       {{name}}
     </h1>
-<<<<<<< HEAD
-    <h3>あなたは業務で、社員ID、社員名がセットになったデータを”社員ID”が昇順になるように出力するようなタスクを依頼されました。<br>
-      以下に、コードを入力し、データ名のボタンをクリックするとそれをキーとしてカラムを並べ替えるようにしてください。<br> <br>
-    </h3>
-    <!-- こっちはお手本みたいなもの。固定？したいのでわかる人なおしてください。暫定的にコメントアウト -->
-<!--     <table>
-    <thead>
-        <tr>
-            <th>id</th>
-            <th>name</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr v-for="item in items" :key="item.userId">
-            <td>{{ item.userId }}</td>
-            <td>{{ item.userName }}</td>
-        </tr>
-    </tbody>
-</table> -->
-    <h3>＜例＞IdとNameをキーとして並べ替えるようにしたもの</h3>
-    <!-- こっちは動的に表をソートするバージョン。methodを用いて並べ替えてる。 -->
-    <!-- ソートが各１回しかできない。。なぜ -->
-    <table>
-    <thead>
-        <tr>
-            <th id="sortButtonId" @click="sort('userId')">id</th>
-            <th id="sortButtonName" @click="sort('userName')">name</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr v-for="item in items" :key="item.userId">
-            <td id="id">{{ item.userId }}</td>
-            <td id="name">{{ item.userName }}</td>
-        </tr>
-    </tbody>
-</table>
-<h3>用いるデータは以下の形式である。<br><br>
-"要素としてuserId,userNameの２つを持つObject型,すべての要素は一致することはない。"<br><br>
-例として用いたデータを以下に示す。
-</h3>
-    <b-card
-    title="入力例"
-  >
-    <b-card-text>
-      items: [
-        { userId: '123', userName: 'Takahashi' },
-        { userId: '221', userName: 'Ueda' },
-        { userId: '212', userName: 'Katou' },
-        { userId: '213', userName: 'Itou' },
-        { userId: '412', userName: 'Okubo' },
-        { userId: '1', userName: 'Gotou' }
-      ]
-    </b-card-text>
-
-    <b-button href="#" variant="primary">Go somewhere</b-button>
-  </b-card>
-
-=======
     <b-card class="exam1Card">
       <b-card-text>あなたは業務で、社員ID、社員名がセットになったデータを”社員ID”が昇順になるように出力するようなタスクを依頼されました。<br>
         以下に、コードを入力し、データ名のボタンをクリックするとそれをキーとしてカラムを並べ替えるようにしてください。<br><br>
@@ -101,7 +43,6 @@
       </b-card>
     </b-card>
     <br>
->>>>>>> main
   </div>
 </template>
 

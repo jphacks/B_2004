@@ -17,7 +17,7 @@
       placeholder="解答を入力してください。"
       rows="6"
     ></b-form-textarea>
-    <b-button @click="getDom()">送信</b-button>
+    <b-button @click="sumpleTest()">送信</b-button>
     <br><br><br><router-link :to="{name: 'ProblemResult', params: {examId: $route.params.examId}}">問題結果画面に遷移します。</router-link>
   </div>
   </body>
@@ -140,7 +140,7 @@ export default {
       output.push('    },')
       output.push('    jointStr: function (items, index) {')
       output.push('      let output = \'\'')
-      output.push('      for (let i = 0; i < items.length; i = i + 1) {')
+      output.push('      for (let i = 0; i < index + 1; i = i + 1) {')
       output.push('        output = output + items[i]')
       output.push('      }')
       output.push('      return output')
