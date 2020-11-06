@@ -50,7 +50,7 @@ export default {
 
 <style scoped>
 .b-card {
-  border: 0.5px ridge gray;
+  border: 0.5px solid gray;
   margin: 10px 10px ;
 }
 </style>

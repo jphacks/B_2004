@@ -21,6 +21,9 @@
       rows="6"
     ></b-form-textarea>
     <b-button @click="getDom()">送信</b-button>
+    <div class="b-buttonArea">
+      <b-button @click="sumpleTest()">送信</b-button>
+    </div>
     <br><br><br><router-link :to="{name: 'ProblemResult', params: {examId: $route.params.examId}}">問題結果画面に遷移します。</router-link>
   </div>
   </body>
@@ -219,5 +222,8 @@ export default {
 <style scoped>
 .problemArea {
   margin: 40px 40px 40px;
+}
+.b-buttonArea {
+  text-align: center;
 }
 </style>
