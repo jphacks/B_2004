@@ -21,7 +21,7 @@
     </b-card-text>
     <h3>出力例</h3>
     <b-card-text>
-      {{ jointStr(items) }}
+      <span v-for="(item, index) of items" :key="index">{{jointStr(items, index)}}<br/></span>
     </b-card-text>
   </b-card>
 
@@ -45,9 +45,9 @@ export default {
     input: Array
   },
   methods: {
-    jointStr (items) {
+    jointStr (items, index) {
       let output = ''
-      for (let i = 0; i < Object.keys(items).length; i++) {
+      for (let i = 0; i < index + 1; i++) {
         output = output + items[i]
       }
       return output

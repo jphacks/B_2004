@@ -114,6 +114,7 @@ function DOMAnalysis (dom) {
     info.name = tag.substr(1 + nameLength, tag.length - 2 - nameLength)
     if (tag.substr(tag.length - 2, 2) === '/>') {
       info.open = false
+      info.name = tag.substr(1 + nameLength, tag.length - 3 - nameLength)
     }
   } else {
     info.name = tags[0].substr(1 + nameLength, tags[0].length - nameLength)
@@ -184,6 +185,17 @@ function DOMAnalysis (dom) {
     info.others.push(otherInfo)
     if (otherInfo.hasOwnProperty('id')) {
       info.id = otherInfo.id
+    }
+    if (otherInfo.hasOwnProperty('left')) {
+      if (otherInfo.left === 'v-for') {
+        info['v-for'] = otherInfo
+      }
+      if (otherInfo.left === 'v-if') {
+        info['v-if'] = otherInfo
+      }
+    }
+    if (otherInfo.hasOwnProperty('key')) {
+      info.key = otherInfo
     }
   }
   //

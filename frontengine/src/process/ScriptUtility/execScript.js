@@ -1,6 +1,9 @@
 import { CheckProperty, getProperty } from './utility.js'
 import { global } from '../moduleProcess.js'
-export { execScript }
+export { execScript, getScript }
+function getScript (body, array, preLocal) {
+  return execScript(body, array, preLocal).returnArguments
+}
 function execScript (body, array, preLocal) {
   // name,valueは予約されている??
   // output {name: name, value: value}

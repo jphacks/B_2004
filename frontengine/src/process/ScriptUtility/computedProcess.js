@@ -9,6 +9,7 @@ export default function (body) {
 
     }
     output[property.key.name].computed = true
+    output[property.key.name].func = true
   }
   return output
 }
