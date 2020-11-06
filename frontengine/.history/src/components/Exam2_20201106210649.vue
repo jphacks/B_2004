@@ -21,7 +21,7 @@
     </b-card-text>
     <h3>出力例</h3>
     <b-card-text>
-      {{ jointStr(items) }}
+      jointStr(items)
     </b-card-text>
   </b-card>
 

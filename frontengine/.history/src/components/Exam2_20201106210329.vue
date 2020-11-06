@@ -21,7 +21,7 @@
     </b-card-text>
     <h3>出力例</h3>
     <b-card-text>
-      {{ jointStr(items) }}
+      <h2></h2>
     </b-card-text>
   </b-card>
 
@@ -46,9 +46,9 @@ export default {
   },
   methods: {
     jointStr (items) {
-      let output = ''
-      for (let i = 0; i < Object.keys(items).length; i++) {
-        output = output + items[i]
+      const output = ''
+      for(let i = 0; i < Object.keys(items).length; i++) {
+        output = output + items[i] 
       }
       return output
     }
