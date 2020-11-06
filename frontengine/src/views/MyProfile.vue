@@ -1,30 +1,19 @@
 <template>
-    <b-container class="bv-example-row">
-    <b-tabs pills content-class="mt-3">
-      <b-tab title="プロフィール" active>
-        <b-row>
-          <b-col class="userState">
-          <h2>
-               <b>{{userItems}}点</b>
-                <br>
-                <span class="user-aset">{{userItems.join}}</span>
-          </h2>
-          <img src="../assets/logo.png">
-          </b-col>
-          <b-col class="userPerform" cols="8">
-          <h2>
-              <p>実績</p>
-              <br>
-              <b-table striped hover :items="items"></b-table>
-          </h2>
-          </b-col>
-        </b-row>
-      </b-tab>
-      <b-tab title="コンテスト実績">
-          <b-card-text>Tab contents 2</b-card-text>
-        </b-tab>
-    </b-tabs>
-    </b-container>
+<b-container class="bv-example-row">
+ <b-row>
+   <b-col class="userState">
+    <h2>南無三</h2>
+     <b class="nameSize">{{userItems}}点</b>
+     <br>
+     <span class="user-aset">{{userItems.join}}</span>
+  <img src="../assets/logo.png">
+  </b-col>
+  <b-col class="userPerform" cols="8">
+    <h2>実績</h2><br>
+    <b-table striped hover :items="items"></b-table>
+    </b-col>
+  </b-row>
+</b-container>
 </template>
 
 <script>
@@ -37,7 +26,7 @@ export default {
   },
   data () {
     return {
-      userItems: {},
+      userItems: 100,
       items: [
         { age: 40, first_name: 'Dickerson', last_name: 'Macdonald' },
         { age: 21, first_name: 'Larsen', last_name: 'Shaw' },
@@ -69,5 +58,8 @@ export default {
 }
 .userPerform {
     text-align: left;
+}
+.nameSize {
+    font-size: 50px;
 }
 </style>
