@@ -7,7 +7,7 @@
       <b-card-body>
         <b-card-text>{{problemStatement}}</b-card-text>
         <b-card-text>{{ getLoginId }}</b-card-text>
-        <router-link :to="{name: 'ProblemDetail', params: {examId: problemId}}" @click.native="setExamInfo()">参加登録</router-link>
+        <router-link :to="{name: 'ProblemDetail', params: {examId: problemId}}" @click.native="chk()">参加登録</router-link>
       </b-card-body>
     </b-card>
   </div>
@@ -26,11 +26,13 @@ export default {
     exam: Object
   },
   methods: {
-    setExamInfo () {
+    chk () {
+      const m = firebase.firestore.Timistamp.fromDate(moment())
+      console.log(m)
       firebase.firestore().collection('users').doc(this.getLoginId).collection('join').doc(this.problemId).set({
         difficult: this.exam.difficult,
-        name: this.exam.name,
-        startAt: firebase.firestore.Timestamp.fromDate(new Date())
+        name: this.exam.name
+        // startAt: firebase.firestore.Timistamp.fromDate(m)
       })
     }
   },
