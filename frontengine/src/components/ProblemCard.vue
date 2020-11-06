@@ -1,10 +1,11 @@
 <template>
   <div class="b-card">
-    <b-card bg-variant="white" text-variant="black" class="text-left">
+    <b-card bg-variant="white" text-variant="black" class="text-center">
       <b-card-body>
-        <h1>{{problemNumber}}</h1>
+        <h4>{{problemNumber}}</h4>
         <b-card-text>{{problemStatement}}</b-card-text>
-        <b-card-text>{{ getLoginId }}</b-card-text>
+        <!--<b-card-text>{{ getLoginId }}</b-card-text>-->
+        <b-card-text>難易度：{{this.exam.difficult}}<br>この問題はソートを行う問題です。是非参加してみてください。</b-card-text>
         <router-link :to="{name: 'ProblemDetail', params: {examId: problemId}}" @click.native="chk()">参加登録</router-link>
       </b-card-body>
     </b-card>
@@ -37,13 +38,13 @@ export default {
       console.log('check', this.getUserId)
       return this.getUserId
     }
-
   }
 }
 </script>
 
 <style scoped>
 .b-card {
-  margin: 40px 40px 40px;
+  border: 10px ridge #00adb5;
+  margin: 10px 10px ;
 }
 </style>

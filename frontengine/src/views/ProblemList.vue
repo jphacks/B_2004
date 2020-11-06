@@ -2,13 +2,25 @@
   <div class="problemList" >
     <h1 >問題一覧</h1>
     <!--{{ exams }}-->
-    <ProblemCard :problemNumber="'No.' + 'test'" :problemId="'vho02QWOCy9IsjgqhiEG'"/>
-    <div v-if="getExamViews.length !== 0">
-      <ProblemCard v-for="(problemId, index) in Object.keys(exams || {})" :key="index" :problemNumber="'No.' + String(index+1)" :problemId="problemId" :exam="exams[problemId]"/>
-    </div>
-    <div v-else>
-      読み込み中...
-    </div>
+    <b-container class="bv-example-row">
+      <b-row cols="2" cols-sm="1" cols-md="1" cols-lg="2">
+        <b-col>
+          <b-card class="leftList">
+            <img alt="frontEngine logo" src="../assets/frontEngineLogo.png">
+            <h4><br>よく解かれる問題<br>No.1</h4>
+          </b-card>
+        </b-col>
+        <b-col>
+          <ProblemCard :problemNumber="'No.' + 'test'" :problemId="'vho02QWOCy9IsjgqhiEG'"/>
+          <div v-if="getExamViews.length !== 0">
+          <ProblemCard v-for="(problemId, index) in Object.keys(exams || {})" :key="index" :problemNumber="'No.' + String(index+1)" :problemId="problemId" :exam="exams[problemId]"/>
+          </div>
+          <div v-else>
+          読み込み中...
+          </div>
+        </b-col>
+      </b-row>
+    </b-container>
   </div>
 </template>
 
@@ -80,3 +92,10 @@ export default {
 }
 
 </script>
+
+<style scoped>
+.leftList {
+  border: 0px ;
+  margin: 10px 10px ;
+}
+</style>
