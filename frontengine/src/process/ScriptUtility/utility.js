@@ -123,7 +123,11 @@ function getProperty (body, local, funcArguments) {
         return outputData[body.property.name](...funcArguments)
       } else if (body.property.name) {
         console.log('bodymemberrr', outputData[body.property.name], outputData, body.property.name)
-        return outputData[body.property.name]
+        if (!outputData[body.property.name]) {
+          return outputData[getProperty(body.property, local)]
+        } else {
+          return outputData[body.property.name]
+        }
       } else if (body.property.extra) {
         return outputData[getProperty(body.property, local)]
       }
