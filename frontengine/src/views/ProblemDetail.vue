@@ -4,7 +4,7 @@
     <span>{{ getExam ? getExam.name : 'testmode' }}</span>
   </div>
   <div class="problemView">
-    <Exam1/>
+    <Exam1 :name="getExam.name"/>
   </div>
   <!-- Answer Form Area -->
   <div class="problemdetail">
@@ -39,6 +39,7 @@ export default {
     }
   },
   props: {
+    exam: Object
   },
   methods: {
     getDom: function () {
