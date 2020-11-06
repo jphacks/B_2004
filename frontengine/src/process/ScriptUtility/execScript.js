@@ -146,7 +146,6 @@ function execScript (body, array, preLocal) {
         return outputReturn
       case 'ContinueStatement':
         let ContinueOutput = { returnArguments: {}, returnLocal: { ...preLocal }, returnOrder: 'break' }
-
         Object.keys(preLocal || {}).forEach(key => {
           ContinueOutput.returnLocal[key] = local[key]
         })
@@ -155,7 +154,6 @@ function execScript (body, array, preLocal) {
         const cases = access.body[i].cases
         const discriminant = access.body[i].discriminant
         const discriminantValue = getProperty(discriminant, local)
-
         for (let takeCase of cases) {
           const testValue = getProperty(takeCase.test, local)
           console.log('discriminantValue', discriminantValue, 'testValue', testValue)

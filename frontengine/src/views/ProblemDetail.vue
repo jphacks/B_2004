@@ -46,6 +46,8 @@ export default {
     },
     sumplePush: function () {
       this.text = this.getSumpleText
+    },
+    createEvent: function () {
     }
   },
   computed: {
@@ -151,6 +153,13 @@ export default {
       output.push('}')
       output.push('</' + 'script>')
       return output.join('\n')
+    },
+    getClearModel () {
+      output = {}
+      output.exists = [] //eventに対応したやつ
+      output.events = [] //event
+      output.events.push({id: 'sortButtonId', event: 'click'})
+      output.events.push({id: 'sortButtonName', event: 'click'})
     }
   }
 }
