@@ -29,6 +29,7 @@
     "esprima": "^4.0.1",
     "firebase": "^8.0.0",
     "js-interpreter": "^2.2.0",
+    "moment": "^2.29.1",
     "vue": "^2.6.11",
     "vue-router": "^3.2.0",
     "vuex": "^3.4.0"
