@@ -7,7 +7,7 @@
       <b-card-body>
         <b-card-text>{{problemStatement}}</b-card-text>
         <b-card-text>{{ getLoginId }}</b-card-text>
-        <router-link :to="{name: 'ProblemDetail', params: {examId: problemId}}" @click.native="setExamInfo()">参加登録</router-link>
+        <router-link :to="{name: 'ProblemDetail', params: {examId: problemId}}" @click.native="chk()">参加登録</router-link>
       </b-card-body>
     </b-card>
   </div>
@@ -16,7 +16,6 @@
 <script>
 import { mapGetters } from 'vuex'
 import firebase from 'firebase'
-import moment from 'moment'
 export default {
   name: 'ProblemCard',
   props: {
@@ -26,11 +25,12 @@ export default {
     exam: Object
   },
   methods: {
-    setExamInfo () {
+    chk () {
+      console.log(moment())
       firebase.firestore().collection('users').doc(this.getLoginId).collection('join').doc(this.problemId).set({
         difficult: this.exam.difficult,
-        name: this.exam.name,
-        startAt: firebase.firestore.Timestamp.fromDate(new Date())
+        name: this.exam.name
+        // startAt: this.exam.startAt
       })
     }
   },
