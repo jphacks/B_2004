@@ -16,10 +16,20 @@ function execScript (body, array, preLocal) {
   const error = []
   let access = body
   // 引数をとる
+  if (array && body.params) {
+    for (let i = 0; i < body.params.length; i++) {
+      local[body.params[i].name] = array[i]
+    }
+  }
+  console.log('array', array, local)
+  for (let key of Object.keys(local || {})) {
+    console.log('output', local[key])
+  }
   //
   //
   // 実際に読み込む
   //
+  console.log('body', body)
   if (body.body && body.body.type === 'BlockStatement') {
     access = body.body
   }
@@ -66,8 +76,10 @@ function execScript (body, array, preLocal) {
             execScript(global[target.property.name], access.body[i].expression.arguments)
           }
         } else if (access.body[i].expression && access.body[i].expression.type === 'AssignmentExpression') {
+          console.log('chhhhhh', access.body[i].expression)
           if (access.body[i].expression.left.name && local.hasOwnProperty(access.body[i].expression.left.name)) {
             local[access.body[i].expression.left.name] = calculation(access.body[i].expression.right, local)
+            console.log('checcer', calculation(access.body[i].expression.right, local))
           } else if (access.body[i].expression.left.property && access.body[i].expression.left.property.name) {
             global[access.body[i].expression.left.property.name] = calculation(access.body[i].expression.right, local)
           }

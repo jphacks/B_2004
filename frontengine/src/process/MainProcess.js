@@ -24,9 +24,12 @@ export default function (text, props, clear, option) {
     })
   }
   // const getClear = clear
-  const getClear = []
+  const getClear = clear
+  let checkClear = 0
+  let targetIndex = 0
   let output = { status: 'WA', reason: '' }
   const vForGlobal = {}
+  console.log('outputtt', text, props, clear, option)
   if (option && option.mode === 'answerDOM') {
     if (option.existString) {
       let tooru = true
@@ -34,7 +37,10 @@ export default function (text, props, clear, option) {
       const targets = []
       targets.push(domTree)
       while (targets.length > 0) {
-        const tar = targets.pop()
+        const tar = targets.shift()
+        if (tar.params) {
+          console.log('targets!!', tar.params, tar)
+        }
         tooru = false
         // -- v-for
         if (tar['v-for']) {
@@ -49,14 +55,19 @@ export default function (text, props, clear, option) {
                     data = getScript(global[target.right], [])
                   }
                   for (let i = 0; i < global[target.right].length; i++) {
-                    tar.params = {}
-                    if (target.index) {
-                      tar.params.index = i
+                    // tar.params = {}
+                    let nextTarget = Object.assign({}, tar)
+                    nextTarget.params = {}
+                    if (target && target.target && target.target.index) {
+                      nextTarget.params.index = i
+                    } else {
                     }
-                    tar.params.value = global[target.right][i]
-                    targets.push(tar)
+                    nextTarget.params.value = global[target.right][i]
+                    console.log('nextTarget', nextTarget)
+                    delete nextTarget['v-for']
+                    targets.push(nextTarget)
                   }
-                  break
+                  continue
                 }
               } else {
                 return { status: 'WA', reason: 'no!!' + target.rights + ' is not defined!!' }
@@ -68,12 +79,72 @@ export default function (text, props, clear, option) {
             // func
           }
         }
-        // -- v-for
-        
+        // 8-- v-for
+        if (tar.name === 'reserveText') {
+          console.log('tarValue:none', tar)
+          for (let reserve of Object.values(tar.reserves)) {
+            const strValueStart = tar.value.substr(0, reserve.start)
+            const strValueEnd = tar.value.substr(reserve.end + 1, tar.value.length)
+            if (reserve.type === 'function') {
+              // とりあえずglobalのみ対応
+              const args = []
+              for (let argument of reserve.functionArgument) {
+                if (tar.params.hasOwnProperty(argument)) {
+                  args.push(tar.params[argument])
+                } else if (global.hasOwnProperty(argument)) {
+                  args.push(global[argument])
+                }
+              }
+              console.log('getter', global, reserve.text)
+              const getReturn = getScript(global[reserve.text], args)
+              const toStr = String(getReturn)
+              tar.value = strValueStart + toStr + strValueEnd
+            } else if (reserve.type === 'variable') {
+              // tar.value = global[reserve.text]
+              const toStr = String(tar.value)
+              tar.value = strValueStart + toStr + strValueEnd
+            }
+          }
+        }
+        if (tar.answer && tar.name === 'reserveText') {
+          // とりあえずexistStringなので....
+          console.log('tarValue', tar.value)
+          if (tar.value === clear[targetIndex]) {
+            checkClear++
+          } else {
+            return { status: 'WA', reason: 'noneClear', target: clear[targetIndex], targetNone: tar.value }
+          }
+          targetIndex++
+          if (clear.length === checkClear) {
+            return { status: 'AC', reason: 'all Accept' }
+          }
+        }
+        // -- lastPropagate
+        let i = 0
+        console.log('tar.children', tar.children, tar)
+        Object.values(tar.children || {}).forEach(array => {
+          array.forEach(value => {
+            let nextObject = {}
+            nextObject = Object.assign({}, value)
+            if (tar.hasOwnProperty('params')) {
+              nextObject.params = tar.params
+            }
+            if (tar.name === 'answer') {
+              nextObject.answer = true
+              nextObject.answerIndex = i
+              i = i + 1
+            }
+            console.log('cheek', nextObject)
+            targets.push(nextObject)
+          })
+        })
+        // -- lastPrpagate
       }
     }
   } else {
 
   }
   // CreateAST(script)
+  console.log('runcode:')
+  return { status: 'WA', reason: 'why?runendCode', info: checkClear }
 }

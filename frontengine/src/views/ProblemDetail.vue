@@ -37,14 +37,30 @@ export default {
   },
   data () {
     return {
-      text: ''
+      text: '',
+      input: [
+        'pen',
+        'pineapple',
+        'apple',
+        'pen'
+      ],
+      clear: [
+        'pen',
+        'penpineapple',
+        'penpineappleapple',
+        'penpineappleapplepen'
+      ],
+      option: {
+        mode: 'answerDOM',
+        existString: true
+      }
     }
   },
   props: {
   },
   methods: {
     getDom: function () {
-      MainProcess(this.text)
+      console.log('TANOMU AC', MainProcess(this.text, this.input, this.clear, this.option))
     },
     sumplePush: function () {
       this.text = this.getSumpleText
@@ -69,8 +85,7 @@ export default {
       const output = []
       output.push('<template>')
       output.push('<div class="problemdetail">')
-      output.push('<answer v-for="(item, index) of items" :key="index">{{jointStr(items, index)}}<br/></answer>')
-      output.push('<answer/>')
+      output.push('<answer v-for="(item, index) of input" :key="index">{{jointStr(input, index)}}<br/></answer>')
       output.push('</div>')
       output.push('</template>')
       output.push('<script>')
@@ -91,12 +106,22 @@ export default {
       output.push('      text: \'\',')
       output.push('      number: 0,')
       output.push('      obj: {a: {}, c:{d:50, e:{}}},')
-      output.push('      array: [0,1,2]')
+      output.push('      array: [0,1,2],')
+      output.push('      input: [\'pen\',\'pineapple\',\'apple\', \'pen\'],')
+      output.push('      clear: [\'pen\',\'penpineapple\',\'penpineappleapple\', \'penpineappleapplepen\'],')
       output.push('    }')
       output.push('  },')
       output.push('  methods: {')
       output.push('    getDom: function (text) {')
       output.push('      MainProcess(text)')
+      output.push('    },')
+      output.push('    jointStr: function (items, index) {')
+      output.push('      let output = \'\'')
+      // output.push('      for (let i = 0; i < index + 1; i++) {')
+      //   output.push('        output = output + items[i]')
+      // output.push('      }')
+      output.push('      output = items[0]')
+      output.push('      return output')
       output.push('    },')
       output.push('  sort: function (index) {')
       output.push('    switch (index) {')
@@ -128,42 +153,7 @@ export default {
       output.push('    let k = 0')
       output.push('          k++')
       output.push('       return k')
-      output.push('      },')
-      output.push('    test: function () {')
-      output.push('      let a = 30 + 30')
-      output.push('      a = 30 + 50')
-      output.push('      let sakurai = {a:30, b:30, c:30}')
-      output.push('      let sakuraihairetu = [30,40,50]')
-      output.push('      let outputText =\'\'')
-      output.push('      switch (a){')
-      output.push('      case 10:')
-      output.push('      outputText=\'10\'')
-      output.push('      break')
-      output.push('      case 50:')
-      output.push('      outputText=\'50\'')
-      output.push('      break')
-      output.push('      case 100:')
-      output.push('      outputText=\'100\'')
-      output.push('      break')
-      output.push('      default:')
-      output.push('      outputText=\'default\'')
       output.push('      }')
-      // output.push('      let k = Object.keys(sakurai)')
-      // output.push('      return output')
-      // output.push('      if (a<100) {')
-      // output.push('      outputText = \'a<100\'')
-      // output.push('      } else if ( a> 150) {')
-      // output.push('      outputText = \'a>150\' ')
-      // output.push('      }  else  {')
-      // output.push('      outputText = \'a>1000\'')
-      // output.push('      }')
-      // output.push('      this.number = 50 + 30 + 20 * 40')
-      output.push('      for (let i = 0; i< 10; i = i + 1) {')
-      output.push('       this.number = this.number + 1')
-      output.push('      }')
-      output.push('        return this.number')
-      // output.push('      this.getDom()')
-      output.push('     }')
       output.push('  },')
       output.push('  computed: {')
       output.push('    getText () {')
