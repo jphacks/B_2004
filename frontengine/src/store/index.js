@@ -35,6 +35,7 @@ export default new Vuex.Store({
     },
     userItemMutation (state, userItem) {
       state.userItems = { ...state.userItems, [state.currentId]: userItem }
+      console.log('checkstate', state)
     }
   },
   actions: {

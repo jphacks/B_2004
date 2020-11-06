@@ -1,16 +1,29 @@
 <template>
 <b-container class="bv-example-row">
  <b-row>
-   <b-col class="userState">
-    <h2>南無三</h2>
-     <b class="nameSize">{{userItems}}点</b>
+   <b-col class="userState" >
+     <b class="nameSize">{{ difficultSum }}点</b>
+     <h2>{{this.getEmailState}}</h2>
      <br>
-     <span class="user-aset">{{userItems.join}}</span>
-  <img src="../assets/logo.png">
   </b-col>
   <b-col class="userPerform" cols="8">
     <h2>実績</h2><br>
-    <b-table striped hover :items="items"></b-table>
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Contest Name</th>
+                <th>Score</th>
+            </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(examId,index) in Object.keys(userItems || {})" :key="examId" :index="index">
+            <td>{{isMoment(userItems[examId].startAt.seconds)}}</td>
+            <td>{{userItems[examId].name}}</td>
+            <td>{{userItems[examId].difficult}}</td>
+          </tr>
+        </tbody>
+    </table>
     </b-col>
   </b-row>
 </b-container>
@@ -20,33 +33,51 @@
 import { LayoutPlugin } from 'bootstrap-vue'
 import firebase from 'firebase'
 import { mapActions, mapGetters } from 'vuex'
+import moment from 'moment'
 export default {
   name: 'MyProfile',
   conponents: {
   },
   data () {
     return {
-      userItems: 100,
-      items: [
-        { age: 40, first_name: 'Dickerson', last_name: 'Macdonald' },
-        { age: 21, first_name: 'Larsen', last_name: 'Shaw' },
-        { age: 89, first_name: 'Geneva', last_name: 'Wilson' },
-        { age: 38, first_name: 'Jami', last_name: 'Carney' }
-      ]
+      userItems: {},
+      difficultSum: 0
     }
   },
-  method: {
+  mounted: function () {
+    console.log('check', this.fetchFirebaseUsers)
+    this.fetchFirebaseUsers()
+  },
+  methods: {
     ...mapActions(['setUserItems']),
-    fetchFirebaseExams: function () {
+    fetchFirebaseUsers: function () {
       const output = {}
-      return firebase.firestore().collection('users').get().then(snapsshot => {
+      return firebase.firestore().collection('users').doc(this.userId).collection('join').get().then(snapsshot => {
         console.log('ss', snapsshot)
         snapsshot.forEach(doc => {
+          console.log('chek', this.users)
           this.setUserItems(doc)
           output[doc.id] = doc.data()
+          this.difficultSum += output[doc.id].difficult
         })
-        this.users = output
+        console.log('cc', this.userItems)
+        this.userItems = output
       })
+    },
+    isMoment: function (date) {
+      console.log('date', date)
+      const momentDAte = moment.unix(date)
+      return momentDAte.format('YYYY-MM-DD HH:mm:ssZ')
+    }
+  },
+  computed: {
+    ...mapGetters(['getUserId', 'getEmailState']),
+    userId: function () {
+      console.log('aa', this.getUserId)
+      return this.getUserId
+    },
+    getUserName: function () {
+      return this.getEmailState
     }
   }
 }
