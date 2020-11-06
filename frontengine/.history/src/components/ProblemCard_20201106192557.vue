@@ -1,12 +1,13 @@
 <template>
   <div class="b-card">
-    <b-card bg-variant="white" text-variant="black" class="text-center">
+    <b-card bg-variant="white" text-variant="black" class="text-left">
+      <b-card-header header-bg-variant="success">
+        <h1>{{problemNumber}}</h1>
+      </b-card-header>
       <b-card-body>
-        <h4>{{problemNumber}}</h4>
         <b-card-text>{{problemStatement}}</b-card-text>
-        <!--<b-card-text>{{ getLoginId }}</b-card-text>-->
-        <b-card-text>難易度：{{ viewExam }}<br>この問題はソートを行う問題です。是非参加してみてください。</b-card-text>
-        <router-link :to="{name: 'ProblemDetail', params: {examId: problemId}}" @click.native="chk()">参加登録</router-link>
+        <b-card-text>{{ getLoginId }}</b-card-text>
+        <router-link :to="{name: 'ProblemDetail', params: {examId: problemId}}" @click.native="setExamInfo()">参加登録</router-link>
       </b-card-body>
     </b-card>
   </div>
@@ -38,19 +39,14 @@ export default {
     getLoginId () {
       console.log('check', this.getUserId)
       return this.getUserId
-    },
-    viewExam () {
-      if (this.exam || 0) {
-        return this.exam.difficult
-      } else return null
     }
+
   }
 }
 </script>
 
 <style scoped>
 .b-card {
-  border: 0.5px ridge gray;
-  margin: 10px 10px ;
+  margin: 40px 40px 40px;
 }
 </style>
