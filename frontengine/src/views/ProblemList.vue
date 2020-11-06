@@ -72,6 +72,7 @@ export default {
           output[doc.id] = doc.data()
         })
         this.exams = output
+        console.log('exams', this.exams)
       })
     }
   },
