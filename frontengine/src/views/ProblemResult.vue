@@ -2,7 +2,7 @@
   <div class="problemResult">
     <h1>結果</h1>
     <span>
-      <h3>今回の結果はこちら：問題No.{{ getExam ? getExam.name : 'testmode' }}</h3>
+      <h3>今回の結果はこちら：{{ getExam ? getExam.name : 'testmode' }}</h3>
     </span>
     <b-container class="bv-example-row">
       <b-row cols="2" cols-sm="1" cols-md="1" cols-lg="2">

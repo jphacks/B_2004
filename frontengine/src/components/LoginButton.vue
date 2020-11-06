@@ -2,7 +2,7 @@
   <div>
     <span class="b-botton" v-on:click="modalShow = !modalShow">{{loginText}}</span>
 
-    <b-modal v-model="modalShow" :title="loginTitle" id="bv-modal-example" hide-footer><LoginForm :loginType="loginType" @loginType="loginChange"/></b-modal>
+    <b-modal v-model="modalShow" :title="loginTitle" id="bv-modal-example" hide-footer ><LoginForm :loginType="loginType" @loginType="loginChange"/></b-modal>
   </div>
 </template>
 
