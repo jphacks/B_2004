@@ -3,7 +3,7 @@ const items = 'tesutetuett';
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions
 //
-exports.submitExam = functions.https.onCall((data, context) => {
+exports.submitExam = functions.region('asia-northeast1').https.onCall((data, context) => {
     console.log('request', data, context);
-    return data;
+    return items;
   });

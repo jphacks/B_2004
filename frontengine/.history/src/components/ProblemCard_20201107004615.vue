@@ -5,7 +5,8 @@
         <h4>{{problemNumber}}</h4>
         <b-card-text>{{problemStatement}}</b-card-text>
         <!--<b-card-text>{{ getLoginId }}</b-card-text>-->
-        <b-card-text>難易度：{{ viewExam }}<br>この問題はソートを行う問題です。是非参加してみてください。</b-card-text>
+        {{ this.exam.difficult }}
+        <b-card-text>難易度：{{ Object.values(this.exam.difficult)[0] }}<br>この問題はソートを行う問題です。是非参加してみてください。</b-card-text>
         <router-link :to="{name: 'ProblemDetail', params: {examId: problemId}}" @click.native="chk()">参加登録</router-link>
       </b-card-body>
     </b-card>
@@ -15,7 +16,6 @@
 <script>
 import { mapGetters } from 'vuex'
 import firebase from 'firebase'
-import moment from 'moment'
 export default {
   name: 'ProblemCard',
   props: {
@@ -25,11 +25,11 @@ export default {
     exam: Object
   },
   methods: {
-    setExamInfo () {
+    chk () {
       firebase.firestore().collection('users').doc(this.getLoginId).collection('join').doc(this.problemId).set({
         difficult: this.exam.difficult,
-        name: this.exam.name,
-        startAt: firebase.firestore.Timestamp.fromDate(new Date())
+        name: this.exam.name
+        // startAt: this.exam.startAt
       })
     }
   },
@@ -38,11 +38,6 @@ export default {
     getLoginId () {
       console.log('check', this.getUserId)
       return this.getUserId
-    },
-    viewExam () {
-      if (this.exam || 0) {
-        return this.exam.difficult
-      } else return null
     }
   }
 }

@@ -4,8 +4,7 @@
     <span>{{ getExam ? getExam.name : 'testmode' }}</span>
   </div>
   <div class="problemView">
-    <!-- <Exam1/> -->
-    <Exam2/>
+    <Exam1/>
   </div>
   <!-- Answer Form Area -->
   <div class="problemdetail">
@@ -29,13 +28,10 @@ import MainProcess from '@/process/MainProcess.js'
 import { mapGetters } from 'vuex'
 import Exam1 from '@/components/Exam1.vue'
 import firebase from 'firebase'
-// import Exam1 from '@/components/Exam1.vue'
-import Exam2 from '@/components/Exam2.vue'
 export default {
   name: 'ProblemDetail',
   components: {
-    // Exam1,
-    Exam2
+    Exam1
   },
   data () {
     return {
@@ -43,31 +39,23 @@ export default {
     }
   },
   props: {
-    exam: Object
   },
   methods: {
     getDom: function () {
     //  MainProcess(this.text)
       const submitExam = firebase.functions().httpsCallable('submitExam')
-      const examId = this.$route.params.examId
-      submitExam({
-        userId: this.getLoginId,
-        examId: examId,
-        examText: this.text
-      })
-        .then(res => {
-          console.log(res)
-        })
-        .catch(e => {
-          console.log(e)
-        })
+      submitExam('wawawa').then(function (res) {
+        consoke.log(res)
+      }).catch(e => {
+      console.log(e);
+    })
     },
     sumplePush: function () {
       this.text = this.getSumpleText
     }
   },
   computed: {
-    ...mapGetters(['getExams', 'getUserId']),
+    ...mapGetters(['getExams']),
     getText () {
       return "''"
     },
@@ -78,10 +66,6 @@ export default {
         return { name: 'testmode' }
       }
       return this.getExams[examId]
-    },
-    getLoginId () {
-      console.log('check', this.getUserId)
-      return this.getUserId
     },
     getSumpleText () {
       const output = []
