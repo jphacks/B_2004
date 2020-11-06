@@ -10,7 +10,7 @@ function CheckProperty (body) {
   if (body && body.key && body.key.name) {
     output.name = body.key.name
   }
-  let bodyType = body.value ? body.value.type : body.type
+  let bodyType = body.value && body.value.type ? body.value.type : body.type
   let bodyValue = body.value || body
   if (bodyType === 'ArrayExpression') {
     output.value = []
@@ -60,7 +60,7 @@ function CheckProperty (body) {
   if (output.hasOwnProperty('value')) {
     out = output.value
   } else {
-    out = {}
+    out = { noneData: true }
   }
   for (const key of Object.keys(output || {})) {
     if (key === 'd') {
@@ -78,6 +78,10 @@ function CheckProperty (body) {
 }
 
 function getProperty (body, local) {
+  if (!body) {
+    console.log('maybe body is null or undifiend?')
+    return false
+  }
   const key = Object.keys(body)[0]
 
   if (body.object && body.object.type === 'ThisExpression') {

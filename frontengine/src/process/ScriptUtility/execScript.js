@@ -153,10 +153,28 @@ function execScript (body, array, preLocal) {
         return ContinueOutput
       case 'SwitchStatement':
         const cases = access.body[i].cases
+        const discriminant = access.body[i].discriminant
+        const discriminantValue = getProperty(discriminant, local)
+
         for (let takeCase of cases) {
-          if (isBool(takeCase.test, local)) {
+          const testValue = getProperty(takeCase.test, local)
+          console.log('discriminantValue', discriminantValue, 'testValue', testValue)
+          if (!testValue) {
+            // maybeDefault
+            const get = execScript(takeCase, array, local)
+            console.log('switchGet', get)
+            if (get.returnOrder === 'break') {
+              break
+            }
+            continue
+          }
+          const createBool = scriptCreateAST(String(discriminantValue) + '===' + String(testValue)).expression
+          const check = isBool(createBool, local)
+          console.log('checkerr', check, createBool)
+          console.log('checker', createBool)
+          if (check) {
             // このケースに該当する
-            console.log('bbo', takeCase.test, local, isBool(takeCase.test, local), cases, access.body[i])
+            console.log('bbo', createBool)
             const get = execScript(takeCase, array, local)
             console.log('switchGet', get)
             if (get.returnOrder === 'break') {
@@ -243,4 +261,13 @@ function isBool (body, local, params, err, type) {
     return calculation(body, local, params, err, type)
   }
   return calculation(body, local, params, err, type)
+}
+
+function scriptCreateAST (script) {
+  const { parse } = require('@babel/parser')
+  const ast = parse(script)
+  if (ast && ast.program && ast.program.body && ast.program.body[0]) {
+    // 一行解析
+    return ast.program.body[0]
+  }
 }
