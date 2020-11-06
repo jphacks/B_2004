@@ -5,7 +5,9 @@
         <h4>{{problemNumber}}</h4>
         <b-card-text>{{problemStatement}}</b-card-text>
         <!--<b-card-text>{{ getLoginId }}</b-card-text>-->
-        <b-card-text>難易度：{{ viewExam }}<br>この問題はソートを行う問題です。是非参加してみてください。</b-card-text>
+        {{ typeof problemId }}
+        {{ typeof exam }}
+        <b-card-text>難易度：{{ exam[problemId].difficult }}<br>この問題はソートを行う問題です。是非参加してみてください。</b-card-text>
         <router-link :to="{name: 'ProblemDetail', params: {examId: problemId}}" @click.native="chk()">参加登録</router-link>
       </b-card-body>
     </b-card>
@@ -37,11 +39,6 @@ export default {
     getLoginId () {
       console.log('check', this.getUserId)
       return this.getUserId
-    },
-    viewExam () {
-      if (this.exam || 0) {
-        return this.exam.difficult
-      } else return null
     }
   }
 }
