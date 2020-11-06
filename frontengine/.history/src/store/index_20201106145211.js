@@ -79,9 +79,6 @@ export default new Vuex.Store({
     },
     getEmailState: (state) => {
       return state.user.email
-    },
-    getUserId: (state) => {
-      return state.currentId
     }
   }
 })

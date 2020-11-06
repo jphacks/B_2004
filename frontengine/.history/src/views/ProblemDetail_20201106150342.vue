@@ -49,7 +49,7 @@ export default {
         userId: this.getLoginId,
         examId: examId,
         examText: this.text
-      })
+        })
         .then(res => {
           console.log(res)
         })

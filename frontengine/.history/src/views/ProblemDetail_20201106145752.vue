@@ -44,12 +44,11 @@ export default {
     getDom: function () {
     //  MainProcess(this.text)
       const submitExam = firebase.functions().httpsCallable('submitExam')
-      const examId = this.$route.params.examId
       submitExam({
         userId: this.getLoginId,
         examId: examId,
         examText: this.text
-      })
+        })
         .then(res => {
           console.log(res)
         })
