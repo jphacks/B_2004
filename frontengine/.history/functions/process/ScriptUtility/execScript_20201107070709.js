@@ -1,10 +1,6 @@
-/* import { CheckProperty, getProperty } from './utility.js'
-import { global } from '../moduleProcess.js' */
-const CheckProperty = require('./utility.js');
-const global = require('../moduleProcess.js');
-/* export{ execScript, getScript } */
-exports.execScript = execScript
-exports.getScript = getScript
+import { CheckProperty, getProperty } from './utility.js'
+import { global } from '../moduleProcess.js'
+export { execScript, getScript }
 function getScript (body, array, preLocal) {
   return execScript(body, array, preLocal).returnArguments
 }

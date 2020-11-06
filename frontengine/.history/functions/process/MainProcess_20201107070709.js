@@ -1,15 +1,10 @@
 // import DomProcess from './DomProcess.js'
-// import CreateAST from './CreateAST.js'
-const ScriptProcess = require('./ScriptProcess.js');
-const DomProcess = require('./DomProcess.js');
-const global = require('./moduleProcess.js');
-const execScript = require('./ScriptUtility/execScript.js');
-const getScript = require('./ScriptUtility/execScript.js');
-/* import ScriptProcess from './ScriptProcess.js'
+import CreateAST from './CreateAST.js'
+import ScriptProcess from './ScriptProcess.js'
 import DomProcess from './DomProcess.js'
 import { global } from './moduleProcess.js'
-import { execScript, getScript } from './ScriptUtility/execScript.js' */
-exports.MainProcess = function (text, props, clear, option) {
+import { execScript, getScript } from './ScriptUtility/execScript.js'
+export default function (text, props, clear, option) {
   const templateLength = '<template>'.length
   const scriptLength = '<script>'.length
   const styleLength = '<style scoped>'.length

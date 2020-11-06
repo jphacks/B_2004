@@ -1,16 +1,11 @@
-/* import propsProcess from './ScriptUtility/propsProcess.js'
+import propsProcess from './ScriptUtility/propsProcess.js'
 import dataProcess from './ScriptUtility/dataProcess.js'
 import methodsProcess from './ScriptUtility/methodsProcess.js'
 import computedProcess from './ScriptUtility/computedProcess.js'
-import { execScript } from './ScriptUtility/execScript.js' */
-const propsProcess = require('./ScriptUtility/propsProcess.js');
-const dataProcess = require('./ScriptUtility/dataProcess.js');
-const methodsProcess = require('./ScriptUtility/methodsProcess.js');
-const computedProcess = require('./ScriptUtility/computedProcess.js');
-const execScript = require('./ScriptUtility/execScript.js');
+import { execScript } from './ScriptUtility/execScript.js'
 const global = {}
-exports.global = global
-exports.moduleProcess = function (ast) {
+export { global }
+export default function (ast) {
   // console.log('ast', ast)
   console.log('getkakuninn!!', ast.program.body)
   const firstBody = ast.program.body[0].declaration.properties

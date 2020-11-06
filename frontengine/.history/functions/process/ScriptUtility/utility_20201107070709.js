@@ -1,10 +1,6 @@
-/* import { global } from '../moduleProcess.js'
+import { global } from '../moduleProcess.js'
 import { execScript } from './execScript.js'
-export { CheckProperty, getProperty } */
-const global = require('../moduleProcess.js');
-const execScript = require('./execScript.js');
-exports.CheckProperty = CheckProperty
-exports.getProperty = getProperty
+export { CheckProperty, getProperty }
 // データの代入を支援するfunction {name: value}の形で返される
 function CheckProperty (body, option) {
   // name,valueは予約されている??

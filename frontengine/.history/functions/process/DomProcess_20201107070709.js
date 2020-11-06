@@ -1,4 +1,4 @@
-exports.DomProcess = function (text) {
+export default function (text) {
   const tags = []
   const tagCount = {} // そのタグが開かれている時true
   const domTree = {}

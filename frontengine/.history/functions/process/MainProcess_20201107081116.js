@@ -9,7 +9,7 @@ const getScript = require('./ScriptUtility/execScript.js');
 import DomProcess from './DomProcess.js'
 import { global } from './moduleProcess.js'
 import { execScript, getScript } from './ScriptUtility/execScript.js' */
-exports.MainProcess = function (text, props, clear, option) {
+export default function (text, props, clear, option) {
   const templateLength = '<template>'.length
   const scriptLength = '<script>'.length
   const styleLength = '<style scoped>'.length

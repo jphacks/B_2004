@@ -1,4 +1,4 @@
-exports.propsProcess = function (body) {
+export default function (body) {
   const output = {}
   console.log('take', body)
   if (body.value.type === 'ObjectExpression') {

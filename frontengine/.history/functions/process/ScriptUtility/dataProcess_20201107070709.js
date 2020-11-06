@@ -1,7 +1,5 @@
-/* import { CheckProperty } from './utility.js' */
-const CheckProperty = require('./utility.js');
-
-exports.dataProcess = function (body) {
+import { CheckProperty } from './utility.js'
+export default function (body) {
   const output = {}
   for (const property of body.body.body[0].argument.properties) {
     const getter = CheckProperty(property)

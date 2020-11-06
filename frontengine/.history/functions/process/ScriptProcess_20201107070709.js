@@ -1,7 +1,5 @@
-/* import CreateAST from './CreateAST.js'
-import moduleProcess from './moduleProcess.js' */
-const CreateAST = require('./CreateAST.js');
-const moduleProcess = require('./moduleProcess.js');
+import CreateAST from './CreateAST.js'
+import moduleProcess from './moduleProcess.js'
 function findBlock (text, firstIndex) {
   let cntFirst = 0
   let cntEnd = 0
@@ -23,7 +21,7 @@ function findBlock (text, firstIndex) {
   }
 }
 
-exports.ScriptProcess = function (text) {
+export default function (text) {
   const generate = require('@babel/generator').default
   const ast = CreateAST(text)
   const module = moduleProcess(ast)

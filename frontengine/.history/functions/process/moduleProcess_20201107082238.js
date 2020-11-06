@@ -9,7 +9,7 @@ const methodsProcess = require('./ScriptUtility/methodsProcess.js');
 const computedProcess = require('./ScriptUtility/computedProcess.js');
 const execScript = require('./ScriptUtility/execScript.js');
 const global = {}
-exports.global = global
+export { global }
 exports.moduleProcess = function (ast) {
   // console.log('ast', ast)
   console.log('getkakuninn!!', ast.program.body)

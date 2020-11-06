@@ -18,7 +18,6 @@
       rows="6"
     ></b-form-textarea>
     <b-button @click="sumpleTest()">送信</b-button>
-    <b-button @click="getDom()">てててすとー</b-button>
     <br><br><br><router-link :to="{name: 'ProblemResult', params: {examId: $route.params.examId}}">問題結果画面に遷移します。</router-link>
   </div>
   </body>
@@ -71,9 +70,13 @@ export default {
         userId: this.getLoginId,
         examId: examId,
         examText: this.text,
-        testCase: this.input,
-        outputSumple: this.clear,
-        optionSumple: this.option
+        testCase: strTest [
+          'pen',
+          'pineapple',
+          'apple',
+          'pen'
+        ],
+        outputSumple: strOutput = 'penpineappleapplepen'
       })
         .then(res => {
           console.log(res)

@@ -1,4 +1,4 @@
-exports.CreateAST = function (script) {
+export default function (script) {
   // var esprima = require('esprima')
   const code = 'console.log("Hello, World!")'
   // console.log('script', script)
