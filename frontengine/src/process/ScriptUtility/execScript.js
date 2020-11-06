@@ -41,10 +41,6 @@ function execScript (body, array, preLocal) {
   }
   const rowParams = Object.keys(body.params || {}).length
   const row = Object.keys(access.body || {}).length
-  for (let i = 0; i < rowParams; i++) {
-    const getter = body.params[0].name
-    local[getter] = array[i]
-  }
   for (let i = 0; i < row; i++) {
     //
     if (!access || !access.body[i] || !access.body[i].type) {

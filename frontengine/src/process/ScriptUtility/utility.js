@@ -112,6 +112,7 @@ function getProperty (body, local, funcArguments) {
       }
     }
   } else if (body.type && body.type === 'MemberExpression' && body.object) {
+    console.log('bodyMeber', body, local, funcArguments)
     if (body.name) {
       return getProperty(body.object, local)[body.name]
     } else if (body.property) {
@@ -120,8 +121,11 @@ function getProperty (body, local, funcArguments) {
       // console.log('join', outputData[body.property.name](...funcArguments), !!funcArguments)
       if (!!funcArguments) {
         return outputData[body.property.name](...funcArguments)
-      } else {
+      } else if (body.property.name) {
+        console.log('bodymemberrr', outputData[body.property.name], outputData, body.property.name)
         return outputData[body.property.name]
+      } else if (body.property.extra) {
+        return outputData[getProperty(body.property, local)]
       }
     }
     return getProperty(body.object, local)
