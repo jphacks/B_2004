@@ -77,10 +77,22 @@ function execScript (body, array, preLocal) {
         const initName = initTarget.id.name
         let initIndex = calculation(initTarget.init, local)
         const readyupdate = target.update
-        const updateCalculation = target.update.right
-        const updateName = readyupdate.left.name
+        let updateCalculation = target.update.right
+        if (!target.update.right) {
+          // argument?
+          updateCalculation = target.update
+        }
+        console.log('update', readyupdate)
+        let updateName = ''
+        if (readyupdate.left) {
+          updateName = readyupdate.left.name
+        } else {
+          // argument
+          updateName = readyupdate.argument.name
+        }
+        // const updateName = readyupdate.left.name
         const readyBool = target.test
-
+        console.log('isBool(readyBool, { ...local, [initName]: initIndex })', isBool(readyBool, { ...local, [initName]: initIndex }))
         while (isBool(readyBool, { ...local, [initName]: initIndex })) {
           let get = execScript(target.body, array, { ...local, [initName]: initIndex })
           Object.keys(get.returnLocal || {}).forEach(key => {
@@ -94,6 +106,10 @@ function execScript (body, array, preLocal) {
           // updateFunc
           if (initName === updateName) {
             initIndex = calculation(updateCalculation, { ...local, [initName]: initIndex })
+            if (initIndex === false) {
+              console.error('why false!?', updateCalculation, initIndex)
+              break
+            }
           } else {
             local[updateName] = calculation(updateCalculation, { ...local, [initName]: initIndex })
           }
@@ -139,8 +155,9 @@ function execScript (body, array, preLocal) {
       case 'ReturnStatement':
         const argument = access.body[i].argument
         let outputReturn = { returnArguments: {}, returnLocal: { ...preLocal }, returnOrder: 'return' }
-        outputReturn.returnArguments = getProperty(argument, local)
-        console.log('getter', outputReturn, argument, outputReturn.returnArguments)
+        const returnData = getProperty(argument, local)
+        outputReturn.returnArguments = returnData
+        console.log('getter', outputReturn, argument, returnData, local)
         Object.keys(preLocal || {}).forEach(key => {
           outputReturn.returnLocal[key] = local[key]
         })
@@ -199,7 +216,7 @@ function calculation (body, local, params, err, type) {
   if (!local) {
     return 'err'
   }
-  if (body.left && body.right) {
+  if (body && body.left && body.right) {
     switch (body.operator) {
       case '+':
         return calculation(body.left, local, params, err, type) + calculation(body.right, local, params, err, type)
@@ -213,6 +230,15 @@ function calculation (body, local, params, err, type) {
         return calculation(body.left, local, params, err, type) % calculation(body.right, local, params, err, type)
       case '**':
         return calculation(body.left, local, params, err, type) ** calculation(body.right, local, params, err, type)
+    }
+  } else if (body && body.hasOwnProperty('argument')) {
+    switch (body.operator) {
+      case '++':
+        return getProperty(body.argument, local) + 1
+      case '--':
+        return getProperty(body.argument, local) - 1
+      case '-':
+        return -getProperty(body.argument, local)
     }
   }
 

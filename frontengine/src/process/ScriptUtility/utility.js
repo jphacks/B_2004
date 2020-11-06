@@ -93,8 +93,8 @@ function getProperty (body, local, funcArguments) {
   if (body && body.type === 'ThisExpression') {
     return global
   } else if (body.type && body.type === 'Identifier' && body.name) {
-    console.log('first:maybe', body, local)
-    if (local[body.name]) {
+    console.log('first:maybe', body, local, !!local[body.name])
+    if (local.hasOwnProperty(body.name)) {
       return local[body.name]
     } else {
       // maybe javascript default item
