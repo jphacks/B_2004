@@ -1,6 +1,6 @@
 <template>
   <div>
-  <b-navbar toggleable="lg" type="dark" variant="info">>
+  <b-navbar class="b-navbar" toggleable="lg" type="dark">>
     <b-navbar-brand to="/">front Engine</b-navbar-brand>
     <div class="menu">
     <b-navbar-brand class="examList" to="/ProblemList">examList</b-navbar-brand>
@@ -57,6 +57,9 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.b-navbar {
+  background-color: #00adb5;
+}
 h3 {
   margin: 40px 0 0;
 }
@@ -73,6 +76,5 @@ li {
   padding-left: 50px;
 }
 .examList {
-
 }
 </style>
