@@ -92,7 +92,7 @@ export default function (text) {
 }
 
 function DOMAnalysis (dom) {
-  console.log('getDom', dom)
+  // console.log('getDom', dom)
   const info = {}
   info.open = true // 閉じられているか
   const others = []
@@ -107,7 +107,7 @@ function DOMAnalysis (dom) {
   const tags = []
   const candidateTags = dom.split(' ')
   for (const tag of candidateTags) {
-    console.log('tag', tag, tag.split('\n'))
+    // console.log('tag', tag, tag.split('\n'))
     tags.push(...tag.split('\n'))
   }
   console.log('tags', tags, candidateTags)
@@ -123,7 +123,7 @@ function DOMAnalysis (dom) {
     info.name = tags[0].substr(1 + nameLength, tags[0].length - nameLength)
     // let blank = false
     // let blanckCount = []
-    console.log('name:getDom', info.name, tags[0])
+    // console.log('name:getDom', info.name, tags[0])
     const candidateOthers = []
     for (let i = 1; i < tags.length - 1; i++) {
       const tag = tags[i]
@@ -183,11 +183,11 @@ function DOMAnalysis (dom) {
     }
   }
   info.others = []
-  console.log('others', others)
+  // console.log('others', others)
   for (const other of others) {
     info.others.push(otherAnalysis(other))
   }
-  console.log('analysis', tags, info, dom)
+  // console.log('analysis', tags, info, dom)
   return info
 }
 
@@ -240,14 +240,14 @@ function otherAnalysis (other) {
         target.target.value = splitTarget[0]
       }
       target.right = splitTarget[1]
-      console.log('見る後', target, splitTarget)
+      // console.log('見る後', target, splitTarget)
     }
     if (target.right.indexOf('(') > 0 && target.right.indexOf(')') > 0) {
       // function
       target.type = 'function'
       target.right = otherSplit[1].split('(')[0]
       const argument = otherSplit[1].split('(')[1].substr(0, otherSplit[1].split('(')[1].length - 1)
-      console.log('arguments', argument)
+      // console.log('arguments', argument)
       target.functionArgument = argument.split(',')
     } else {
       // variable
@@ -269,7 +269,7 @@ function otherAnalysis (other) {
           target.right = false
         }
       } else {
-        console.log('見る後', target.right.match(/\[/g) || [], target)
+        // console.log('見る後', target.right.match(/\[/g) || [], target)
         target.variableType = 'global'
       }
     }
@@ -340,7 +340,7 @@ function textAnalysis (text) {
         target.type = 'function'
         target.text = targetCheck.split('(')[0]
         const argument = targetCheck.split('(')[1].substr(0, targetCheck.split('(')[1].length - 1)
-        console.log('arguments', argument)
+        // console.log('arguments', argument)
         target.functionArgument = argument.split(',')
       } else {
         // variable
