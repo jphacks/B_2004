@@ -44,16 +44,11 @@ export default {
     getDom: function () {
     //  MainProcess(this.text)
       const submitExam = firebase.functions().httpsCallable('submitExam')
-      submitExam({
-        text: 'text',
-        num: 200
+      submitExam('wawawa').then(function (res) {
+        console.log(res)
+      }).catch(e => {
+        console.log(e)
       })
-        .then(res => {
-          console.log(res)
-        })
-        .catch(e => {
-          console.log(e)
-        })
     },
     sumplePush: function () {
       this.text = this.getSumpleText

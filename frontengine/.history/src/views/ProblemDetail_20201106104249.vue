@@ -17,6 +17,7 @@
       rows="6"
     ></b-form-textarea>
     <b-button @click="getDom()">送信</b-button>
+    <a href="https://us-central1-frontengine-3a212.cloudfunctions.net/submitExam">Techacademyマガジン</a>
     <br><br><br><router-link :to="{name: 'ProblemResult', params: {examId: $route.params.examId}}">問題結果画面に遷移します。</router-link>
   </div>
   </body>
@@ -27,7 +28,6 @@
 import MainProcess from '@/process/MainProcess.js'
 import { mapGetters } from 'vuex'
 import Exam1 from '@/components/Exam1.vue'
-import firebase from 'firebase'
 export default {
   name: 'ProblemDetail',
   components: {
@@ -42,18 +42,7 @@ export default {
   },
   methods: {
     getDom: function () {
-    //  MainProcess(this.text)
-      const submitExam = firebase.functions().httpsCallable('submitExam')
-      submitExam({
-        text: 'text',
-        num: 200
-      })
-        .then(res => {
-          console.log(res)
-        })
-        .catch(e => {
-          console.log(e)
-        })
+      MainProcess(this.text)
     },
     sumplePush: function () {
       this.text = this.getSumpleText

@@ -27,7 +27,6 @@
 import MainProcess from '@/process/MainProcess.js'
 import { mapGetters } from 'vuex'
 import Exam1 from '@/components/Exam1.vue'
-import firebase from 'firebase'
 export default {
   name: 'ProblemDetail',
   components: {
@@ -43,17 +42,9 @@ export default {
   methods: {
     getDom: function () {
     //  MainProcess(this.text)
-      const submitExam = firebase.functions().httpsCallable('submitExam')
-      submitExam({
-        text: 'text',
-        num: 200
+    const submitExam = firebase.functions().httpsCallable('submitExam')
+    return submitExam('wawawa').then(function (res) {
       })
-        .then(res => {
-          console.log(res)
-        })
-        .catch(e => {
-          console.log(e)
-        })
     },
     sumplePush: function () {
       this.text = this.getSumpleText

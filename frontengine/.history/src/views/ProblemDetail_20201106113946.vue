@@ -46,14 +46,14 @@ export default {
       const submitExam = firebase.functions().httpsCallable('submitExam')
       submitExam({
         text: 'text',
-        num: 200
+        num: 200,
       })
-        .then(res => {
+      .then(res => {
           console.log(res)
         })
-        .catch(e => {
-          console.log(e)
-        })
+      .catch(e => {
+        console.log(e)
+      })
     },
     sumplePush: function () {
       this.text = this.getSumpleText

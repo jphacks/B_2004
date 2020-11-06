@@ -1,9 +1,9 @@
 const functions = require('firebase-functions');
-const items = 'tesutetuett';
+
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions
 //
-exports.submitExam = functions.https.onCall((data, context) => {
-    console.log('request', data, context);
-    return data;
+exports.submitExam = functions.https.onRequest((request, response) => {
+    console.log('request', request, response);
+    response.send("WA");
   });
