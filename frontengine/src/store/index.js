@@ -11,7 +11,8 @@ export default new Vuex.Store({
     user: {
     },
     exams: {},
-    getExam: {}
+    getExam: {},
+    userItems: {}
   },
   mutations: {
     loginMutation (state, user) {
@@ -31,6 +32,9 @@ export default new Vuex.Store({
     examMutation (state, exam) {
       state.exams = { ...state.exams, [exam.id]: exam.data }
       console.log('checkstate', state)
+    },
+    userItemMutation (state, userItem) {
+      state.userItems = { ...state.userItems, [state.currentId]: userItem }
     }
   },
   actions: {
@@ -54,6 +58,18 @@ export default new Vuex.Store({
       commit('examMutation', { id: get.id, data: get.data() })
     },
     regist ({ commit }) {
+    },
+    fetchUserItems ({ commit }, state) {
+      firebase.firestore().collection('userId').get().then(snapsshot => {
+        snapsshot.forEach(doc => {
+          console.log('??')
+          commit('userItemMutation', { id: doc.id, data: doc.data() })
+          return state.userId
+        })
+      })
+    },
+    setUserItems ({ commit }, set) {
+      commit('userItemMutation', { id: set.id, data: set.data() })
     }
   },
   getters: {
@@ -82,6 +98,9 @@ export default new Vuex.Store({
     },
     getUserId: (state) => {
       return state.currentId
+    },
+    getUserItems: (state) => {
+      return state.users
     }
   }
 })

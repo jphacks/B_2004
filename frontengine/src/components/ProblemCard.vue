@@ -26,9 +26,12 @@ export default {
   },
   methods: {
     chk () {
+      const date = new Date()
+      console.log('aaa', date)
       firebase.firestore().collection('users').doc(this.getLoginId).collection('join').doc(this.problemId).set({
         difficult: this.exam.difficult,
-        name: this.exam.name
+        name: this.exam.name,
+        statAt: date
         // startAt: this.exam.startAt
       })
     }

@@ -5,7 +5,7 @@
         <b-row>
           <b-col class="userState">
           <h2>
-               <b>{{myRate}}点</b>
+               <b>{{userItems}}点</b>
                 <br>
                 <span class="user-aset">{{userName}}</span>
           </h2>
@@ -29,20 +29,29 @@
 
 <script>
 import { LayoutPlugin } from 'bootstrap-vue'
+import firebase from 'firebase'
+import { mapActions, mapGetters } from 'vuex'
 export default {
   name: 'MyProfile',
   conponents: {
   },
   data () {
     return {
-      myRate: 100,
-      userName: '南無三',
-      items: [
-        { age: 40, first_name: 'Dickerson', last_name: 'Macdonald' },
-        { age: 21, first_name: 'Larsen', last_name: 'Shaw' },
-        { age: 89, first_name: 'Geneva', last_name: 'Wilson' },
-        { age: 38, first_name: 'Jami', last_name: 'Carney' }
-      ]
+      userItems: {}
+    }
+  },
+  method: {
+    ...mapActions(['setUserItems']),
+    fetchFirebaseExams: function () {
+      const output = {}
+      return firebase.firestore().collection('users').get().then(snapsshot => {
+        console.log('ss', snapsshot)
+        snapsshot.forEach(doc => {
+          this.setUserItems(doc)
+          output[doc.id] = doc.data()
+        })
+        this.users = output
+      })
     }
   }
 }
