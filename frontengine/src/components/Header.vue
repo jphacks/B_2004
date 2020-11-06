@@ -1,6 +1,6 @@
 <template>
   <div>
-  <b-navbar class="b-navbar" toggleable="lg" type="dark">>
+  <b-navbar class="b-navbar" toggleable="lg" type="dark">
     <b-navbar-brand to="/">front Engine</b-navbar-brand>
     <div class="menu">
     <b-navbar-brand class="examList" to="/ProblemList">examList</b-navbar-brand>

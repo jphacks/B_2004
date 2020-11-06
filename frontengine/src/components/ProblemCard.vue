@@ -6,7 +6,7 @@
         <b-card-text>{{problemStatement}}</b-card-text>
         <!--<b-card-text>{{ getLoginId }}</b-card-text>-->
         <b-card-text>難易度：{{ viewExam }}<br>この問題はソートを行う問題です。是非参加してみてください。</b-card-text>
-        <router-link :to="{name: 'ProblemDetail', params: {examId: problemId}}" @click.native="chk()">参加登録</router-link>
+        <router-link :to="{name: 'ProblemDetail', params: {examId: problemId}}" @click.native="setExamInfo()">参加登録</router-link>
       </b-card-body>
     </b-card>
   </div>
@@ -50,7 +50,7 @@ export default {
 
 <style scoped>
 .b-card {
-  border: 0.5px ridge gray;
+  border: 0.5px solid gray;
   margin: 10px 10px ;
 }
 </style>
