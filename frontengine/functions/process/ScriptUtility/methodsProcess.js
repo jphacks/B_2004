@@ -1,4 +1,4 @@
-exports.methodProcess = function (body) {
+function methodProcess(body) {
   const output = {}
   for (const property of body.value.properties) {
     output[property.key.name] = property.value
