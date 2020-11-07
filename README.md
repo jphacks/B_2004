@@ -2,6 +2,11 @@
 
 [![IMAGE ALT TEXT HERE](https://res.cloudinary.com/teamb/image/upload/v1604724742/logo_transparent_yzo3dq.png)](https://frontengine-3a212.web.app)
 
+
+##テストユーザー (既存のバグでこのユーザー以外うまく正誤判定がされません...)
+gmail: testtest@gmail.com
+password: testtest
+
 ## 製品概要
 　フロントエンジニアのサポート行うためのアプリケーション。多数の問題に取り組むことでスキルアップができ、レーティングシステムにより定量的に評価する。
 ### 背景(製品開発のきっかけ、課題等）
