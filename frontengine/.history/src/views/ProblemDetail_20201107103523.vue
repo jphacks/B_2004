@@ -19,6 +19,8 @@
     ></b-form-textarea>
     <b-button @click="sumpleTest()">送信</b-button>
     <b-button @click="getDom()">てててすとー</b-button>
+    {{ $route.params.examId }}
+    {{ 'jdiwji' }}
     <br><br><br><router-link :to="{name: 'ProblemResult', params: {examId: $route.params.examId}}">問題結果画面に遷移します。</router-link>
   </div>
   </body>

@@ -50,25 +50,21 @@ export default {
       output: []
     }
   },
-  mounted: function () {
-    this.getResult()
-    console.log('output', this.output)
-  },
   props: {
     examId: String,
     status: String,
     reason: String
   },
   method: {
-    getResult: function () {
-      return firebase.firestore().collection('exams').doc(this.$route.params.examId).collection('users').doc(this.getUserId).get().then(ss => {
+    getResult:function () {
+      return firebase.firestore().collection('exams').doc(getId).collection('users').doc(userId).get().then(ss => {
         const data = ss.data()
         this.output = ss.data()
       })
     }
   },
   computed: {
-    ...mapGetters(['getExams', 'getUserId']),
+    ...mapGetters(['getExams']),
     getText () {
       return "''"
     },
@@ -79,10 +75,7 @@ export default {
         return { name: 'testmode' }
       }
       return this.getExams[this.examId]
-    },
-    getLoginId () {
-      console.log('check', this.getUserId)
-      return this.getUserId
+    }
     }
   }
 }

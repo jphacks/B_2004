@@ -64,6 +64,12 @@ export default {
     examId: String
   },
   methods: {
+    setExamresult () {
+      firebase.firestore().collection('users').doc(this.getLoginId).collection('join').doc(this.problemId).set({
+        status: 'WA',
+        detail: 'akakak'
+      })
+    },
     getDom: function () {
     //  MainProcess(this.text)
       const submitExam = firebase.functions().httpsCallable('submitExam')

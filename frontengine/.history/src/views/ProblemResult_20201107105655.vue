@@ -47,12 +47,19 @@ export default {
         { number: '9', message: this.status, detail: this.reason },
         { number: '10', message: this.status, detail: this.reason }
       ],
-      output: []
+      output: [
+        { expectations: 'hello', answer: 'hello' },
+        { expectations: 'hello world', answer: 'helloworld' },
+        { expectations: 'HELLO', answer: '' },
+        { expectations: 'HELLO WORLD', answer: 'HELLOWORLD' },
+        { expectations: 'Hello', answer: '' },
+        { expectations: 'HelloWorld', answer: '' },
+        { expectations: 'Helloworld', answer: 'Helloworld' },
+        { expectations: 'HELLOworld', answer: '' },
+        { expectations: 'helloWORLD', answer: 'helloWORLD' },
+        { expectations: 'goodbye', answer: 'goodbye' }
+      ]
     }
-  },
-  mounted: function () {
-    this.getResult()
-    console.log('output', this.output)
   },
   props: {
     examId: String,
@@ -60,15 +67,9 @@ export default {
     reason: String
   },
   method: {
-    getResult: function () {
-      return firebase.firestore().collection('exams').doc(this.$route.params.examId).collection('users').doc(this.getUserId).get().then(ss => {
-        const data = ss.data()
-        this.output = ss.data()
-      })
-    }
   },
   computed: {
-    ...mapGetters(['getExams', 'getUserId']),
+    ...mapGetters(['getExams']),
     getText () {
       return "''"
     },
@@ -79,10 +80,6 @@ export default {
         return { name: 'testmode' }
       }
       return this.getExams[this.examId]
-    },
-    getLoginId () {
-      console.log('check', this.getUserId)
-      return this.getUserId
     }
   }
 }

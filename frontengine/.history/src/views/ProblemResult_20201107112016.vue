@@ -61,7 +61,7 @@ export default {
   },
   method: {
     getResult: function () {
-      return firebase.firestore().collection('exams').doc(this.$route.params.examId).collection('users').doc(this.getUserId).get().then(ss => {
+      return firebase.firestore().collection('exams').doc(this.$route.params.examId).collection('users').doc(getLoginId()).get().then(ss => {
         const data = ss.data()
         this.output = ss.data()
       })
