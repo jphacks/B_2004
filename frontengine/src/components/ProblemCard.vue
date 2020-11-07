@@ -1,8 +1,8 @@
 <template>
-  <div class="b-card">
+  <div class="b-card" v-if="this.exam">
     <b-card bg-variant="white" text-variant="black" class="text-center">
       <b-card-body>
-        <h4>{{this.exam.name}}</h4>
+        <h4>{{this.exam ? this.exam.name: ''}}</h4>
         <b-card-text>{{problemStatement}}</b-card-text>
         <!--<b-card-text>{{ getLoginId }}</b-card-text>-->
         <b-card-text>難易度：{{ viewExam }}<br>この問題はソートを行う問題です。是非参加してみてください。</b-card-text>
