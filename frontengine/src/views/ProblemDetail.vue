@@ -21,7 +21,7 @@
       rows="6"
     ></b-form-textarea>
     <b-button @click="getDom()">送信</b-button>
-    <br><br><br><router-link :to="{name: 'ProblemResult', params: {examId: $route.params.examId}}">問題結果画面に遷移します。</router-link>
+    <!-- <br><br><br><router-link :to="{name: 'ProblemResult', params: {examId: $route.params.examId}}">問題結果画面に遷移します。</router-link> -->
   </div>
   </body>
 </template>
@@ -85,6 +85,7 @@ export default {
       })
         .then(res => {
           console.log(res)
+          this.$router.push({ name: 'ProblemResult', params: { examId: this.$route.params.examId } })
         })
         .catch(e => {
           console.log(e)

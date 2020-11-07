@@ -2,18 +2,18 @@
   <div class="problemResult">
     <h1>結果</h1>
     <span>
-      <h3>今回の結果はこちら：{{ getExam ? getExam.name : 'testmode' }}</h3>
+      <h3>今回の結果はこちら：{{ name }}</h3>
     </span>
     <b-container class="bv-example-row">
       <b-row cols="2" cols-sm="1" cols-md="1" cols-lg="2">
         <b-col>
           <ul id="example-1">
-            <ResultCard v-for="(item, index) in result" :key="index" :testCaseNumber="item.number" :judgment="item.message" :reasons="item.detail"/>
+            <ResultCard v-for="(item, index) in keys" :key="index" :testCaseNumber="index" :judgment="item.enter" :reasons="item.detail"/>
           </ul>
         </b-col>
         <b-col>
           <ul id="example-2">
-            <OutputCard v-for="(item, index) in output" :key="index" :expectation="item.expectations" :yourAnswer="item.answer"/>
+            <OutputCard v-for="(item, index) in output" :key="index" :expectation="item.expectations" :yourAnswer="item.status"/>
           </ul>
         </b-col>
       </b-row>
@@ -35,24 +35,16 @@ export default {
   },
   data () {
     return {
-      result: [
-        { number: '1', message: this.status, detail: this.reason },
-        { number: '2', message: this.status, detail: this.reason },
-        { number: '3', message: this.status, detail: this.reason },
-        { number: '4', message: this.status, detail: this.reason },
-        { number: '5', message: this.status, detail: this.reason },
-        { number: '6', message: this.status, detail: this.reason },
-        { number: '7', message: this.status, detail: this.reason },
-        { number: '8', message: this.status, detail: this.reason },
-        { number: '9', message: this.status, detail: this.reason },
-        { number: '10', message: this.status, detail: this.reason }
-      ],
-      output: []
+      result: [],
+      output: [],
+      keys: [],
+      name: ''
     }
   },
   mounted: function () {
     this.getResult()
-    console.log('output', this.output)
+    this.testCase()
+    console.log('output', this.output, this.keys)
   },
   props: {
     examId: String,
@@ -62,10 +54,23 @@ export default {
   methods: {
     getResult: function () {
       console.log('info', this.$route.params.examId)
+      const output = []
       return firebase.firestore().collection('exams').doc(this.$route.params.examId).collection('users').get().then(ss => {
-        const data = ss.data()
-        this.output = ss.data()
-        console.log('outputdata', data, ss)
+        ss.forEach(doc => {
+          output.push({ [doc.id]: doc.data() })
+        })
+        console.log('outputdata', output)
+        let returnOutput = {}
+        this.output = output[0][this.getLoginId].output
+        console.log('output', this.getLoginId, this.output)
+      })
+    },
+    testCase: function () {
+      const output = []
+      return firebase.firestore().collection('exams').doc(this.$route.params.examId).get().then(ss => {
+        this.keys = ss.data().examInfo.testCases
+        this.name = ss.data().name
+        console.log('outputaa', this.keys)
       })
     }
   },
