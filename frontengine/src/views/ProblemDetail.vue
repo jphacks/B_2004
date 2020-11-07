@@ -1,15 +1,78 @@
 <template>
   <body class="problemArea">
-  <div class="ploblemBody">
+  <!--<div class="ploblemBody">
     <span>{{ getExam ? getExam.name : 'testmode' }}</span>
-  </div>
+  </div>-->
   <div class="problemView">
     <!-- <Exam1/> -->
-    <Exam2/>
-    {{ getExam.name }}
-    {{getExam.examInfo}}
-    {{getExam.difficult}}
+    <!--<Exam2/>-->
+    <h1>問題：{{ getExam.name }}</h1>
+    <!--<h1>難易度：{{getExam.difficult}}</h1>-->
+      <b-card class="b-card">
+      <b-card-text>
+        {{getExam.examInfo.explain.join('')}}<br><br>
+        {{getExamInfo}}<br>
+        {{getExamDataForm}}<br><br>
+        <b-card>
+          <b-card-text>
+            入力例1<br>
+            {{getExam.examInfo.testCases.pascalCase.enter.join(',')}}<br>
+          </b-card-text>
+          <b-card-text>
+            出力例1<br>
+            {{getExam.examInfo.testCases.pascalCase.exit[0]}}<br>
+            {{getExam.examInfo.testCases.pascalCase.exit[1]}}<br>
+          </b-card-text>
+        </b-card>
+        <b-card>
+          <b-card-text>
+            入力例2<br>
+            {{getExam.examInfo.testCases.randomCase.enter.join(',')}}<br>
+          </b-card-text>
+          <b-card-text>
+            出力例2<br>
+            {{getExam.examInfo.testCases.randomCase.exit[0]}}<br>
+            {{getExam.examInfo.testCases.randomCase.exit[1]}}<br>
+            {{getExam.examInfo.testCases.randomCase.exit[2]}}<br>
+            {{getExam.examInfo.testCases.randomCase.exit[3]}}<br>
+            {{getExam.examInfo.testCases.randomCase.exit[4]}}<br>
+          </b-card-text>
+        </b-card>
+        <b-card>
+          <b-card-text>
+            入力例3<br>
+            {{getExam.examInfo.testCases.sampleCase.enter.join(',')}}<br>
+          </b-card-text>
+          <b-card-text>
+            出力例3<br>
+            {{getExam.examInfo.testCases.sampleCase.exit[0]}}<br>
+            {{getExam.examInfo.testCases.sampleCase.exit[1]}}<br>
+            {{getExam.examInfo.testCases.sampleCase.exit[2]}}<br>
+            {{getExam.examInfo.testCases.sampleCase.exit[3]}}<br>
+          </b-card-text>
+        </b-card>
+        <b-card>
+          <b-card-text>
+            入力例4<br>
+            {{getExam.examInfo.testCases.sampleCase2.enter.join(',')}}<br>
+          </b-card-text>
+          <b-card-text>
+            出力例4<br>
+            {{getExam.examInfo.testCases.sampleCase2.exit[0]}}<br>
+            {{getExam.examInfo.testCases.sampleCase2.exit[1]}}<br>
+            {{getExam.examInfo.testCases.sampleCase2.exit[2]}}<br>
+            {{getExam.examInfo.testCases.sampleCase2.exit[3]}}<br>
+            {{getExam.examInfo.testCases.sampleCase2.exit[4]}}<br>
+            {{getExam.examInfo.testCases.sampleCase2.exit[5]}}<br>
+            {{getExam.examInfo.testCases.sampleCase2.exit[6]}}<br>
+            {{getExam.examInfo.testCases.sampleCase2.exit[7]}}<br>
+            {{getExam.examInfo.testCases.sampleCase2.exit[8]}}<br>
+          </b-card-text>
+        </b-card>
+      </b-card-text>
+    </b-card>
   </div>
+  <br>
   <!-- Answer Form Area -->
   <div class="problemdetail">
     <b-button variant="outline-primary" @click="sumplePush()">サンプルを設置する</b-button>
@@ -20,9 +83,8 @@
       placeholder="解答を入力してください。"
       rows="6"
     ></b-form-textarea>
-    <b-button @click="getDom()">送信</b-button>
     <div class="b-buttonArea">
-      <b-button @click="sumpleTest()">送信</b-button>
+        <b-button @click="getDom()">送信</b-button>
     </div>
     <br><br><br><router-link :to="{name: 'ProblemResult', params: {examId: $route.params.examId}}">問題結果画面に遷移します。</router-link>
   </div>
@@ -36,12 +98,12 @@ import { mapGetters, mapActions } from 'vuex'
 import Exam1 from '@/components/Exam1.vue'
 import firebase from 'firebase'
 // import Exam1 from '@/components/Exam1.vue'
-import Exam2 from '@/components/Exam2.vue'
+// import Exam2 from '@/components/Exam2.vue'
 export default {
   name: 'ProblemDetail',
   components: {
     // Exam1,
-    Exam2
+    // Exam2
   },
   data () {
     return {
@@ -214,7 +276,14 @@ export default {
       output.events.push({ id: 'sortButtonId', event: 'click' })
       output.events.push({ id: 'sortButtonName', event: 'click' })
       return output
+    },
+    getExamInfo () {
+      return this.getExam.examInfo.exEnter[0]
+    },
+    getExamDataForm () {
+      return this.getExam.examInfo.exEnter[1]
     }
+
   }
 }
 </script>
@@ -225,5 +294,9 @@ export default {
 }
 .b-buttonArea {
   text-align: center;
+}
+.b-card {
+  border: solid 0.5px gray;
+  margin: auto;
 }
 </style>
