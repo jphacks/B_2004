@@ -76,11 +76,11 @@ export default {
     },
     getExam () {
       // const examId = this.$route.params.examId
-      console.log('getExam', this.examId, this.getExams)
-      if (!this.getExams || !this.getExams[this.examId]) {
+      console.log('getExam', examId, this.getExams)
+      if (!this.getExams || !this.getExams[examId]) {
         return { name: 'testmode' }
       }
-      return this.getExams[this.examId]
+      return this.getExams[examId]
     }
   }
 }

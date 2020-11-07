@@ -8,7 +8,7 @@
       <b-row cols="2" cols-sm="1" cols-md="1" cols-lg="2">
         <b-col>
           <ul id="example-1">
-            <ResultCard v-for="(item, index) in result" :key="index" :testCaseNumber="item.number" :judgment="item.message" :reasons="item.detail"/>
+            <ResultCard v-for="(item, index) in result" :key="index" :testCaseNumber="item.number" :judgment="item.message"/>
           </ul>
         </b-col>
         <b-col>
@@ -37,16 +37,16 @@ export default {
   data () {
     return {
       result: [
-        { number: '1', message: this.status, detail: this.reason },
-        { number: '2', message: this.status, detail: this.reason },
-        { number: '3', message: this.status, detail: this.reason },
-        { number: '4', message: this.status, detail: this.reason },
-        { number: '5', message: this.status, detail: this.reason },
-        { number: '6', message: this.status, detail: this.reason },
-        { number: '7', message: this.status, detail: this.reason },
-        { number: '8', message: this.status, detail: this.reason },
-        { number: '9', message: this.status, detail: this.reason },
-        { number: '10', message: this.status, detail: this.reason }
+        { number: '1', message: '正解' },
+        { number: '2', message: '正解' },
+        { number: '3', message: '不正解' },
+        { number: '4', message: '正解' },
+        { number: '5', message: '不正解' },
+        { number: '6', message: '不正解' },
+        { number: '7', message: '正解' },
+        { number: '8', message: '不正解' },
+        { number: '9', message: '正解' },
+        { number: '10', message: '正解' }
       ],
       output: [
         { expectations: 'hello', answer: 'hello' },
@@ -63,9 +63,7 @@ export default {
     }
   },
   props: {
-    examId: String,
-    status: String,
-    reason: String
+    examId: String
   },
   method: {
   },
@@ -75,12 +73,12 @@ export default {
       return "''"
     },
     getExam () {
-      // const examId = this.$route.params.examId
-      console.log('getExam', this.examId, this.getExams)
-      if (!this.getExams || !this.getExams[this.examId]) {
+      const examId = this.$route.params.examId
+      console.log('getExam', examId, this.getExams)
+      if (!this.getExams || !this.getExams[examId]) {
         return { name: 'testmode' }
       }
-      return this.getExams[this.examId]
+      return this.getExams[examId]
     }
   }
 }

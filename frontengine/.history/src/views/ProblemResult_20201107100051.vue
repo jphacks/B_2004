@@ -80,7 +80,7 @@ export default {
       if (!this.getExams || !this.getExams[this.examId]) {
         return { name: 'testmode' }
       }
-      return this.getExams[this.examId]
+      return this.getExams[examId]
     }
   }
 }
