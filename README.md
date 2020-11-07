@@ -3,8 +3,8 @@
 [![IMAGE ALT TEXT HERE](https://res.cloudinary.com/teamb/image/upload/v1604724742/logo_transparent_yzo3dq.png)](https://frontengine-3a212.web.app)
 
 
-##テストユーザー (既存のバグでこのユーザー以外うまく正誤判定がされません...)
-gmail: testtest@gmail.com
+##テストユーザー (既存のバグでこのユーザー以外うまく正誤判定がされません...)<br>
+gmail: testtest@gmail.com<bt>
 password: testtest
 
 ## 製品概要
