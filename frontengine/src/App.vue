@@ -2,7 +2,6 @@
   <div id="app">
     <Header></Header>
     <div id="nav">
-      <router-link to="/problemResult">ProblemResult</router-link>
     </div>
     <router-view/>
   </div>
