@@ -1,48 +1,84 @@
 <template>
-    <b-container class="bv-example-row">
-    <b-tabs pills content-class="mt-3">
-      <b-tab title="プロフィール" active>
-        <b-row>
-          <b-col class="userState">
-          <h2>
-               <b>{{myRate}}点</b>
-                <br>
-                <span class="user-aset">{{userName}}</span>
-          </h2>
-          <img src="../assets/logo.png">
-          </b-col>
-          <b-col class="userPerform" cols="8">
-          <h2>
-              <p>実績</p>
-              <br>
-              <b-table striped hover :items="items"></b-table>
-          </h2>
-          </b-col>
-        </b-row>
-      </b-tab>
-      <b-tab title="コンテスト実績">
-          <b-card-text>Tab contents 2</b-card-text>
-        </b-tab>
-    </b-tabs>
-    </b-container>
+<b-container class="bv-example-row">
+ <b-row>
+   <b-col class="userState" >
+     <img src="../assets/frontEngineIcon.png">
+      <h2 class="nameSize">{{this.getEmailState}}</h2>
+     <b>合計 {{ difficultSum }}点</b>
+     <br>
+  </b-col>
+  <b-col class="userPerform" cols="8">
+    <h2>実績</h2><br>
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Contest Name</th>
+                <th>Score</th>
+            </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(examId,index) in Object.keys(userItems || {})" :key="examId" :index="index">
+            <td>{{isMoment(userItems[examId].startAt.seconds)}}</td>
+            <td>{{userItems[examId].name}}</td>
+            <td>{{userItems[examId].difficult}}</td>
+          </tr>
+        </tbody>
+    </table>
+    </b-col>
+  </b-row>
+</b-container>
 </template>
 
 <script>
 import { LayoutPlugin } from 'bootstrap-vue'
+import firebase from 'firebase'
+import { mapActions, mapGetters } from 'vuex'
+import moment from 'moment'
 export default {
   name: 'MyProfile',
   conponents: {
   },
   data () {
     return {
-      myRate: 100,
-      userName: '南無三',
-      items: [
-        { age: 40, first_name: 'Dickerson', last_name: 'Macdonald' },
-        { age: 21, first_name: 'Larsen', last_name: 'Shaw' },
-        { age: 89, first_name: 'Geneva', last_name: 'Wilson' },
-        { age: 38, first_name: 'Jami', last_name: 'Carney' }
-      ]
+      userItems: {},
+      difficultSum: 0
+    }
+  },
+  mounted: function () {
+    console.log('check', this.fetchFirebaseUsers)
+    this.fetchFirebaseUsers()
+  },
+  methods: {
+    ...mapActions(['setUserItems']),
+    fetchFirebaseUsers: function () {
+      const output = {}
+      return firebase.firestore().collection('users').doc(this.userId).collection('join').get().then(snapsshot => {
+        console.log('ss', snapsshot)
+        snapsshot.forEach(doc => {
+          console.log('chek', this.users)
+          this.setUserItems(doc)
+          output[doc.id] = doc.data()
+          this.difficultSum += output[doc.id].difficult
+        })
+        console.log('cc', this.userItems)
+        this.userItems = output
+      })
+    },
+    isMoment: function (date) {
+      console.log('date', date)
+      const momentDAte = moment.unix(date)
+      return momentDAte.format('YYYY-MM-DD HH:mm:ssZ')
+    }
+  },
+  computed: {
+    ...mapGetters(['getUserId', 'getEmailState']),
+    userId: function () {
+      console.log('aa', this.getUserId)
+      return this.getUserId
+    },
+    getUserName: function () {
+      return this.getEmailState
     }
   }
 }
@@ -54,5 +90,9 @@ export default {
 }
 .userPerform {
     text-align: left;
+}
+.nameSize {
+    padding-top: 25px;
+    font-size: 25px;
 }
 </style>

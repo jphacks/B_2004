@@ -59,11 +59,13 @@ export default {
     status: String,
     reason: String
   },
-  method: {
+  methods: {
     getResult: function () {
-      return firebase.firestore().collection('exams').doc(this.$route.params.examId).collection('users').doc(this.getUserId).get().then(ss => {
+      console.log('info', this.$route.params.examId)
+      return firebase.firestore().collection('exams').doc(this.$route.params.examId).collection('users').get().then(ss => {
         const data = ss.data()
         this.output = ss.data()
+        console.log('outputdata', data, ss)
       })
     }
   },

@@ -9,7 +9,7 @@ const getScript = require('./ScriptUtility/execScript.js');
 import DomProcess from './DomProcess.js'
 import { global } from './moduleProcess.js'
 import { execScript, getScript } from './ScriptUtility/execScript.js' */
-exports.MainProcess = function (text, props, clear, option) {
+function MainProcess (text, props, clear, option) {
   const templateLength = '<template>'.length
   const scriptLength = '<script>'.length
   const styleLength = '<style scoped>'.length
@@ -24,9 +24,7 @@ exports.MainProcess = function (text, props, clear, option) {
   console.log('scriptRe', domTree)
   const errors = []
   if (props) {
-    Object.keys(props || {}).forEach(key => {
-      global[key] = props[key]
-    })
+   global.input = props
   }
   // const getClear = clear
   const getClear = clear
@@ -34,9 +32,10 @@ exports.MainProcess = function (text, props, clear, option) {
   let targetIndex = 0
   let output = { status: 'WA', reason: '' }
   const vForGlobal = {}
-  console.log('outputtt', text, props, clear, option)
+  console.log('outputtt', global, props, clear, option)
   if (option && option.mode === 'answerDOM') {
     if (option.existString) {
+      console.log('optionConsole', option)
       let tooru = true
       // let target = domTree
       const targets = []
@@ -157,6 +156,7 @@ exports.MainProcess = function (text, props, clear, option) {
         // -- lastPrpagate
       }
     }
+  return { status: 'WA', reason: 'why?runendCode', info: checkClear, option: 'answer' }
   } else {
 
   }

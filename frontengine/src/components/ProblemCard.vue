@@ -2,11 +2,11 @@
   <div class="b-card">
     <b-card bg-variant="white" text-variant="black" class="text-center">
       <b-card-body>
-        <h4>{{problemNumber}}</h4>
+        <h4>{{this.exam.name}}</h4>
         <b-card-text>{{problemStatement}}</b-card-text>
         <!--<b-card-text>{{ getLoginId }}</b-card-text>-->
         <b-card-text>難易度：{{ viewExam }}<br>この問題はソートを行う問題です。是非参加してみてください。</b-card-text>
-        <router-link :to="{name: 'ProblemDetail', params: {examId: problemId}}" @click.native="chk()">参加登録</router-link>
+        <router-link :to="{name: 'ProblemDetail', params: {examId: problemId}}" @click.native="setExamInfo()">参加登録</router-link>
       </b-card-body>
     </b-card>
   </div>
