@@ -13,7 +13,7 @@
         {{getExam.examInfo.explain.join('')}}<br><br>
         {{getExamInfo}}<br>
         {{getExamDataForm}}<br><br>
-        <b-card>
+        <!--<b-card>
           <b-card-text>
             入力例1<br>
             {{getExam.examInfo.testCases.pascalCase.enter.join(',')}}<br>
@@ -37,21 +37,20 @@
             {{getExam.examInfo.testCases.randomCase.exit[3]}}<br>
             {{getExam.examInfo.testCases.randomCase.exit[4]}}<br>
           </b-card-text>
-        </b-card>
+        </b-card>-->
         <b-card>
           <b-card-text>
-            入力例3<br>
+            入力例1<br>
             {{getExam.examInfo.testCases.sampleCase.enter.join(',')}}<br>
           </b-card-text>
           <b-card-text>
             出力例3<br>
-            {{getExam.examInfo.testCases.sampleCase.exit[0]}}<br>
-            {{getExam.examInfo.testCases.sampleCase.exit[1]}}<br>
-            {{getExam.examInfo.testCases.sampleCase.exit[2]}}<br>
-            {{getExam.examInfo.testCases.sampleCase.exit[3]}}<br>
+            <span v-for="(smCase, index) in Object.keys(getExam.examInfo.testCases.sampleCase.exit || {})" :key="index" >
+              {{String(getExam.examInfo.testCases.sampleCase.exit[index])}}<br>
+            </span>
           </b-card-text>
         </b-card>
-        <b-card>
+        <!--<b-card>
           <b-card-text>
             入力例4<br>
             {{getExam.examInfo.testCases.sampleCase2.enter.join(',')}}<br>
@@ -68,7 +67,7 @@
             {{getExam.examInfo.testCases.sampleCase2.exit[7]}}<br>
             {{getExam.examInfo.testCases.sampleCase2.exit[8]}}<br>
           </b-card-text>
-        </b-card>
+        </b-card>-->
       </b-card-text>
     </b-card>
   </div>
