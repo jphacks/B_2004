@@ -41,7 +41,7 @@ const routes = [
     component: Entry
   },
   {
-    path: '/problemResult/:examId',
+    path: '/problemResult',
     name: 'ProblemResult',
     component: ProblemResult
   }

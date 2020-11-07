@@ -6,9 +6,6 @@
   <div class="problemView">
     <!-- <Exam1/> -->
     <Exam2/>
-    {{ getExam.name }}
-    {{getExam.examInfo}}
-    {{getExam.difficult}}
   </div>
   <!-- Answer Form Area -->
   <div class="problemdetail">
@@ -20,8 +17,9 @@
       placeholder="解答を入力してください。"
       rows="6"
     ></b-form-textarea>
-    <b-button @click="getDom()">送信</b-button>
-    <!-- <br><br><br><router-link :to="{name: 'ProblemResult', params: {examId: $route.params.examId}}">問題結果画面に遷移します。</router-link> -->
+    <b-button @click="sumpleTest()">送信</b-button>
+    <b-button @click="getDom()">てててすとー</b-button>
+    <br><br><br><router-link :to="{name: 'ProblemResult', params: {examId: examId}}">問題結果画面に遷移します。</router-link>
   </div>
   </body>
 </template>
@@ -29,7 +27,7 @@
 <script>
 // @ is an alias to /src
 import MainProcess from '@/process/MainProcess.js'
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters } from 'vuex'
 import Exam1 from '@/components/Exam1.vue'
 import firebase from 'firebase'
 // import Exam1 from '@/components/Exam1.vue'
@@ -58,19 +56,14 @@ export default {
       option: {
         mode: 'answerDOM',
         existString: true
-      },
-      exam: {
       }
     }
   },
   props: {
-  },
-  mounted: function () {
-    this.setExam()
-    console.log('exam', this.exam)
+    exam: Object
+    examId: String
   },
   methods: {
-    ...mapActions(['setExams']),
     getDom: function () {
     //  MainProcess(this.text)
       const submitExam = firebase.functions().httpsCallable('submitExam')
@@ -85,7 +78,6 @@ export default {
       })
         .then(res => {
           console.log(res)
-          this.$router.push({ name: 'ProblemResult', params: { examId: this.$route.params.examId } })
         })
         .catch(e => {
           console.log(e)
@@ -97,19 +89,6 @@ export default {
     sumplePush: function () {
       this.text = this.getSumpleText
     },
-    setExam: function () {
-      const examId = this.$route.params.examId
-      return firebase.firestore().collection('exams').get().then(snapsshot => {
-        let output = {}
-        console.log('ss', snapsshot)
-        snapsshot.forEach(doc => {
-          this.setExams(doc)
-          output[doc.id] = doc.data()
-        })
-        console.log('this.exam', output[examId])
-        this.exam = output[examId]
-      })
-    },
     createEvent: function () {
     }
   },
@@ -119,7 +98,12 @@ export default {
       return "''"
     },
     getExam () {
-      return this.exam
+      const examId = this.$route.params.examId
+      console.log('getExam', examId, this.getExams)
+      if (!this.getExams || !this.getExams[examId]) {
+        return { name: 'testmode' }
+      }
+      return this.getExams[examId]
     },
     getLoginId () {
       console.log('check', this.getUserId)
@@ -150,7 +134,9 @@ export default {
       output.push('      text: \'\',')
       output.push('      number: 0,')
       output.push('      obj: {a: {}, c:{d:50, e:{}}},')
-      output.push('      array: [0,1,2]')
+      output.push('      array: [0,1,2],')
+      output.push('      input: [\'pen\',\'pineapple\',\'apple\', \'pen\'],')
+      output.push('      clear: [\'pen\',\'penpineapple\',\'penpineappleapple\', \'penpineappleapplepen\'],')
       output.push('    }')
       output.push('  },')
       output.push('  methods: {')

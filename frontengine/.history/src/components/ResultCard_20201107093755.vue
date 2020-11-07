@@ -14,10 +14,13 @@
 <script>
 export default {
   name: 'ResultCard',
+  data: {
+    status: 'WA',
+    reason: 'why?runendCode'
+  },
   props: {
     testCaseNumber: String,
-    judgment: String,
-    reasons: String
+    judgment: String
   }
 }
 </script>

@@ -16,8 +16,7 @@ export default {
   name: 'ResultCard',
   props: {
     testCaseNumber: String,
-    judgment: String,
-    reasons: String
+    judgment: String
   }
 }
 </script>
