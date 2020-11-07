@@ -21,10 +21,7 @@
       rows="6"
     ></b-form-textarea>
     <b-button @click="getDom()">送信</b-button>
-    <div class="b-buttonArea">
-      <b-button @click="sumpleTest()">送信</b-button>
-    </div>
-    <br><br><br><router-link :to="{name: 'ProblemResult', params: {examId: $route.params.examId}}">問題結果画面に遷移します。</router-link>
+    <!-- <br><br><br><router-link :to="{name: 'ProblemResult', params: {examId: $route.params.examId}}">問題結果画面に遷移します。</router-link> -->
   </div>
   </body>
 </template>
@@ -66,6 +63,8 @@ export default {
       }
     }
   },
+  props: {
+  },
   mounted: function () {
     this.setExam()
     console.log('exam', this.exam)
@@ -79,10 +78,14 @@ export default {
       submitExam({
         userId: this.getLoginId,
         examId: examId,
-        examText: this.text
+        examText: this.text,
+        testCase: this.input,
+        outputSumple: this.clear,
+        optionSumple: this.option
       })
         .then(res => {
           console.log(res)
+          this.$router.push({ name: 'ProblemResult', params: { examId: this.$route.params.examId } })
         })
         .catch(e => {
           console.log(e)
@@ -147,9 +150,7 @@ export default {
       output.push('      text: \'\',')
       output.push('      number: 0,')
       output.push('      obj: {a: {}, c:{d:50, e:{}}},')
-      output.push('      array: [0,1,2],')
-      output.push('      input: [\'pen\',\'pineapple\',\'apple\', \'pen\'],')
-      output.push('      clear: [\'pen\',\'penpineapple\',\'penpineappleapple\', \'penpineappleapplepen\'],')
+      output.push('      array: [0,1,2]')
       output.push('    }')
       output.push('  },')
       output.push('  methods: {')

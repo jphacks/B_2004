@@ -2,18 +2,18 @@
   <div class="problemResult">
     <h1>結果</h1>
     <span>
-      <h3>今回の結果はこちら：{{ getExam ? getExam.name : 'testmode' }}</h3>
+      <h3>今回の結果はこちら：{{ name }}</h3>
     </span>
     <b-container class="bv-example-row">
       <b-row cols="2" cols-sm="1" cols-md="1" cols-lg="2">
         <b-col>
           <ul id="example-1">
-            <ResultCard v-for="(item, index) in result" :key="index" :testCaseNumber="item.number" :judgment="item.message"/>
+            <ResultCard v-for="(item, index) in keys" :key="index" :testCaseNumber="index" :judgment="item.enter" :reasons="item.detail"/>
           </ul>
         </b-col>
         <b-col>
           <ul id="example-2">
-            <OutputCard v-for="(item, index) in output" :key="index" :expectation="item.expectations" :yourAnswer="item.answer"/>
+            <OutputCard v-for="(item, index) in output" :key="index" :expectation="item.expectations" :yourAnswer="item.status"/>
           </ul>
         </b-col>
       </b-row>
@@ -27,7 +27,6 @@ import firebase from 'firebase'
 import { mapActions, mapGetters } from 'vuex'
 import ResultCard from '@/components/ResultCard.vue'
 import OutputCard from '@/components/OutputCard.vue'
-
 export default {
   name: 'ProblemResult',
   components: {
@@ -36,49 +35,61 @@ export default {
   },
   data () {
     return {
-      result: [
-        { number: '1', message: '正解' },
-        { number: '2', message: '正解' },
-        { number: '3', message: '不正解' },
-        { number: '4', message: '正解' },
-        { number: '5', message: '不正解' },
-        { number: '6', message: '不正解' },
-        { number: '7', message: '正解' },
-        { number: '8', message: '不正解' },
-        { number: '9', message: '正解' },
-        { number: '10', message: '正解' }
-      ],
-      output: [
-        { expectations: 'hello', answer: 'hello' },
-        { expectations: 'hello world', answer: 'helloworld' },
-        { expectations: 'HELLO', answer: '' },
-        { expectations: 'HELLO WORLD', answer: 'HELLOWORLD' },
-        { expectations: 'Hello', answer: '' },
-        { expectations: 'HelloWorld', answer: '' },
-        { expectations: 'Helloworld', answer: 'Helloworld' },
-        { expectations: 'HELLOworld', answer: '' },
-        { expectations: 'helloWORLD', answer: 'helloWORLD' },
-        { expectations: 'goodbye', answer: 'goodbye' }
-      ]
+      result: [],
+      output: [],
+      keys: [],
+      name: ''
     }
   },
-  props: {
-    examId: String
+  mounted: function () {
+    this.getResult()
+    this.testCase()
+    console.log('output', this.output, this.keys)
   },
-  method: {
+  props: {
+    examId: String,
+    status: String,
+    reason: String
+  },
+  methods: {
+    getResult: function () {
+      console.log('info', this.$route.params.examId)
+      const output = []
+      return firebase.firestore().collection('exams').doc(this.$route.params.examId).collection('users').get().then(ss => {
+        ss.forEach(doc => {
+          output.push({ [doc.id]: doc.data() })
+        })
+        console.log('outputdata', output)
+        let returnOutput = {}
+        this.output = output[0][this.getLoginId].output
+        console.log('output', this.getLoginId, this.output)
+      })
+    },
+    testCase: function () {
+      const output = []
+      return firebase.firestore().collection('exams').doc(this.$route.params.examId).get().then(ss => {
+        this.keys = ss.data().examInfo.testCases
+        this.name = ss.data().name
+        console.log('outputaa', this.keys)
+      })
+    }
   },
   computed: {
-    ...mapGetters(['getExams']),
+    ...mapGetters(['getExams', 'getUserId']),
     getText () {
       return "''"
     },
     getExam () {
-      const examId = this.$route.params.examId
-      console.log('getExam', examId, this.getExams)
-      if (!this.getExams || !this.getExams[examId]) {
+      // const examId = this.$route.params.examId
+      console.log('getExam', this.examId, this.getExams)
+      if (!this.getExams || !this.getExams[this.examId]) {
         return { name: 'testmode' }
       }
-      return this.getExams[examId]
+      return this.getExams[this.examId]
+    },
+    getLoginId () {
+      console.log('check', this.getUserId)
+      return this.getUserId
     }
   }
 }
