@@ -13,7 +13,7 @@
         {{getExam.examInfo.explain.join('')}}<br><br>
         {{getExamInfo}}<br>
         {{getExamDataForm}}<br><br>
-        <b-card>
+        <!--<b-card>
           <b-card-text>
             入力例1<br>
             {{getExam.examInfo.testCases.pascalCase.enter.join(',')}}<br>
@@ -37,21 +37,20 @@
             {{getExam.examInfo.testCases.randomCase.exit[3]}}<br>
             {{getExam.examInfo.testCases.randomCase.exit[4]}}<br>
           </b-card-text>
-        </b-card>
+        </b-card>-->
         <b-card>
           <b-card-text>
-            入力例3<br>
+            入力例1<br>
             {{getExam.examInfo.testCases.sampleCase.enter.join(',')}}<br>
           </b-card-text>
           <b-card-text>
-            出力例3<br>
-            {{getExam.examInfo.testCases.sampleCase.exit[0]}}<br>
-            {{getExam.examInfo.testCases.sampleCase.exit[1]}}<br>
-            {{getExam.examInfo.testCases.sampleCase.exit[2]}}<br>
-            {{getExam.examInfo.testCases.sampleCase.exit[3]}}<br>
+            出力例1<br>
+            <span v-for="(smCase, index) in Object.keys(getExam.examInfo.testCases.sampleCase.exit || {})" :key="index" >
+              {{String(getExam.examInfo.testCases.sampleCase.exit[index])}}<br>
+            </span>
           </b-card-text>
         </b-card>
-        <b-card>
+        <!--<b-card>
           <b-card-text>
             入力例4<br>
             {{getExam.examInfo.testCases.sampleCase2.enter.join(',')}}<br>
@@ -68,7 +67,7 @@
             {{getExam.examInfo.testCases.sampleCase2.exit[7]}}<br>
             {{getExam.examInfo.testCases.sampleCase2.exit[8]}}<br>
           </b-card-text>
-        </b-card>
+        </b-card>-->
       </b-card-text>
     </b-card>
   </div>
@@ -192,7 +191,7 @@ export default {
       const output = []
       output.push('<template>')
       output.push('<div class="problemdetail">')
-      output.push('<answer v-for="(item, index) of input" :key="index">{{jointStr(input, index)}}<br/></answer>')
+      output.push('<answer v-for="(item, index) of input" :key="index">{{ }}<br/></answer>')
       output.push('</div>')
       output.push('</template>')
       output.push('<script>')
@@ -202,62 +201,15 @@ export default {
       output.push('  components: {')
       output.push('  },')
       output.push('props: {')
-      output.push('input: Array,')
-      output.push('testCase: {')
-      output.push('type: String,')
-      output.push('default: \'testcase\'')
-      output.push(' }')
+      output.push('input: Array')
       output.push('},')
       output.push('  data () {')
       output.push('    return {')
       output.push('      text: \'\',')
-      output.push('      number: 0,')
-      output.push('      obj: {a: {}, c:{d:50, e:{}}},')
-      output.push('      array: [0,1,2]')
+      output.push('      number: 0')
       output.push('    }')
       output.push('  },')
       output.push('  methods: {')
-      output.push('    getDom: function (text) {')
-      output.push('      MainProcess(text)')
-      output.push('    },')
-      output.push('    jointStr: function (items, index) {')
-      output.push('      let output = \'\'')
-      output.push('      for (let i = 0; i < index + 1; i = i + 1) {')
-      output.push('        output = output + items[i]')
-      output.push('      }')
-      output.push('      return output')
-      output.push('    },')
-      output.push('  sort: function (index) {')
-      output.push('    switch (index) {')
-      output.push('        case \'userId\':')
-      output.push('          this.items.sort(function (a, b) {')
-      output.push('            if (a.userId < b.userId) {')
-      output.push('              return -1')
-      output.push('            }')
-      output.push('            if (a.userId > b.userId) {')
-      output.push('             return 1')
-      output.push('            }')
-      output.push('            return 0')
-      output.push('          })')
-      output.push('          break')
-      output.push('        case \'userName\':')
-      output.push('          this.items.sort(function (a, b) {')
-      output.push('            if (a.userName < b.userName) {')
-      output.push('              return -1')
-      output.push('            }')
-      output.push('            if (a.userName > b.userName) {')
-      output.push('              return 1')
-      output.push('            }')
-      output.push('            return 0')
-      output.push('          })')
-      output.push('          break')
-      output.push('      }')
-      output.push('    },')
-      output.push('    testObject: function () {')
-      output.push('    let k = 0')
-      output.push('          k++')
-      output.push('       return k')
-      output.push('      }')
       output.push('  },')
       output.push('  computed: {')
       output.push('    getText () {')

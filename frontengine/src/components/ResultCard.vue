@@ -2,7 +2,7 @@
   <div class="b-card">
     <b-card bg-variant="white" text-variant="black" class="text-center">
       <b-card-header header-bg-variant="white">
-        <b-card-text>テストケースNo.{{testCaseNumber}}</b-card-text>
+        <b-card-text>{{testCaseNumber}}</b-card-text>
       </b-card-header>
       <b-card-body>
         <b-card-text>{{judgment}}</b-card-text>
@@ -15,9 +15,9 @@
 export default {
   name: 'ResultCard',
   props: {
-    testCaseNumber: String,
-    judgment: String,
-    reasons: String
+    testCaseNumber: {},
+    judgment: {},
+    reasons: {}
   }
 }
 </script>
