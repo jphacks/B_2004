@@ -146,11 +146,11 @@ export default {
         optionSumple: this.option
       })
         .then(res => {
-          console.log(res)
+          console.log('res', res)
           this.$router.push({ name: 'ProblemResult', params: { examId: this.$route.params.examId } })
         })
         .catch(e => {
-          console.log(e)
+          console.log('e', e)
         })
     },
     sumpleTest: function () {

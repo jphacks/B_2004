@@ -55,14 +55,10 @@ export default {
     getResult: function () {
       console.log('info', this.$route.params.examId)
       const output = []
-      return firebase.firestore().collection('exams').doc(this.$route.params.examId).collection('users').get().then(ss => {
-        ss.forEach(doc => {
-          output.push({ [doc.id]: doc.data() })
-        })
-        console.log('outputdata', output)
-        let returnOutput = {}
-        this.output = output[0][this.getLoginId].output
-        console.log('output', this.getLoginId, this.output)
+      return firebase.firestore().collection('exams').doc(this.$route.params.examId).collection('users').doc(this.getLoginId).get().then(ss => {
+        const getData = ss.data()
+        console.log('outputdata', getData)
+        this.output = getData
       })
     },
     testCase: function () {
@@ -79,6 +75,7 @@ export default {
     getText () {
       return "''"
     },
+
     getExam () {
       // const examId = this.$route.params.examId
       console.log('getExam', this.examId, this.getExams)

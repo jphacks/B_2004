@@ -12,6 +12,10 @@ exports.submitExam = functions.https.onCall((data, context) => {
   const getId = data.examId;
   const userId = data.userId;
   const examRef = db.collection('exams').doc(getId)
+  // Initialize
+  if (userId) {
+    db.collection('exams').doc(getId).collection('users').doc(userId).set({output: []})
+  }
   return examRef.get().then(snapsshot => {
     const doc = snapsshot
     if (!doc.exists) {
@@ -866,6 +870,9 @@ function execScript (body, array, preLocal) {
   // name,valueは予約されている??
   // output {name: name, value: value}
   let local = {}
+  if (!body) {
+    return { returnArguments: {}, returnLocal: { ...preLocal }, returnOrder: 'noneBody' }
+  }
   if (preLocal) {
     
     local = Object.assign(local, preLocal)
