@@ -4,7 +4,7 @@ import ScriptProcess from './ScriptProcess.js'
 import DomProcess from './DomProcess.js'
 import { global } from './moduleProcess.js'
 import { execScript, getScript } from './ScriptUtility/execScript.js'
-export default function (text, props, clear, option) {
+export default async function (text, props, clear, option) {
   const templateLength = '<template>'.length
   const scriptLength = '<script>'.length
   const styleLength = '<style scoped>'.length
@@ -14,15 +14,27 @@ export default function (text, props, clear, option) {
   // ('解析 template:', templates, 'script:', script, 'style:', style)
   // ('解析script ', script)
   const domTree = DomProcess(templates)
-  const scriptRe = ScriptProcess(script)
-  const data = execScript(global.testObject, ['userId'])
-  console.log('scriptRe', domTree)
+  const module = ScriptProcess(script)
+  // const data = execScript(global, ['userId'])
+  console.log('scriptRe', global, module, option, clear)
+  console.log('dom', domTree)
   const errors = []
+  let toProps = {}
+  if (Array.isArray(props)) {
+    toProps.input = props
+  } else {
+    // obj型
+    toProps = Object.assign(toProps, props)
+  }
+  // オブジェクト型で例題作ってなかった><
+  // const toProps = { input: props }
+
   if (props) {
-    Object.keys(props || {}).forEach(key => {
-      global[key] = props[key]
+    Object.keys(toProps || {}).forEach(key => {
+      global[key] = toProps[key]
     })
   }
+
   // const getClear = clear
   const getClear = clear
   let checkClear = 0
@@ -32,6 +44,7 @@ export default function (text, props, clear, option) {
   console.log('outputtt', text, props, clear, option)
   if (option && option.mode === 'answerDOM') {
     if (option.existString) {
+      let resultOutput = [] // 文字列型の場合は、outputが見れるはず
       let tooru = true
       // let target = domTree
       const targets = []
@@ -120,12 +133,14 @@ export default function (text, props, clear, option) {
           if (tar.value === clear[targetIndex]) {
             checkClear++
           } else {
-            return { status: 'WA', reason: 'noneClear', target: clear[targetIndex], targetNone: tar.value }
+            return { status: 'WA', reason: 'noneClear', target: clear[targetIndex], targetNone: tar.value, targetIndex: targetIndex }
           }
           targetIndex++
           if (clear.length === checkClear) {
             return { status: 'AC', reason: 'all Accept' }
           }
+        } else if (tar.answer) {
+          console.log('tarValue:without', tar)
         }
         // -- lastPropagate
         let i = 0
@@ -151,6 +166,7 @@ export default function (text, props, clear, option) {
         })
         // -- lastPrpagate
       }
+      return { status: 'WA', reason: 'runCode', info: checkClear, option: option, clear: clear }
     }
   } else {
 

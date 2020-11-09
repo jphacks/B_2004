@@ -584,7 +584,7 @@ function moduleProcess(ast) {
   }
   // 
   
-  const output = execScript(global.testObject, global.text)
+  // const output = execScript(global.testObject, global.text)
   
   // 
   return modules
