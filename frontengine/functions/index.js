@@ -116,6 +116,7 @@ function MainProcess (text, props, clear, option) {
           }
         }
         // 8-- v-for
+        console.log('ppp', tar)
         if (tar.name === 'reserveText') {
           for (let reserve of Object.values(tar.reserves)) {
             const strValueStart = tar.value.substr(0, reserve.start)
@@ -138,7 +139,11 @@ function MainProcess (text, props, clear, option) {
               tar.value = strValueStart + toStr + strValueEnd
             } else if (reserve.type === 'variable') {
               // tar.value = global[reserve.text]
-              const toStr = String(tar.value)
+              console.log('ppppp', reserve)
+              let toStr = String(tar.value)
+              if (global.hasOwnProperty(toStr)) {
+                toStr = String(global[toStr])
+              }
               tar.value = strValueStart + toStr + strValueEnd
             }
           }

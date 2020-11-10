@@ -122,8 +122,12 @@ export default async function (text, props, clear, option) {
               tar.value = strValueStart + toStr + strValueEnd
             } else if (reserve.type === 'variable') {
               // tar.value = global[reserve.text]
-              const toStr = String(tar.value)
+              let toStr = String(tar.value)
+              if (global.hasOwnProperty(toStr)) {
+                toStr = String(global[toStr])
+              }
               tar.value = strValueStart + toStr + strValueEnd
+              console.log('pppRRR', tar, reserve)
             }
           }
         }
