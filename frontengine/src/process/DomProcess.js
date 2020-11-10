@@ -321,7 +321,7 @@ function textAnalysis (text) {
   // 配列で受け取る?
   const output = {}
   output.value = text.join('')
-  output.reserves = {}
+  output.reserves = []
   let targetText = ''
   for (let i = 0; i < text.length; i++) {
     targetText = text[i]
@@ -344,6 +344,7 @@ function textAnalysis (text) {
         }
         targetTexts.push(targetText)
       }
+      i += 1
       const targetCheck = targetTexts.join('')
       target.text = targetCheck
       if (targetTexts.indexOf('(') > 0 && targetTexts.indexOf(')') > 0) {
@@ -358,7 +359,30 @@ function textAnalysis (text) {
         target.type = 'variable'
         target.variableType = 'global'
       }
-      output.reserves[target.text] = target
+      output.reserves.push(target)
+    } else if (targetText !== '{') {
+      // {{}} でかこまれてないやつ
+      console.log('aaaa', targetText, text.length)
+      const target = {}
+      target.start = i
+      const targetTexts = []
+      for (;i < text.length; i++) {
+        if (text.length - 1 == i + 1) {
+          break
+        }
+        targetText = text[i]
+        if (targetText === '{' && text[i + 1] === '{') {
+          target.end = i - 1
+          i--
+          break
+        }
+        targetTexts.push(targetText)
+      }
+      const targetCheck = targetTexts.join('')
+      target.text = targetCheck
+      target.type = 'direct'
+      target.variableType = 'string'
+      output.reserves.push(target)
     }
   }
   return output
