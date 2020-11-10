@@ -7,21 +7,21 @@
     <!-- <Exam1/> -->
     <!--<Exam2/>-->
     <h1>問題：{{ getExam.name }}</h1>
+    <span v-if="!getLoginId">※ログインしていない場合提出できません</span>
     <!--<h1>難易度：{{getExam.difficult}}</h1>-->
       <b-card class="b-card">
       <b-card-text>
-        {{getExam.examInfo.explain.join('')}}<br><br>
-        {{getExamInfo}}<br>
-        {{getExamDataForm}}<br><br>
+        <span v-for="(value) of getExplain" :key="value">{{value}}<br></span><br>
+        <span v-for="(value) of getEnter" :key="value">{{value}}<br></span><br>
         <b-card>
           <b-card-text>
             入力例1<br>
-            {{getExam.examInfo.testCases.sampleCase.enter.join(',')}}<br>
+            {{getSumpleInput.join(',')}}<br>
           </b-card-text>
           <b-card-text>
             出力例1<br>
-            <span v-for="(smCase, index) in Object.keys(getExam.examInfo.testCases.sampleCase.exit || {})" :key="index" >
-              {{String(getExam.examInfo.testCases.sampleCase.exit[index])}}<br>
+            <span v-for="(smCase, key) in Object.keys(getSumpleOutput || {})" :key="key" >
+              {{String(getSumpleOutput[key])}}<br>
             </span>
           </b-card-text>
         </b-card>
@@ -44,7 +44,7 @@
       rows="6"
     ></b-form-textarea>
     <div class="detail-buttons">
-    <b-button @click="getDom()">送信</b-button>
+    <b-button v-if="getLoginId" @click="getDom()">送信</b-button>
     <b-button @click="sumpleTest()">サンプルを出力</b-button>
     </div>
     <!-- <br><br><br><router-link :to="{name: 'ProblemResult', params: {examId: $route.params.examId}}">問題結果画面に遷移します。</router-link> -->
@@ -113,7 +113,7 @@ export default {
       })
         .then(res => {
           console.log('res', res)
-          this.$router.push({ name: 'ProblemResult', params: { examId: this.$route.params.examId } })
+          this.$router.push({ name: 'ProblemResult', params: { examId: this.$route.params.examId, resOutput: res } })
         })
         .catch(e => {
           console.log('e', e)
@@ -245,13 +245,36 @@ export default {
       output.events.push({ id: 'sortButtonName', event: 'click' })
       return output
     },
-    getExamInfo () {
-      return this.getExam.examInfo.exEnter[0]
+    getEnter () {
+      if (!this.getExam || !this.getExam.examInfo) {
+        return {}
+      }
+      return this.getExam.examInfo.exEnter
     },
-    getExamDataForm () {
-      return this.getExam.examInfo.exEnter[1]
+    getExplain () {
+      if (!this.getExam || !this.getExam.examInfo) {
+        return {}
+      }
+      return this.getExam.examInfo.explain
+    },
+    getExamInfo () {
+      if (!this.getExam || !this.getExam.examInfo) {
+        return {}
+      }
+      return this.getExam.examInfo
+    },
+    getSumpleOutput () {
+      if (!this.getExamInfo.testCases) {
+        return {}
+      }
+      return this.getExamInfo.testCases.sampleCase.exit
+    },
+    getSumpleInput () {
+      if (!this.getExamInfo.testCases) {
+        return []
+      }
+      return this.getExamInfo.testCases.sampleCase.enter
     }
-
   }
 }
 </script>
