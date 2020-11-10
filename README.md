@@ -7,7 +7,8 @@
 README横のリンクか下記からお願いします.<br>
 [https://frontengine-3a212.web.app](https://frontengine-3a212.web.app)
 
-##テストユーザー (既存のバグでこのユーザー以外うまく正誤判定がされません...)<br>
+##テストユーザー ~-(既存のバグでこのユーザー以外うまく正誤判定がされません...)-~　新規登録ユーザーでも動くはずです^^<br>
+
 gmail: testtest@gmail.com<bt>
 password: testtest
 <br>
