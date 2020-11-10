@@ -30,12 +30,9 @@ exports.submitExam = functions.https.onCall((data, context) => {
       output.push(MainProcess(data.examText, value.enter, value.exit, acData.examInfo.option))
     })
     if (userId) {
-      db.collection('exams').doc(getId).collection('users').doc(userId).set({output: output})
+      db.collection('exams').doc(getId).collection('users').doc(userId).set({output: output, inputScript: data.examText})
     }
     console.log('output', output)
-    // if (userId) {
-    //   db.collection('exams').doc(getId).collection('users').doc(userId).set(output)
-    // }
     return output;
     }
   })
@@ -52,7 +49,7 @@ function MainProcess (text, props, clear, option) {
   // ('解析script ', script)
   const domTree = DomProcess(templates)
   const scriptRe = ScriptProcess(script)
-  const data = execScript(global.testObject, ['userId'])
+  // const data = execScript(global.testObject, ['userId'])
   const errors = []
   if (props) {
     // Object.keys(props || {}).forEach(key => {
