@@ -106,7 +106,7 @@ export default async function (text, props, clear, option) {
               // とりあえずglobalのみ対応
               const args = []
               for (let argument of reserve.functionArgument) {
-                if (tar.params.hasOwnProperty(argument)) {
+                if (tar && tar.params && tar.params.hasOwnProperty(argument)) {
                   args.push(tar.params[argument])
                 } else if (global.hasOwnProperty(argument)) {
                   args.push(global[argument])
