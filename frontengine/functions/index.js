@@ -38,158 +38,196 @@ exports.submitExam = functions.https.onCall((data, context) => {
   })
   });
 
-function MainProcess (text, props, clear, option) {
-  const templateLength = '<template>'.length
-  const scriptLength = '<script>'.length
-  const styleLength = '<style scoped>'.length
-  const templates = text.substr(text.indexOf('<template>') + templateLength, text.indexOf('</template>') - templateLength)
-  const script = text.substr(text.indexOf('<script>') + scriptLength, text.indexOf('</script>') - scriptLength - text.indexOf('<script>'))
-  const style = text.substr(text.indexOf('<style scoped>') + styleLength, text.indexOf('</style>') - styleLength - text.indexOf('<style scoped>'))
-  // ('解析 template:', templates, 'script:', script, 'style:', style)
-  // ('解析script ', script)
-  const domTree = DomProcess(templates)
-  const scriptRe = ScriptProcess(script)
-  // const data = execScript(global.testObject, ['userId'])
-  const errors = []
-  if (props) {
-    // Object.keys(props || {}).forEach(key => {
-    //   global[key] = props[key]
-    // })
-    global.input = props
-  }
-  // const getClear = clear
-  const getClear = clear
-  let checkClear = 0
-  let targetIndex = 0
-  let output = { status: 'WA', reason: '' }
-  const vForGlobal = {}
-  console.log('outputtt', props, clear, option, text)
-  if (option && option.mode === 'answerDOM') {
-    if (option.existString) {
-      let tooru = true
-      // let target = domTree
-      const targets = []
-      targets.push(domTree)
-      while (targets.length > 0) {
-        const getTar = targets.shift()
-        const tar = Object.assign({}, getTar)
-        if (tar.params) {
-        }
-        tooru = false
-        // -- v-for
-        if (tar['v-for']) {
-          const target = tar['v-for']
-          if (target.type === 'variable') {
-            if (target.variableType === 'global') {
-              if (global.hasOwnProperty(target.right)) {
-                if (global[target.right]) {
-                  let data = global[target.right]
-                  if (data.func) {
-                    // argumentはまだ未対応><
-                    data = getScript(global[target.right], [])
-                  }
-                  for (let i = 0; i < global[target.right].length; i++) {
-                    // tar.params = {}
-                    let nextTarget = Object.assign({}, tar)
-                    const params = {}
-                    if (target && target.target && target.target.index) {
-                      params.index = i
-                    } else {
+  function MainProcess(text, props, clear, option) {
+    const templateLength = '<template>'.length
+    const scriptLength = '<script>'.length
+    const styleLength = '<style scoped>'.length
+    const templates = text.substr(text.indexOf('<template>') + templateLength, text.indexOf('</template>') - templateLength)
+    const script = text.substr(text.indexOf('<script>') + scriptLength, text.indexOf('</script>') - scriptLength - text.indexOf('<script>'))
+    const style = text.substr(text.indexOf('<style scoped>') + styleLength, text.indexOf('</style>') - styleLength - text.indexOf('<style scoped>'))
+    // ('解析 template:', templates, 'script:', script, 'style:', style)
+    // ('解析script ', script)
+    const domTree = DomProcess(templates)
+    const module = ScriptProcess(script)
+    // const data = execScript(global, ['userId'])
+    console.log('scriptRe', global, module, option, clear)
+    console.log('dom', domTree)
+    const errors = []
+    let toProps = {}
+    if (Array.isArray(props)) {
+      toProps.input = props
+    } else {
+      // obj型
+      toProps = Object.assign(toProps, props)
+    }
+    // オブジェクト型で例題作ってなかった><
+    // const toProps = { input: props }
+  
+    if (props) {
+      Object.keys(toProps || {}).forEach(key => {
+        global[key] = toProps[key]
+      })
+    }
+  
+    // const getClear = clear
+    const getClear = clear
+    let checkClear = 0
+    let targetIndex = 0
+    let output = { status: 'WA', reason: '' }
+    const vForGlobal = {}
+    // console.log('outputtt', text, props, clear, option)
+    if (option && option.mode === 'answerDOM') {
+      if (option.existString) {
+        let resultOutput = [] // 文字列型の場合は、outputが見れるはず
+        let tooru = true
+        // let target = domTree
+        const targets = []
+        targets.push(domTree)
+        while (targets.length > 0) {
+          const getTar = targets.shift()
+          const tar = Object.assign({}, getTar)
+          if (tar.params) {
+            console.log('targets!!', tar.params, tar)
+          }
+          tooru = false
+          // -- v-for
+          if (tar['v-for']) {
+            const target = tar['v-for']
+            if (target.type === 'variable') {
+              if (target.variableType === 'global') {
+                if (global.hasOwnProperty(target.right)) {
+                  if (global[target.right]) {
+                    let data = global[target.right]
+                    if (data.func) {
+                      // argumentはまだ未対応><
+                      data = getScript(global[target.right], [])
                     }
-                    nextTarget.paramIndex = i
-                    nextTarget.paramValue = global[target.right][i]
-                    params.value = global[target.right][i]
-                    nextTarget.params = Object.assign({}, params)
-                    delete nextTarget['v-for']
-                    targets.push(nextTarget)
+                    for (let i = 0; i < global[target.right].length; i++) {
+                      // tar.params = {}
+                      let nextTarget = Object.assign({}, tar)
+                      const params = {}
+                      if (target && target.target && target.target.index) {
+                        params.index = i
+                      } else {
+                      }
+                      nextTarget.paramIndex = i
+                      nextTarget.paramValue = global[target.right][i]
+                      params.value = global[target.right][i]
+                      nextTarget.params = Object.assign({}, params)
+                      console.log('nextTarget', nextTarget)
+                      delete nextTarget['v-for']
+                      targets.push(nextTarget)
+                    }
+                    continue
                   }
-                  continue
+                } else {
+                  return { status: 'WA', reason: 'no!!' + target.rights + ' is not defined!!' }
                 }
               } else {
-                return { status: 'WA', reason: 'no!!' + target.rights + ' is not defined!!' }
+                return { status: 'WA', reason: 'sorry!! no use not Global v-for' }
               }
             } else {
-              return { status: 'WA', reason: 'sorry!! no use not Global v-for' }
+              // func
             }
-          } else {
-            // func
           }
-        }
-        // 8-- v-for
-        console.log('ppp', tar)
-        if (tar.name === 'reserveText') {
-          for (let reserve of Object.values(tar.reserves)) {
-            const strValueStart = tar.value.substr(0, reserve.start)
-            const strValueEnd = tar.value.substr(reserve.end + 1, tar.value.length)
-            if (reserve.type === 'function') {
-              // とりあえずglobalのみ対応
-              const args = []
-              for (let argument of reserve.functionArgument) {
-                if (tar && tar.params && tar.params.hasOwnProperty(argument)) {
-                  args.push(tar.params[argument])
-                } else if (global.hasOwnProperty(argument)) {
-                  args.push(global[argument])
+          // 8-- v-for
+          if (tar.name === 'reserveText') {
+            // console.log('tarValue:none', tar)
+            const output = []
+            for (let reserve of Object.values(tar.reserves)) {
+              const strValueStart = tar.value.substr(0, reserve.start)
+              const strValueEnd = tar.value.substr(reserve.end + 1, tar.value.length)
+              if (reserve.type === 'function') {
+                // とりあえずglobalのみ対応
+                const args = []
+                for (let argument of reserve.functionArgument) {
+                  if (tar && tar.params && tar.params.hasOwnProperty(argument)) {
+                    args.push(tar.params[argument])
+                  } else if (global.hasOwnProperty(argument)) {
+                    args.push(global[argument])
+                  }
                 }
+                // console.log('getterqq', global, tar, args)
+                if (!global.hasOwnProperty(reserve.text)) {
+                  return { status: 'WA', reason: 'funtion no' }
+                }
+                const getReturn = getScript(global[reserve.text], args)
+                const toStr = String(getReturn)
+                // console.log('getter', global, getReturn, args, toStr)
+                // tar.value = strValueStart + toStr + strValueEnd
+                output.push(toStr)
+              } else if (reserve.type === 'variable') {
+                // tar.value = global[reserve.text]
+                let toStr = String(reserve.text)
+                if (global.hasOwnProperty(reserve.text)) {
+                  if (!global[reserve.text].func) {
+                    toStr = String(global[reserve.text])
+                  } else if (global[reserve.text].computed) {
+                    toStr = String(getScript(global[reserve.text]))
+                  } else {
+                    return { status: 'WA', reason: 'maybe function -> computed?' }
+                  }
+                } else if (tar && tar.params && tar.params.hasOwnProperty(reserve.text)) {
+                  toStr = tar.params[reserve.text]
+                }
+                // tar.value = strValueStart + toStr + strValueEnd
+                output.push(toStr)
+                // console.log('pppRRR', reserve, tar.value, global)
+              } else if (reserve.type === 'direct') {
+                output.push(reserve.text)
               }
-              if (!global.hasOwnProperty(reserve.text)) {
-                return { status: 'WA', reason: 'funtion no' }
+            }
+            tar.value = output.join('')
+          }
+          if (tar.answer && tar.name === 'reserveText') {
+            // とりあえずexistStringなので....
+            // console.log('tarValue', tar, targetIndex)
+            if (tar.value === clear[targetIndex]) {
+              checkClear++
+            } else {
+              return { status: 'WA', reason: 'noneClear', target: clear[targetIndex], targetNone: tar.value, targetIndex: targetIndex }
+            }
+            targetIndex++
+            if (clear.length === checkClear) {
+              return { status: 'AC', reason: 'all Accept' }
+            }
+          } else if (tar.answer) {
+            // console.log('tarValue:without', tar)
+          }
+          // -- lastPropagate
+          let i = 0
+          // console.log('tar.children', tar.children, tar)
+          Object.values(tar.children || {}).forEach(array => {
+            array.forEach(value => {
+              let nextObject = {}
+              nextObject = Object.assign({}, value)
+              if (tar.hasOwnProperty('params')) {
+                nextObject.params = Object.assign({}, tar.params)
               }
-              const getReturn = getScript(global[reserve.text], args)
-              const toStr = String(getReturn)
-              tar.value = strValueStart + toStr + strValueEnd
-            } else if (reserve.type === 'variable') {
-              // tar.value = global[reserve.text]
-              console.log('ppppp', reserve)
-              let toStr = String(tar.value)
-              if (global.hasOwnProperty(toStr)) {
-                toStr = String(global[toStr])
+              if (tar.hasOwnProperty('paramIndex')) {
+                nextObject.paramIndex = tar.paramIndex
               }
-              tar.value = strValueStart + toStr + strValueEnd
-            }
-          }
-        }
-        if (tar.answer && tar.name === 'reserveText') {
-          // とりあえずexistStringなので....
-          if (tar.value === clear[targetIndex]) {
-            checkClear++
-          } else {
-            return { status: 'WA', reason: 'noneClear', target: clear[targetIndex], targetNone: tar.value }
-          }
-          targetIndex++
-          if (clear.length === checkClear) {
-            return { status: 'AC', reason: 'all Accept' }
-          }
-        }
-        // -- lastPropagate
-        let i = 0
-        Object.values(tar.children || {}).forEach(array => {
-          array.forEach(value => {
-            let nextObject = {}
-            nextObject = Object.assign({}, value)
-            if (tar.hasOwnProperty('params')) {
-              nextObject.params = Object.assign({}, tar.params)
-            }
-            if (tar.hasOwnProperty('paramIndex')) {
-              nextObject.paramIndex = tar.paramIndex
-            }
-            if (tar.name === 'answer') {
-              nextObject.answer = true
-              nextObject.answerIndex = i
-              i = i + 1
-            }
-            targets.push(nextObject)
+              if (tar.name === 'answer') {
+                nextObject.answer = true
+                nextObject.answerIndex = i
+                i = i + 1
+              }
+              // console.log('cheek', nextObject)
+              targets.push(nextObject)
+            })
           })
-        })
-        // -- lastPrpagate
+          // -- lastPrpagate
+        }
+        return { status: 'WA', reason: 'runCode', info: checkClear, option: option, clear: clear }
       }
-    }
-  } else {
-
-  }
-  // CreateAST(script)
+    } else {
   
-  return { status: 'WA', reason: 'why?runendCode', info: checkClear }
-};
+    }
+    // CreateAST(script)
+    // console.log('runcode:')
+    return { status: 'WA', reason: 'why?runendCode', info: checkClear }
+  };
+  
 
 function DomProcess (text) {
   const tags = []
@@ -278,7 +316,309 @@ function DomProcess (text) {
   const tree = createDomTree(depths)
 
   return tree
+};
+
+function DOMAnalysis (dom) {
+  //
+  const info = {}
+  info.open = true // 閉じられているか
+  const others = []
+  const candidatetag = []
+  let nameLength = 0
+  if (dom.substr(0, 2) === '</') {
+    info.close = true
+    nameLength++
+  } else {
+    info.close = false
+  }
+  const tags = []
+  const candidateTags = dom.split(' ')
+  for (const tag of candidateTags) {
+    //
+    tags.push(...tag.split('\n'))
+  }
+
+  // const info = {}
+  if (tags.length === 1) {
+    // tag一つのみ
+    const tag = tags[0]
+    info.name = tag.substr(1 + nameLength, tag.length - 2 - nameLength)
+    if (tag.substr(tag.length - 2, 2) === '/>') {
+      info.open = false
+      info.name = tag.substr(1 + nameLength, tag.length - 3 - nameLength)
+    }
+  } else {
+    info.name = tags[0].substr(1 + nameLength, tags[0].length - nameLength)
+    // let blank = false
+    // let blanckCount = []
+    //
+    const candidateOthers = []
+    for (let i = 1; i < tags.length - 1; i++) {
+      const tag = tags[i]
+      candidateOthers.push(tag)
+      if (tag.length > 0) {
+        candidatetag.push(candidateOthers.length - 1)
+      }
+    }
+    let rensei = []
+    let kisu = false
+    for (let i = 0; i < candidatetag.length; i++) {
+      const candidateKey = candidatetag[i]
+      const other = candidateOthers[candidateKey]
+
+      const quoteLength = (other.match(/"/g) || []).length
+      //
+      if (kisu) {
+        rensei.push(' '.repeat(candidateKey - candidatetag[i - 1]))
+      }
+      if (quoteLength % 2 !== 0) {
+        // 貰ったのが奇数
+        if (kisu) {
+          kisu = false
+          rensei.push(other)
+          others.push(rensei.join(''))
+          rensei = []
+          continue
+        } else {
+          kisu = true
+          rensei.push(other)
+          continue
+        }
+      } else {
+        // 貰ったのが偶数
+        if (kisu) {
+          rensei.push(other)
+          continue
+        } else {
+          others.push(other)
+          continue
+        }
+      }
+    }
+    const lastTag = tags[tags.length - 1]
+    if (lastTag.substr(lastTag.length - 2, 2) === '/>') {
+      // />
+      info.open = false
+      if (lastTag.substr(0, lastTag.length - 2).length > 0) {
+        others.push(lastTag.substr(0, lastTag.length - 2))
+      }
+    } else {
+      if (lastTag.substr(0, lastTag.length - 1).length > 0) {
+        others.push(lastTag.substr(0, lastTag.length - 1))
+      }
+      // >
+    }
+  }
+  info.others = []
+  //
+  for (const other of others) {
+    const otherInfo = otherAnalysis(other)
+    info.others.push(otherInfo)
+    if (otherInfo.hasOwnProperty('id')) {
+      info.id = otherInfo.id
+    }
+    if (otherInfo.hasOwnProperty('left')) {
+      if (otherInfo.left === 'v-for') {
+        info['v-for'] = otherInfo
+      }
+      if (otherInfo.left === 'v-if') {
+        info['v-if'] = otherInfo
+      }
+    }
+    if (otherInfo.hasOwnProperty('key')) {
+      info.key = otherInfo
+    }
+  }
+  //
+  return info
 }
+
+function otherAnalysis (other) {
+  /*
+    directive: true or false
+    type: 'function' or variable
+    variableType:
+    functionArgument:
+  */
+  const target = {}
+  target.left = ''
+  const otherSplit = other.split('"')
+  if (otherSplit.length > 1) {
+    target.left = otherSplit[0].split('=')[0]
+    target.right = otherSplit[1]
+    if (target.left.indexOf(':') === 0) {
+      target.directive = true
+      target.left = otherSplit[0].split('=')[0].split(':')[1]
+    } else {
+      target.directive = false
+    }
+    if (target.left === 'v-if') {
+      target.directive = true
+    }
+    if (target.left === 'v-for') {
+      target.directive = true
+      let splitTarget = target.right.split(' of ')
+      if (splitTarget.length === 1) {
+        splitTarget = target.right.split(' in ')
+      }
+      target.target = {}
+      if (splitTarget[0].indexOf('(') >= 0 && splitTarget[0].indexOf(')') >= 0) {
+        const catchCandidate = []
+        let candidate = []
+        const catchTargets = splitTarget[0].substr(1, splitTarget[0].length - 2).split(',')
+
+        for (const tarKey of catchTargets) {
+          tarKey.split('').forEach(mozi => {
+            if (mozi !== ' ' && mozi !== '/n') {
+              candidate.push(mozi)
+            }
+          })
+          catchCandidate.push(candidate.join(''))
+          candidate = []
+        }
+        target.target.value = catchCandidate[0]
+        target.target.index = catchCandidate[1]
+      } else {
+        target.target.value = splitTarget[0]
+      }
+      target.right = splitTarget[1]
+      //
+    }
+    if (target.right.indexOf('(') > 0 && target.right.indexOf(')') > 0) {
+      // function
+      target.type = 'function'
+      target.right = otherSplit[1].split('(')[0]
+      const argument = otherSplit[1].split('(')[1].substr(0, otherSplit[1].split('(')[1].length - 1)
+      //
+      target.functionArgument = argument.split(',')
+    } else {
+      // variable
+      target.type = 'variable'
+      if (((target.right.match(/'/g) || []).length >= 2 || !target.directive)) {
+        target.variableType = 'String'
+      } else if ((target.right.match(/\[/g) || []).length >= 1 && (target.right.match(/\]/g) || []).length >= 1) {
+        target.variableType = 'Array'
+      } else if ((target.right.match(/\{/g) || []).length >= 1 && (target.right.match(/\}/g) || []).length >= 1) {
+        target.variableType = 'Object'
+      } else if ((target.right.match(/[0-9]/g) || []).length === target.right.length) {
+        target.variableType = 'Integer'
+        target.right = Number(target.right)
+      } else if (target.right === 'true' || target.right === 'false') {
+        target.variableType = 'boolean'
+        if (target.right === 'true') {
+          target.right = true
+        } else {
+          target.right = false
+        }
+      } else {
+        //
+        target.variableType = 'global'
+      }
+    }
+  } else {
+    // length == 1
+    target.left = otherSplit[0].split('\n')[0]
+    target.right = true
+    target.type = 'variable'
+    target.variableType = 'bool'
+  }
+
+  return target
+}
+
+function createDomTree (depths) {
+  const length = Object.keys(depths).length - 1
+  for (let i = length; i > 0; i--) {
+    for (const seed of Object.values(depths[i])) {
+      if (!seed.close && seed.parentId >= 0) {
+        if (!depths[i - 1][seed.parentId].children) {
+          depths[i - 1][seed.parentId].children = {}
+        }
+        if (!depths[i - 1][seed.parentId].children[seed.name]) {
+          depths[i - 1][seed.parentId].children[seed.name] = []
+        }
+        depths[i - 1][seed.parentId].children[seed.name].push(seed)
+      } else {
+      }
+    }
+  }
+  for (const seed of Object.values(depths[0])) {
+    if (!seed.close) {
+      return seed
+    }
+  }
+}
+function textAnalysis (text) {
+  // 配列で受け取る?
+  const output = {}
+  output.value = text.join('')
+  output.reserves = []
+  let targetText = ''
+  for (let i = 0; i < text.length; i++) {
+    targetText = text[i]
+    //
+    if (targetText === '{' && text[i + 1] === '{') {
+      // {{ <- これ
+      // ホントは正規表現でいい感じにしたいね...
+      const target = {}
+      target.start = i
+      const targetTexts = []
+      i += 2
+      for (; ; i++) {
+        targetText = text[i]
+        if (targetText === '/s' || targetText === ' ') {
+          continue
+        }
+        if (targetText === '}' && text[i + 1] === '}') {
+          target.end = i + 1
+          break
+        }
+        targetTexts.push(targetText)
+      }
+      i += 1
+      const targetCheck = targetTexts.join('')
+      target.text = targetCheck
+      if (targetTexts.indexOf('(') > 0 && targetTexts.indexOf(')') > 0) {
+        // function
+        target.type = 'function'
+        target.text = targetCheck.split('(')[0]
+        const argument = targetCheck.split('(')[1].substr(0, targetCheck.split('(')[1].length - 1)
+        //
+        target.functionArgument = argument.split(',')
+      } else {
+        // variable
+        target.type = 'variable'
+        target.variableType = 'global'
+      }
+      output.reserves.push(target)
+    } else if (targetText !== '{') {
+      // {{}} でかこまれてないやつ
+      // console.log('aaaa', targetText, text.length)
+      const target = {}
+      target.start = i
+      const targetTexts = []
+      for (;i < text.length; i++) {
+        if (text.length - 1 == i + 1) {
+          break
+        }
+        targetText = text[i]
+        if (targetText === '{' && text[i + 1] === '{') {
+          target.end = i - 1
+          i--
+          break
+        }
+        targetTexts.push(targetText)
+      }
+      const targetCheck = targetTexts.join('')
+      target.text = targetCheck
+      target.type = 'direct'
+      target.variableType = 'string'
+      output.reserves.push(target)
+    }
+  }
+  return output
+}
+
 
 function DOMAnalysis (dom) {
   //

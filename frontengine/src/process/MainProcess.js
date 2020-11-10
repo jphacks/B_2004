@@ -41,7 +41,7 @@ export default async function (text, props, clear, option) {
   let targetIndex = 0
   let output = { status: 'WA', reason: '' }
   const vForGlobal = {}
-  console.log('outputtt', text, props, clear, option)
+  // console.log('outputtt', text, props, clear, option)
   if (option && option.mode === 'answerDOM') {
     if (option.existString) {
       let resultOutput = [] // 文字列型の場合は、outputが見れるはず
@@ -98,7 +98,8 @@ export default async function (text, props, clear, option) {
         }
         // 8-- v-for
         if (tar.name === 'reserveText') {
-          console.log('tarValue:none', tar)
+          // console.log('tarValue:none', tar)
+          const output = []
           for (let reserve of Object.values(tar.reserves)) {
             const strValueStart = tar.value.substr(0, reserve.start)
             const strValueEnd = tar.value.substr(reserve.end + 1, tar.value.length)
@@ -112,28 +113,41 @@ export default async function (text, props, clear, option) {
                   args.push(global[argument])
                 }
               }
-              console.log('getterqq', global, tar, args)
+              // console.log('getterqq', global, tar, args)
               if (!global.hasOwnProperty(reserve.text)) {
                 return { status: 'WA', reason: 'funtion no' }
               }
               const getReturn = getScript(global[reserve.text], args)
               const toStr = String(getReturn)
-              console.log('getter', global, getReturn, args, toStr)
-              tar.value = strValueStart + toStr + strValueEnd
+              // console.log('getter', global, getReturn, args, toStr)
+              // tar.value = strValueStart + toStr + strValueEnd
+              output.push(toStr)
             } else if (reserve.type === 'variable') {
               // tar.value = global[reserve.text]
-              let toStr = String(tar.value)
-              if (global.hasOwnProperty(toStr)) {
-                toStr = String(global[toStr])
+              let toStr = String(reserve.text)
+              if (global.hasOwnProperty(reserve.text)) {
+                if (!global[reserve.text].func) {
+                  toStr = String(global[reserve.text])
+                } else if (global[reserve.text].computed) {
+                  toStr = String(getScript(global[reserve.text]))
+                } else {
+                  return { status: 'WA', reason: 'maybe function -> computed?' }
+                }
+              } else if (tar && tar.params && tar.params.hasOwnProperty(reserve.text)) {
+                toStr = tar.params[reserve.text]
               }
-              tar.value = strValueStart + toStr + strValueEnd
-              console.log('pppRRR', tar, reserve)
+              // tar.value = strValueStart + toStr + strValueEnd
+              output.push(toStr)
+              // console.log('pppRRR', reserve, tar.value, global)
+            } else if (reserve.type === 'direct') {
+              output.push(reserve.text)
             }
           }
+          tar.value = output.join('')
         }
         if (tar.answer && tar.name === 'reserveText') {
           // とりあえずexistStringなので....
-          console.log('tarValue', tar, targetIndex)
+          // console.log('tarValue', tar, targetIndex)
           if (tar.value === clear[targetIndex]) {
             checkClear++
           } else {
@@ -144,11 +158,11 @@ export default async function (text, props, clear, option) {
             return { status: 'AC', reason: 'all Accept' }
           }
         } else if (tar.answer) {
-          console.log('tarValue:without', tar)
+          // console.log('tarValue:without', tar)
         }
         // -- lastPropagate
         let i = 0
-        console.log('tar.children', tar.children, tar)
+        // console.log('tar.children', tar.children, tar)
         Object.values(tar.children || {}).forEach(array => {
           array.forEach(value => {
             let nextObject = {}
@@ -164,7 +178,7 @@ export default async function (text, props, clear, option) {
               nextObject.answerIndex = i
               i = i + 1
             }
-            console.log('cheek', nextObject)
+            // console.log('cheek', nextObject)
             targets.push(nextObject)
           })
         })
@@ -176,6 +190,6 @@ export default async function (text, props, clear, option) {
 
   }
   // CreateAST(script)
-  console.log('runcode:')
+  // console.log('runcode:')
   return { status: 'WA', reason: 'why?runendCode', info: checkClear }
 }
