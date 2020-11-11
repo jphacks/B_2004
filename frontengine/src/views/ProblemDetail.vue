@@ -146,8 +146,11 @@ export default {
           } else {
             this.sumpleOutput.push(res.reason)
           }
+          if (res.noneTarget) {
+            this.sumpleOutput.push('failedIndex: ' + res.noneTarget)
+          }
           if (res.output) {
-            this.sumpleOutput.push('output:', res.output)
+            this.sumpleOutput.push('output: ' + res.output)
           }
           this.wait = false
         })

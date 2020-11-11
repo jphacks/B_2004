@@ -122,13 +122,22 @@ function DOMAnalysis (dom) {
     // let blanckCount = []
     //
     const candidateOthers = []
-    for (let i = 1; i < tags.length - 1; i++) {
+    if (tags[tags.length - 1] !== '>') {
+      tags[tags.length - 1] = tags[tags.length - 1].split('>')[0]
+      tags.push('>')
+    } else if (tags[tags.length - 1] !== '/>') {
+      tags[tags.length - 1] = tags[tags.length - 1].split('/>')[0]
+      tags.push('/>')
+    }
+    let tagslength = tags.length
+    for (let i = 1; i < tagslength; i++) {
       const tag = tags[i]
       candidateOthers.push(tag)
       if (tag.length > 0) {
         candidatetag.push(candidateOthers.length - 1)
       }
     }
+    console.log('candidate', candidateOthers, candidatetag, tags)
     let rensei = []
     let kisu = false
     for (let i = 0; i < candidatetag.length; i++) {

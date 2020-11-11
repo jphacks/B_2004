@@ -199,16 +199,17 @@ export default async function (text, props, clear, option) {
       }
       if (option.existString) {
         let flag = true
+        let noneTarget = []
         for (let i = 0; i < clear.length; i++) {
           if (lastOutput[i] !== clear[i]) {
             flag = false
-            break
+            noneTarget.push(i)
           }
         }
         if (flag) {
           return { status: 'AC', reason: 'all Accept', info: checkClear, option: option, clear: clear, output: lastOutput }
         } else {
-          return { status: 'WA', reason: 'runCode', info: checkClear, option: option, clear: clear, output: lastOutput }
+          return { status: 'WA', reason: 'noClear', info: checkClear, option: option, clear: clear, output: lastOutput, noneTarget: noneTarget }
         }
       } else {
         return { status: 'WA', reason: 'runCode', info: checkClear, option: option, clear: clear, output: lastOutput }
