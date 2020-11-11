@@ -3,6 +3,7 @@ import CreateAST from './CreateAST.js'
 import ScriptProcess from './ScriptProcess.js'
 import DomProcess from './DomProcess.js'
 import { global } from './moduleProcess.js'
+import { domProperty } from './ScriptUtility/domUtility.js'
 import { execScript, getScript } from './ScriptUtility/execScript.js'
 export default async function (text, props, clear, option) {
   const templateLength = '<template>'.length
@@ -16,8 +17,8 @@ export default async function (text, props, clear, option) {
   const domTree = DomProcess(templates)
   const module = ScriptProcess(script)
   // const data = execScript(global, ['userId'])
-  console.log('scriptRe', global, module, option, clear)
-  console.log('dom', domTree)
+  // console.lo('scriptRe', global, module, option, clear)
+  // console.lo('dom', domTree)
   const errors = []
   let toProps = {}
   if (Array.isArray(props)) {
@@ -34,7 +35,7 @@ export default async function (text, props, clear, option) {
       global[key] = toProps[key]
     })
   }
-
+  console.log('global', global)
   // const getClear = clear
   const getClear = clear
   let checkClear = 0
@@ -49,49 +50,62 @@ export default async function (text, props, clear, option) {
       // let target = domTree
       const targets = []
       targets.push(domTree)
+      console.log('answerDom', domTree)
       while (targets.length > 0) {
         const getTar = targets.shift()
         const tar = Object.assign({}, getTar)
         if (tar.params) {
-          console.log('targets!!', tar.params, tar)
+          // console.lo('targets!!', tar.params, tar)
         }
         tooru = false
         // -- v-for
+        console.log('mituketa', tar)
         if (tar['v-for']) {
           const target = tar['v-for']
-          if (target.type === 'variable') {
-            if (target.variableType === 'global') {
-              if (global.hasOwnProperty(target.right)) {
-                if (global[target.right]) {
-                  let data = global[target.right]
-                  if (data.func) {
-                    // argumentはまだ未対応><
-                    data = getScript(global[target.right], [])
-                  }
-                  for (let i = 0; i < global[target.right].length; i++) {
-                    // tar.params = {}
-                    let nextTarget = Object.assign({}, tar)
-                    const params = {}
-                    if (target && target.target && target.target.index) {
-                      params.index = i
-                    } else {
-                    }
-                    nextTarget.paramIndex = i
-                    nextTarget.paramValue = global[target.right][i]
-                    params.value = global[target.right][i]
-                    nextTarget.params = Object.assign({}, params)
-                    console.log('nextTarget', nextTarget)
-                    delete nextTarget['v-for']
-                    targets.push(nextTarget)
-                  }
-                  continue
+          if (target.type === 'variable' || target.type === 'function') {
+            console.log('chhh', target)
+            let data = domProperty(target.right, tar.params)
+            // とりあえずdataはArray想定 本来ではObjectも考えないといけないよ
+            console.log('data', data)
+            if (Array.isArray(data)) {
+              for (let i = 0; i < data.length; i++) {
+                // tar.params = {}
+                let nextTarget = Object.assign({}, tar)
+                const params = {}
+                const keys = Object.values(target.target)
+                params[keys[0]] = data[i]
+                if (keys.length === 2) {
+                  params[keys[1]] = i
                 }
-              } else {
-                return { status: 'WA', reason: 'no!!' + target.rights + ' is not defined!!' }
+                nextTarget.paramIndex = i
+                nextTarget.paramValue = data[i]
+                nextTarget.params = Object.assign({}, params)
+                // console.lo('nextTarget', nextTarget)
+                delete nextTarget['v-for']
+                targets.push(nextTarget)
               }
             } else {
-              return { status: 'WA', reason: 'sorry!! no use not Global v-for' }
+              // obj
+              const keys = Object.keys(data)
+              data = Object.values(data)
+              for (let i = 0; i < data.length; i++) {
+                // tar.params = {}
+                let nextTarget = Object.assign({}, tar)
+                const params = {}
+                const keys = Object.values(target.target)
+                params[keys[0]] = data[i]
+                if (keys.length === 2) {
+                  params[keys[1]] = keys[i]
+                }
+                nextTarget.paramIndex = keys[i]
+                nextTarget.paramValue = data[i]
+                nextTarget.params = Object.assign({}, params)
+                // console.lo('nextTarget', nextTarget)
+                delete nextTarget['v-for']
+                targets.push(nextTarget)
+              }
             }
+            continue
           } else {
             // func
           }
@@ -104,38 +118,14 @@ export default async function (text, props, clear, option) {
             const strValueStart = tar.value.substr(0, reserve.start)
             const strValueEnd = tar.value.substr(reserve.end + 1, tar.value.length)
             if (reserve.type === 'function') {
+              const get = domProperty(reserve.textRawValue, tar.params)
               // とりあえずglobalのみ対応
               const args = []
-              for (let argument of reserve.functionArgument) {
-                if (tar && tar.params && tar.params.hasOwnProperty(argument)) {
-                  args.push(tar.params[argument])
-                } else if (global.hasOwnProperty(argument)) {
-                  args.push(global[argument])
-                }
-              }
-              // console.log('getterqq', global, tar, args)
-              if (!global.hasOwnProperty(reserve.text)) {
-                return { status: 'WA', reason: 'funtion no' }
-              }
-              const getReturn = getScript(global[reserve.text], args)
-              const toStr = String(getReturn)
-              // console.log('getter', global, getReturn, args, toStr)
-              // tar.value = strValueStart + toStr + strValueEnd
+              const toStr = String(get)
               output.push(toStr)
             } else if (reserve.type === 'variable') {
-              // tar.value = global[reserve.text]
-              let toStr = String(reserve.text)
-              if (global.hasOwnProperty(reserve.text)) {
-                if (!global[reserve.text].func) {
-                  toStr = String(global[reserve.text])
-                } else if (global[reserve.text].computed) {
-                  toStr = String(getScript(global[reserve.text]))
-                } else {
-                  return { status: 'WA', reason: 'maybe function -> computed?' }
-                }
-              } else if (tar && tar.params && tar.params.hasOwnProperty(reserve.text)) {
-                toStr = tar.params[reserve.text]
-              }
+              const get = domProperty(reserve.textRawValue, tar.params)
+              let toStr = String(get)
               // tar.value = strValueStart + toStr + strValueEnd
               output.push(toStr)
               // console.log('pppRRR', reserve, tar.value, global)
