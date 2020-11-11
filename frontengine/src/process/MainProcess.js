@@ -41,6 +41,8 @@ export default async function (text, props, clear, option) {
   let checkClear = 0
   let targetIndex = 0
   let output = { status: 'WA', reason: '' }
+  let lastOutput = []
+  let outputIndex = 0
   const vForGlobal = {}
   // console.log('outputtt', text, props, clear, option)
   if (option && option.mode === 'answerDOM') {
@@ -52,7 +54,8 @@ export default async function (text, props, clear, option) {
       targets.push(domTree)
       console.log('answerDom', domTree)
       while (targets.length > 0) {
-        const getTar = targets.shift()
+        const ifBool = true
+        const getTar = targets.pop()
         const tar = Object.assign({}, getTar)
         if (tar.params) {
           // console.lo('targets!!', tar.params, tar)
@@ -68,7 +71,7 @@ export default async function (text, props, clear, option) {
             // とりあえずdataはArray想定 本来ではObjectも考えないといけないよ
             console.log('data', data)
             if (Array.isArray(data)) {
-              for (let i = 0; i < data.length; i++) {
+              for (let i = data.length - 1; i >= 0; i--) {
                 // tar.params = {}
                 let nextTarget = Object.assign({}, tar)
                 const params = {}
@@ -88,7 +91,7 @@ export default async function (text, props, clear, option) {
               // obj
               const keys = Object.keys(data)
               data = Object.values(data)
-              for (let i = 0; i < data.length; i++) {
+              for (let i = data.length - 1; i >= 0; i--) {
                 // tar.params = {}
                 let nextTarget = Object.assign({}, tar)
                 const params = {}
@@ -111,6 +114,16 @@ export default async function (text, props, clear, option) {
           }
         }
         // 8-- v-for
+        // v-if
+        console.log('tarIf', tar['v-if'], tar)
+        if (tar['v-if']) {
+          let data = !!domProperty(tar['v-if'].right, tar.params)
+          console.log('v-ifSkip', data, tar)
+          if (!data) {
+            continue
+          }
+        }
+        // 8-- v-if
         if (tar.name === 'reserveText') {
           // console.log('tarValue:none', tar)
           const output = []
@@ -138,43 +151,69 @@ export default async function (text, props, clear, option) {
         if (tar.answer && tar.name === 'reserveText') {
           // とりあえずexistStringなので....
           // console.log('tarValue', tar, targetIndex)
-          if (tar.value === clear[targetIndex]) {
-            checkClear++
-          } else {
-            return { status: 'WA', reason: 'noneClear', target: clear[targetIndex], targetNone: tar.value, targetIndex: targetIndex }
+          console.log('lastOutput', ...lastOutput)
+          if (typeof lastOutput[outputIndex] !== 'string') {
+            lastOutput[outputIndex] = ''
           }
-          targetIndex++
-          if (clear.length === checkClear) {
-            return { status: 'AC', reason: 'all Accept' }
-          }
+          lastOutput[outputIndex] = lastOutput[outputIndex] + tar.value
+          // if (tar.value === clear[targetIndex]) {
+          //   checkClear++
+          // } else {
+          //   return { status: 'WA', reason: 'noneClear', target: clear[targetIndex], targetNone: tar.value, targetIndex: targetIndex }
+          // }
+          // targetIndex++
+          // if (clear.length === checkClear) {
+          //   return { status: 'AC', reason: 'all Accept', output: lastOutput }
+          // }
         } else if (tar.answer) {
           // console.log('tarValue:without', tar)
         }
         // -- lastPropagate
-        let i = 0
-        // console.log('tar.children', tar.children, tar)
-        Object.values(tar.children || {}).forEach(array => {
-          array.forEach(value => {
-            let nextObject = {}
-            nextObject = Object.assign({}, value)
-            if (tar.hasOwnProperty('params')) {
-              nextObject.params = Object.assign({}, tar.params)
-            }
-            if (tar.hasOwnProperty('paramIndex')) {
-              nextObject.paramIndex = tar.paramIndex
-            }
-            if (tar.name === 'answer') {
-              nextObject.answer = true
-              nextObject.answerIndex = i
-              i = i + 1
-            }
-            // console.log('cheek', nextObject)
-            targets.push(nextObject)
-          })
-        })
-        // -- lastPrpagate
+        // 子供に伝播
+        if (tar.name === 'br') {
+          outputIndex++
+        }
+        let pushChildren = tar.children || []
+        console.log('children', tar.children, tar)
+        for (let i = pushChildren.length - 1; i >= 0; i--) {
+          const value = pushChildren[i]
+          let nextObject = {}
+          nextObject = Object.assign({}, value)
+          if (tar.hasOwnProperty('params')) {
+            nextObject.params = Object.assign({}, tar.params)
+          }
+          if (tar.hasOwnProperty('paramIndex')) {
+            nextObject.paramIndex = tar.paramIndex
+          }
+          if (tar.hasOwnProperty('answer')) {
+            nextObject.answer = tar.answer
+          }
+          if (tar.name === 'answer') {
+            nextObject.answer = true
+            nextObject.answerIndex = i
+          }
+          // console.log('cheek', nextObject)
+          targets.push(nextObject)
+          // -- lastPrpagate
+        }
       }
-      return { status: 'WA', reason: 'runCode', info: checkClear, option: option, clear: clear }
+      if (option.existString) {
+        let flag = true
+        let noneTarget = []
+        for (let i = 0; i < clear.length; i++) {
+          if (lastOutput[i] !== clear[i]) {
+            flag = false
+            noneTarget.push(i)
+          }
+        }
+        if (flag) {
+          return { status: 'AC', reason: 'all Accept', info: checkClear, option: option, clear: clear, output: lastOutput }
+        } else {
+          return { status: 'WA', reason: 'noClear', info: checkClear, option: option, clear: clear, output: lastOutput, noneTarget: noneTarget }
+        }
+      } else {
+        return { status: 'WA', reason: 'runCode', info: checkClear, option: option, clear: clear, output: lastOutput }
+      }
     }
   } else {
 

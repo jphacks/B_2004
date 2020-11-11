@@ -17,12 +17,17 @@ function domProperty (text, params) {
 
 function scriptCreateAST (script) {
   const { parse } = require('@babel/parser')
-  const ast = parse(script)
-  if (ast && ast.program && ast.program.body && ast.program.body[0]) {
+  console.log('domScript', script)
+  try {
+    const ast = parse(script)
+    if (ast && ast.program && ast.program.body && ast.program.body[0]) {
     // 一行解析
-    return ast.program.body[0]
-  }
-  if (ast && ast.program && ast.program.directives && ast.program.directives[0]) {
-    return ast.program.directives[0]
+      return ast.program.body[0]
+    }
+    if (ast && ast.program && ast.program.directives && ast.program.directives[0]) {
+      return ast.program.directives[0]
+    }
+  } catch (e) {
+    console.log('error', e)
   }
 }

@@ -131,9 +131,11 @@ function getProperty (body, local, funcArguments) {
           return outputData[body.property.name]
         }
       } else if (body.property.extra) {
-        const index = getProperty(body.property, local)
-        console.log('配列', outputData, index, outputData[index])
-        return outputData[index]
+        if (outputData) {
+          const index = getProperty(body.property, local)
+          console.log('配列', outputData, index, outputData[index])
+          return outputData[index]
+        }
       }
     }
     return getProperty(body.object, local)
