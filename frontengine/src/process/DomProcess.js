@@ -231,6 +231,8 @@ function otherAnalysis (other) {
         splitTarget = target.right.split(' in ')
       }
       target.target = {}
+      console.log('split', splitTarget)
+      target.right = splitTarget[1]
       if (splitTarget[0].indexOf('(') >= 0 && splitTarget[0].indexOf(')') >= 0) {
         const catchCandidate = []
         let candidate = []
@@ -256,9 +258,10 @@ function otherAnalysis (other) {
     if (target.right.indexOf('(') > 0 && target.right.indexOf(')') > 0) {
       // function
       target.type = 'function'
-      target.right = otherSplit[1].split('(')[0]
-      const argument = otherSplit[1].split('(')[1].substr(0, otherSplit[1].split('(')[1].length - 1)
+      // target.right = otherSplit[1].split('(')[0]
+      const argument = target.right.split('(')[1].substr(0, target.right.split('(')[1].length - 1)
       //
+      target.functionTarget = target.right.split('(')[0]
       target.functionArgument = argument.split(',')
     } else {
       // variable
@@ -347,6 +350,7 @@ function textAnalysis (text) {
       i += 1
       const targetCheck = targetTexts.join('')
       target.text = targetCheck
+      target.textRawValue = targetCheck
       if (targetTexts.indexOf('(') > 0 && targetTexts.indexOf(')') > 0) {
         // function
         target.type = 'function'
@@ -362,7 +366,7 @@ function textAnalysis (text) {
       output.reserves.push(target)
     } else if (targetText !== '{') {
       // {{}} でかこまれてないやつ
-      console.log('aaaa', targetText, text.length)
+      // console.lo('aaaa', targetText, text.length)
       const target = {}
       target.start = i
       const targetTexts = []
@@ -380,6 +384,7 @@ function textAnalysis (text) {
       }
       const targetCheck = targetTexts.join('')
       target.text = targetCheck
+      target.textRawValue = targetCheck
       target.type = 'direct'
       target.variableType = 'string'
       output.reserves.push(target)
