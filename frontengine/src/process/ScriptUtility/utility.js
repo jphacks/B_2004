@@ -203,7 +203,7 @@ function convertProperty (body, local, funcArguments, preValue) {
       console.log('vaaaa', memberValue, local, body)
       // block要素
       for (let i = 0; i < memberValue.length; i++) {
-
+        const takeProperty = memberValue[i]
       }
     }
   } else {
@@ -219,4 +219,8 @@ function convertProperty (body, local, funcArguments, preValue) {
 
 function getProperty (body, local, funcArguments, preValue) {
   return convertProperty(body, local, funcArguments, preValue)
+}
+
+function functionObject (body, ...args) {
+  return getScript(body, args)
 }
