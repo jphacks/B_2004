@@ -83,11 +83,12 @@ function CheckProperty (body, option) {
   }
 }
 
-function getProperty (body, local, funcArguments) {
+function convertProperty (body, local, funcArguments, preValue) {
   if (!body) {
     console.error('maybe body is null or undifiend?', body, local)
     return false
   }
+  console.log('geet', body, local, funcArguments, preValue)
   const key = Object.keys(body || {})[0]
   if (body && body.type === 'ThisExpression') {
     return global
@@ -121,7 +122,7 @@ function getProperty (body, local, funcArguments) {
       const outputData = getProperty(body.object, local)
       // // console.log('join?', body, outputData, body.property.name, outputData[body.property.name](''), funcArguments)
       // // console.log('join', outputData[body.property.name](...funcArguments), !!funcArguments)
-      if (!!funcArguments && outputData && outputData[body.property.name]) {
+      if (Array.isArray(funcArguments) && outputData && !!outputData[body.property.name] && typeof outputData[body.property.name] === 'function') {
         return outputData[body.property.name](...funcArguments)
       } else if (body.property.name) {
         // console.log('bodymemberrr', outputData[body.property.name], outputData, body.property.name)
@@ -141,13 +142,14 @@ function getProperty (body, local, funcArguments) {
     return getProperty(body.object, local)
   } else if (body.type === 'CallExpression') {
     let propertyArguments = []
+    console.log('callexpression!!', body.type, body, local)
     if (body.arguments) {
       for (let param of body.arguments) {
         if (param.type === 'FunctionExpression') {
           console.error('sorry!! argument dont use function!!')
           return false
         } else {
-          propertyArguments.push(getProperty(param, local))
+          propertyArguments.push(getProperty(param, local, [], body))
         }
       }
       if (body.callee) {
@@ -174,6 +176,14 @@ function getProperty (body, local, funcArguments) {
     const lustGet = getProperty(body.value, local, funcArguments)
     console.log('???', lustGet)
     return lustGet
+  } else if (body.type === 'ArrowFunctionExpression') {
+    console.log('vaaa', body, local, preValue)
+    if (body.body.type === 'AssignmentExpression') {
+      // 要素一つ
+    } else {
+      // block要素
+      // const get =
+    }
   } else {
     let data = CheckProperty(body)
     let key = 'key'
@@ -183,4 +193,8 @@ function getProperty (body, local, funcArguments) {
     console.log('return', data[key], data)
     return data[key]
   }
+}
+
+function getProperty (body, local, funcArguments, preValue) {
+  return convertProperty(body, local, funcArguments, preValue)
 }

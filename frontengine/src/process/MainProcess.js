@@ -115,7 +115,6 @@ export default async function (text, props, clear, option) {
         }
         // 8-- v-for
         // v-if
-        console.log('tarIf', tar['v-if'], tar)
         if (tar['v-if']) {
           let data = !!domProperty(tar['v-if'].right, tar.params)
           console.log('v-ifSkip', data, tar)

@@ -67,7 +67,10 @@ function execScript (body, array, preLocal) {
       case 'ExpressionStatement':
         // console.lo('argument', access.body[i])
         if (access.body[i].expression && access.body[i].expression.type === 'CallExpression') {
-          const target = access.body[i].expression.callee
+          const preTarget = access.body[i].expression
+          const target = preTarget.callee
+          const takeG = getProperty(preTarget, local)
+          console.log('bodyGee', local, preTarget, takeG)
           if (target.object && target.object.type === 'ThisExpression') {
             execScript(global[target.property.name], access.body[i].expression.arguments)
           }
