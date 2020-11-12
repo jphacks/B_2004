@@ -2,13 +2,15 @@ import { global } from '../moduleProcess.js'
 import { execScript, getScript, isBool } from './execScript.js'
 export { domProperty }
 function domProperty (text, params) {
+  const type = typeof Boolean(text)
+  console.log('type', type)
   const script = scriptCreateAST(text)
   const ToParams = params || {}
   const toDomScript = Object.assign(ToParams, global)
-  console.log('scriptDom', script, toDomScript, text)
-  if (script.expression) {
+  const scriptExpression = script.expression || script
+  if (script && script.expression) {
     return isBool(script.expression, toDomScript)
-  } else if (script.value) {
+  } else if (script && script.value) {
     return isBool(script.value, toDomScript)
   }
   // console.lo('checcer', script)
@@ -17,9 +19,9 @@ function domProperty (text, params) {
 
 function scriptCreateAST (script) {
   const { parse } = require('@babel/parser')
-  console.log('domScript', script)
   try {
     const ast = parse(script)
+    console.log('scriptt', ast)
     if (ast && ast.program && ast.program.body && ast.program.body[0]) {
     // 一行解析
       return ast.program.body[0]

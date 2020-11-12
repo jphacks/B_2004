@@ -22,7 +22,6 @@ function CheckProperty (body, option) {
   } else if (bodyType === 'ObjectExpression') {
     for (const property of bodyValue.properties) {
       const get = CheckProperty(property)
-      console.log('getter', get)
       for (const key of Object.keys(get || {})) {
         if (key !== 'noneDataEDEKQWLDCOLASXMW') {
           output[key] = get[key]
@@ -114,7 +113,6 @@ function getProperty (body, local, funcArguments) {
       }
     }
   } else if (body.type && body.type === 'MemberExpression' && body.object) {
-    console.log('bodyMeber', body, local, funcArguments)
     if (body.name) {
       return getProperty(body.object, local)[body.name]
     } else if (body.property) {
@@ -133,7 +131,6 @@ function getProperty (body, local, funcArguments) {
       } else if (body.property.extra) {
         if (outputData) {
           const index = getProperty(body.property, local)
-          console.log('配列', outputData, index, outputData[index])
           return outputData[index]
         }
       }
@@ -172,7 +169,6 @@ function getProperty (body, local, funcArguments) {
     return getScript(body, [], local)
   } else if (body.type === 'ObjectProperty') {
     const lustGet = getProperty(body.value, local, funcArguments)
-    console.log('???', lustGet)
     return lustGet
   } else {
     let data = CheckProperty(body)
@@ -180,7 +176,6 @@ function getProperty (body, local, funcArguments) {
     if (typeof data === 'object') {
       key = Object.keys(data || {})[0]
     }
-    console.log('return', data[key], data)
     return data[key]
   }
 }

@@ -137,7 +137,6 @@ function DOMAnalysis (dom) {
         candidatetag.push(candidateOthers.length - 1)
       }
     }
-    console.log('candidate', candidateOthers, candidatetag, tags)
     let rensei = []
     let kisu = false
     for (let i = 0; i < candidatetag.length; i++) {
@@ -240,7 +239,7 @@ function otherAnalysis (other) {
         splitTarget = target.right.split(' in ')
       }
       target.target = {}
-      console.log('split', splitTarget)
+
       target.right = splitTarget[1]
       if (splitTarget[0].indexOf('(') >= 0 && splitTarget[0].indexOf(')') >= 0) {
         const catchCandidate = []

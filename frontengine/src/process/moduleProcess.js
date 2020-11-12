@@ -7,7 +7,6 @@ const global = {}
 export { global }
 export default function (ast) {
   // console.log('ast', ast)
-  console.log('getkakuninn!!', ast.program.body)
   const firstBody = ast.program.body[0].declaration.properties
   const modules = {}
   for (const body of firstBody) {
@@ -33,9 +32,7 @@ export default function (ast) {
     }
   }
   // console.log('srhjeosije', global.text)
-  console.log('output!!!!!', global)
   // const output = execScript(global.testObject, global.text)
-  console.log('output!!!', global)
   // console.log('moduleOutput', global, modules)
   return modules
 }

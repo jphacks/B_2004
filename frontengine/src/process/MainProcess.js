@@ -35,7 +35,6 @@ export default async function (text, props, clear, option) {
       global[key] = toProps[key]
     })
   }
-  console.log('global', global)
   // const getClear = clear
   const getClear = clear
   let checkClear = 0
@@ -52,7 +51,6 @@ export default async function (text, props, clear, option) {
       // let target = domTree
       const targets = []
       targets.push(domTree)
-      console.log('answerDom', domTree)
       while (targets.length > 0) {
         const ifBool = true
         const getTar = targets.pop()
@@ -62,14 +60,11 @@ export default async function (text, props, clear, option) {
         }
         tooru = false
         // -- v-for
-        console.log('mituketa', tar)
         if (tar['v-for']) {
           const target = tar['v-for']
           if (target.type === 'variable' || target.type === 'function') {
-            console.log('chhh', target)
             let data = domProperty(target.right, tar.params)
             // とりあえずdataはArray想定 本来ではObjectも考えないといけないよ
-            console.log('data', data)
             if (Array.isArray(data)) {
               for (let i = data.length - 1; i >= 0; i--) {
                 // tar.params = {}
@@ -115,10 +110,8 @@ export default async function (text, props, clear, option) {
         }
         // 8-- v-for
         // v-if
-        console.log('tarIf', tar['v-if'], tar)
         if (tar['v-if']) {
           let data = !!domProperty(tar['v-if'].right, tar.params)
-          console.log('v-ifSkip', data, tar)
           if (!data) {
             continue
           }
@@ -151,7 +144,6 @@ export default async function (text, props, clear, option) {
         if (tar.answer && tar.name === 'reserveText') {
           // とりあえずexistStringなので....
           // console.log('tarValue', tar, targetIndex)
-          console.log('lastOutput', ...lastOutput)
           if (typeof lastOutput[outputIndex] !== 'string') {
             lastOutput[outputIndex] = ''
           }
@@ -174,7 +166,6 @@ export default async function (text, props, clear, option) {
           outputIndex++
         }
         let pushChildren = tar.children || []
-        console.log('children', tar.children, tar)
         for (let i = pushChildren.length - 1; i >= 0; i--) {
           const value = pushChildren[i]
           let nextObject = {}

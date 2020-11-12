@@ -26,7 +26,7 @@ function CheckProperty (body, option) {
   } else if (bodyType === 'ObjectExpression') {
     for (const property of bodyValue.properties) {
       const get = CheckProperty(property)
-      console.log('getter', get)
+      // console.log('getter', get)
       for (const key of Object.keys(get || {})) {
         if (key !== 'noneDataEDEKQWLDCOLASXMW') {
           output[key] = get[key]
@@ -88,7 +88,7 @@ function CheckProperty (body, option) {
 }
 
 function getProperty (body, local, funcArguments) {
-  console.log('first', body, local)
+  // console.log('first', body, local)
   if (!body) {
     console.error('maybe body is null or undifiend?', body, local)
     return false
@@ -97,7 +97,7 @@ function getProperty (body, local, funcArguments) {
   if (body && body.type === 'ThisExpression') {
     return global
   } else if (body.type && body.type === 'Identifier' && body.name) {
-    console.log('first:maybe', body, local, !!local[body.name])
+    // console.log('first:maybe', body, local, !!local[body.name])
     if (local.hasOwnProperty(body.name)) {
       return local[body.name]
     } else {
@@ -116,17 +116,17 @@ function getProperty (body, local, funcArguments) {
       }
     }
   } else if (body.type && body.type === 'MemberExpression' && body.object) {
-    console.log('bodyMeber', body, local, funcArguments)
+    // console.log('bodyMeber', body, local, funcArguments)
     if (body.name) {
       return getProperty(body.object, local)[body.name]
     } else if (body.property) {
       const outputData = getProperty(body.object, local)
-      // console.log('join?', body, outputData, body.property.name, outputData[body.property.name](''), funcArguments)
-      // console.log('join', outputData[body.property.name](...funcArguments), !!funcArguments)
+      // // console.log('join?', body, outputData, body.property.name, outputData[body.property.name](''), funcArguments)
+      // // console.log('join', outputData[body.property.name](...funcArguments), !!funcArguments)
       if (!!funcArguments) {
         return outputData[body.property.name](...funcArguments)
       } else if (body.property.name) {
-        console.log('bodymemberrr', outputData[body.property.name], outputData, body.property.name)
+        // console.log('bodymemberrr', outputData[body.property.name], outputData, body.property.name)
         if (!outputData[body.property.name]) {
           return outputData[getProperty(body.property, local)]
         } else {
@@ -149,9 +149,9 @@ function getProperty (body, local, funcArguments) {
         }
       }
       if (body.callee) {
-        console.log('callee', propertyArguments)
+        // console.log('callee', propertyArguments)
         const outputData = getProperty(body.callee, local, propertyArguments)
-        console.log('getter', outputData)
+        // console.log('getter', outputData)
         return outputData
       }
     }
@@ -161,7 +161,7 @@ function getProperty (body, local, funcArguments) {
     if (typeof data === 'object') {
       key = Object.keys(data || {})[0]
     }
-    console.log('return', data[key], data)
+    // console.log('return', data[key], data)
     return data[key]
   }
 }
