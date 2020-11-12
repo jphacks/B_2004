@@ -148,6 +148,8 @@ function convertProperty (body, local, funcArguments, preValue) {
         if (param.type === 'FunctionExpression') {
           console.error('sorry!! argument dont use function!!')
           return false
+        } else if (param.type === 'ArrowFunctionExpression') {
+          propertyArguments.push(getProperty(param, local, [], body.callee))
         } else {
           propertyArguments.push(getProperty(param, local, [], body))
         }
@@ -177,12 +179,32 @@ function convertProperty (body, local, funcArguments, preValue) {
     console.log('???', lustGet)
     return lustGet
   } else if (body.type === 'ArrowFunctionExpression') {
-    console.log('vaaa', body, local, preValue)
+    let memberTarget = preValue
+    let memberValue = getProperty(memberTarget, local) // 配列なのは確定
+    while (true) {
+      if (Array.isArray(memberValue)) {
+        break
+      } else {
+        if (memberTarget.hasOwnProperty('object')) {
+          memberTarget = preValue.object
+          memberValue = getProperty(memberTarget, local)
+        } else {
+          break
+        }
+      }
+    }
+    if (!Array.isArray(memberValue)) {
+      // objectがなくなった場合
+      return false
+    }
     if (body.body.type === 'AssignmentExpression') {
       // 要素一つ
-    } else {
+    } else if (body.body.type === 'BlockStatement') {
+      console.log('vaaaa', memberValue, local, body)
       // block要素
-      // const get =
+      for (let i = 0; i < memberValue.length; i++) {
+
+      }
     }
   } else {
     let data = CheckProperty(body)
