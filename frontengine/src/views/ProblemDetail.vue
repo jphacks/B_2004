@@ -49,6 +49,8 @@
     </div>
     <!-- <br><br><br><router-link :to="{name: 'ProblemResult', params: {examId: $route.params.examId}}">問題結果画面に遷移します。</router-link> -->
   </div>
+  <preview-field :dom="getDomTree">
+  </preview-field>
   </body>
 </template>
 
@@ -58,13 +60,13 @@ import MainProcess from '@/process/MainProcess.js'
 import { mapGetters, mapActions } from 'vuex'
 import Exam1 from '@/components/Exam1.vue'
 import firebase from 'firebase'
+import PreviewField from '@/components/preview/PreviewField'
 // import Exam1 from '@/components/Exam1.vue'
 // import Exam2 from '@/components/Exam2.vue'
 export default {
   name: 'ProblemDetail',
   components: {
-    // Exam1,
-    // Exam2
+    PreviewField
   },
   data () {
     return {
@@ -88,7 +90,8 @@ export default {
       exam: {
       },
       sumpleOutput: [],
-      wait: false
+      wait: false,
+      getDomTree: {}
     }
   },
   props: {
@@ -139,6 +142,7 @@ export default {
         MainProcess(this.text, sumpleInput, sumpleClear, option).then(res => {
           this.sumpleOutput.pop()
           this.sumpleOutput.push('')
+          this.getDomTree = res.domTree
           if (res.reason === 'noneClear') {
             this.sumpleOutput.push(res.reason)
             this.sumpleOutput.push('failed: [' + res.targetIndex + ']: ' + res.targetNone)

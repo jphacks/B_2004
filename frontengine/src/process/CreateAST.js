@@ -6,5 +6,4 @@ export default function (script) {
   const ast = parse(script, { sourceType: 'module' })
   // console.log('ast', JSON.stringify(ast, null, 2))
   return ast
-
 }
