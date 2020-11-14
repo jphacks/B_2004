@@ -12,6 +12,10 @@ exports.submitExam = functions.https.onCall((data, context) => {
   const getId = data.examId;
   const userId = data.userId;
   const examRef = db.collection('exams').doc(getId)
+  // Initialize
+  if (userId) {
+    db.collection('exams').doc(getId).collection('users').doc(userId).set({output: []})
+  }
   return examRef.get().then(snapsshot => {
     const doc = snapsshot
     if (!doc.exists) {
@@ -26,16 +30,92 @@ exports.submitExam = functions.https.onCall((data, context) => {
       output.push(MainProcess(data.examText, value.enter, value.exit, acData.examInfo.option))
     })
     if (userId) {
-      db.collection('exams').doc(getId).collection('users').doc(userId).set({output: output})
+      db.collection('exams').doc(getId).collection('users').doc(userId).set({output: output, inputScript: data.examText})
     }
     console.log('output', output)
-    // if (userId) {
-    //   db.collection('exams').doc(getId).collection('users').doc(userId).set(output)
-    // }
     return output;
     }
   })
   });
+function findBlock (text, firstIndex) {
+  let cntFirst = 0
+  let cntEnd = 0
+  const slice = []
+  for (let i = firstIndex; i < text.length; i++) {
+    if (cntFirst !== 0 && cntFirst === cntEnd) {
+      const str = slice.join('')
+      return str
+    }
+    if (text.charAt(i) === '{') {
+      cntFirst++
+      continue
+    }
+    if (text.charAt(i) === '}') {
+      cntEnd++
+      continue
+    }
+    slice.push(text.charAt(i))
+  }
+}
+
+function ScriptProcess (text) {
+  const generate = require('@babel/generator').default
+  const ast = CreateAST(text)
+  const module = moduleProcess(ast)
+  // const generated = generate(ast)
+  // ('interpre', myInterpreter, myInterpreter.run())
+  // ('generate', generate.code(ast, { sourceType: 'module', sourceMaps: true }))
+  const dataLength = 'data ()'.length
+  const methodLength = 'methods:'.length
+  const dataFirst = text.indexOf('data ()') + dataLength
+  const methodFirst = text.indexOf('methods:') + methodLength
+  const dataBlock = findBlock(text, dataFirst)
+  const methodBlock = findBlock(text, methodFirst)
+  return module
+  // (dataBlock, methodBlock)
+}
+
+function strict (text) {
+  'use strict'
+  eval(text)
+}
+
+function moduleProcess (ast) {
+  // console.log('ast', ast)
+  const firstBody = ast.program.body[0].declaration.properties
+  const modules = {}
+  for (const body of firstBody) {
+    // console.log('body', body)
+    modules[body.key.name] = body
+  }
+  for (const key of Object.keys(modules)) {
+    switch (key) {
+      case 'props':
+        mergeObject(propsProcess(modules[key]))
+        break
+      case 'methods':
+        mergeObject(methodsProcess(modules[key]))
+        break
+      case 'data':
+        mergeObject(dataProcess(modules[key]))
+        break
+      case 'computed':
+        mergeObject(computedProcess(modules[key]))
+        break
+      case 'mounted':
+        break
+    }
+  }
+  // console.log('srhjeosije', global.text)
+  // const output = execScript(global.testObject, global.text)
+  // console.log('moduleOutput', global, modules)
+  return modules
+}
+function mergeObject (obj) {
+  Object.keys(obj).forEach(key => {
+    global[key] = obj[key]
+  })
+}
 
 function MainProcess (text, props, clear, option) {
   const templateLength = '<template>'.length
@@ -47,145 +127,206 @@ function MainProcess (text, props, clear, option) {
   // ('解析 template:', templates, 'script:', script, 'style:', style)
   // ('解析script ', script)
   const domTree = DomProcess(templates)
-  const scriptRe = ScriptProcess(script)
-  const data = execScript(global.testObject, ['userId'])
+  const module = ScriptProcess(script)
+  // const data = execScript(global, ['userId'])
+  // console.lo('scriptRe', global, module, option, clear)
+  // console.lo('dom', domTree)
   const errors = []
+  let toProps = {}
+  if (Array.isArray(props)) {
+    toProps.input = props
+  } else {
+    // obj型
+    toProps = Object.assign(toProps, props)
+  }
+  // オブジェクト型で例題作ってなかった><
+  // const toProps = { input: props }
+
   if (props) {
-    // Object.keys(props || {}).forEach(key => {
-    //   global[key] = props[key]
-    // })
-    global.input = props
+    Object.keys(toProps || {}).forEach(key => {
+      global[key] = toProps[key]
+    })
   }
   // const getClear = clear
   const getClear = clear
   let checkClear = 0
   let targetIndex = 0
   let output = { status: 'WA', reason: '' }
+  let lastOutput = []
+  let outputIndex = 0
   const vForGlobal = {}
-  console.log('outputtt', props, clear, option, text)
+  // console.log('outputtt', text, props, clear, option)
   if (option && option.mode === 'answerDOM') {
     if (option.existString) {
+      let resultOutput = [] // 文字列型の場合は、outputが見れるはず
       let tooru = true
       // let target = domTree
       const targets = []
       targets.push(domTree)
       while (targets.length > 0) {
-        const getTar = targets.shift()
+        const ifBool = true
+        const getTar = targets.pop()
         const tar = Object.assign({}, getTar)
         if (tar.params) {
+          // console.lo('targets!!', tar.params, tar)
         }
         tooru = false
         // -- v-for
         if (tar['v-for']) {
           const target = tar['v-for']
-          if (target.type === 'variable') {
-            if (target.variableType === 'global') {
-              if (global.hasOwnProperty(target.right)) {
-                if (global[target.right]) {
-                  let data = global[target.right]
-                  if (data.func) {
-                    // argumentはまだ未対応><
-                    data = getScript(global[target.right], [])
-                  }
-                  for (let i = 0; i < global[target.right].length; i++) {
-                    // tar.params = {}
-                    let nextTarget = Object.assign({}, tar)
-                    const params = {}
-                    if (target && target.target && target.target.index) {
-                      params.index = i
-                    } else {
-                    }
-                    nextTarget.paramIndex = i
-                    nextTarget.paramValue = global[target.right][i]
-                    params.value = global[target.right][i]
-                    nextTarget.params = Object.assign({}, params)
-                    delete nextTarget['v-for']
-                    targets.push(nextTarget)
-                  }
-                  continue
+          if (target.type === 'variable' || target.type === 'function') {
+            let data = domProperty(target.right, tar.params)
+            // とりあえずdataはArray想定 本来ではObjectも考えないといけないよ
+            if (Array.isArray(data)) {
+              for (let i = data.length - 1; i >= 0; i--) {
+                // tar.params = {}
+                let nextTarget = Object.assign({}, tar)
+                const params = {}
+                const keys = Object.values(target.target)
+                params[keys[0]] = data[i]
+                if (keys.length === 2) {
+                  params[keys[1]] = i
                 }
-              } else {
-                return { status: 'WA', reason: 'no!!' + target.rights + ' is not defined!!' }
+                nextTarget.paramIndex = i
+                nextTarget.paramValue = data[i]
+                nextTarget.params = Object.assign({}, params)
+                // console.lo('nextTarget', nextTarget)
+                delete nextTarget['v-for']
+                targets.push(nextTarget)
               }
             } else {
-              return { status: 'WA', reason: 'sorry!! no use not Global v-for' }
+              // obj
+              const keys = Object.keys(data)
+              data = Object.values(data)
+              for (let i = data.length - 1; i >= 0; i--) {
+                // tar.params = {}
+                let nextTarget = Object.assign({}, tar)
+                const params = {}
+                const keys = Object.values(target.target)
+                params[keys[0]] = data[i]
+                if (keys.length === 2) {
+                  params[keys[1]] = keys[i]
+                }
+                nextTarget.paramIndex = keys[i]
+                nextTarget.paramValue = data[i]
+                nextTarget.params = Object.assign({}, params)
+                // console.lo('nextTarget', nextTarget)
+                delete nextTarget['v-for']
+                targets.push(nextTarget)
+              }
             }
+            continue
           } else {
             // func
           }
         }
         // 8-- v-for
+        // v-if
+        if (tar['v-if']) {
+          let data = !!domProperty(tar['v-if'].right, tar.params)
+          if (!data) {
+            continue
+          }
+        }
+        // 8-- v-if
         if (tar.name === 'reserveText') {
+          // console.log('tarValue:none', tar)
+          const output = []
           for (let reserve of Object.values(tar.reserves)) {
             const strValueStart = tar.value.substr(0, reserve.start)
             const strValueEnd = tar.value.substr(reserve.end + 1, tar.value.length)
             if (reserve.type === 'function') {
+              const get = domProperty(reserve.textRawValue, tar.params)
               // とりあえずglobalのみ対応
               const args = []
-              for (let argument of reserve.functionArgument) {
-                if (tar.params.hasOwnProperty(argument)) {
-                  args.push(tar.params[argument])
-                } else if (global.hasOwnProperty(argument)) {
-                  args.push(global[argument])
-                }
-              }
-              if (!global.hasOwnProperty(reserve.text)) {
-                return { status: 'WA', reason: 'funtion no' }
-              }
-              const getReturn = getScript(global[reserve.text], args)
-              const toStr = String(getReturn)
-              tar.value = strValueStart + toStr + strValueEnd
+              const toStr = String(get)
+              output.push(toStr)
             } else if (reserve.type === 'variable') {
-              // tar.value = global[reserve.text]
-              const toStr = String(tar.value)
-              tar.value = strValueStart + toStr + strValueEnd
+              const get = domProperty(reserve.textRawValue, tar.params)
+              let toStr = String(get)
+              // tar.value = strValueStart + toStr + strValueEnd
+              output.push(toStr)
+              // console.log('pppRRR', reserve, tar.value, global)
+            } else if (reserve.type === 'direct') {
+              output.push(reserve.text)
             }
           }
+          tar.value = output.join('')
         }
         if (tar.answer && tar.name === 'reserveText') {
           // とりあえずexistStringなので....
-          if (tar.value === clear[targetIndex]) {
-            checkClear++
-          } else {
-            return { status: 'WA', reason: 'noneClear', target: clear[targetIndex], targetNone: tar.value }
+          // console.log('tarValue', tar, targetIndex)
+          if (typeof lastOutput[outputIndex] !== 'string') {
+            lastOutput[outputIndex] = ''
           }
-          targetIndex++
-          if (clear.length === checkClear) {
-            return { status: 'AC', reason: 'all Accept' }
-          }
+          lastOutput[outputIndex] = lastOutput[outputIndex] + tar.value
+          // if (tar.value === clear[targetIndex]) {
+          //   checkClear++
+          // } else {
+          //   return { status: 'WA', reason: 'noneClear', target: clear[targetIndex], targetNone: tar.value, targetIndex: targetIndex }
+          // }
+          // targetIndex++
+          // if (clear.length === checkClear) {
+          //   return { status: 'AC', reason: 'all Accept', output: lastOutput }
+          // }
+        } else if (tar.answer) {
+          // console.log('tarValue:without', tar)
         }
         // -- lastPropagate
-        let i = 0
-        Object.values(tar.children || {}).forEach(array => {
-          array.forEach(value => {
-            let nextObject = {}
-            nextObject = Object.assign({}, value)
-            if (tar.hasOwnProperty('params')) {
-              nextObject.params = Object.assign({}, tar.params)
-            }
-            if (tar.hasOwnProperty('paramIndex')) {
-              nextObject.paramIndex = tar.paramIndex
-            }
-            if (tar.name === 'answer') {
-              nextObject.answer = true
-              nextObject.answerIndex = i
-              i = i + 1
-            }
-            targets.push(nextObject)
-          })
-        })
-        // -- lastPrpagate
+        // 子供に伝播
+        if (tar.name === 'br') {
+          outputIndex++
+        }
+        let pushChildren = tar.children || []
+        for (let i = pushChildren.length - 1; i >= 0; i--) {
+          const value = pushChildren[i]
+          let nextObject = {}
+          nextObject = Object.assign({}, value)
+          if (tar.hasOwnProperty('params')) {
+            nextObject.params = Object.assign({}, tar.params)
+          }
+          if (tar.hasOwnProperty('paramIndex')) {
+            nextObject.paramIndex = tar.paramIndex
+          }
+          if (tar.hasOwnProperty('answer')) {
+            nextObject.answer = tar.answer
+          }
+          if (tar.name === 'answer') {
+            nextObject.answer = true
+            nextObject.answerIndex = i
+          }
+          // console.log('cheek', nextObject)
+          targets.push(nextObject)
+          // -- lastPrpagate
+        }
+      }
+      if (option.existString) {
+        let flag = true
+        let noneTarget = []
+        for (let i = 0; i < clear.length; i++) {
+          if (lastOutput[i] !== clear[i]) {
+            flag = false
+            noneTarget.push(i)
+          }
+        }
+        if (flag) {
+          return { status: 'AC', reason: 'all Accept', info: checkClear, option: option, clear: clear, output: lastOutput }
+        } else {
+          return { status: 'WA', reason: 'noClear', info: checkClear, option: option, clear: clear, output: lastOutput, noneTarget: noneTarget }
+        }
+      } else {
+        return { status: 'WA', reason: 'runCode', info: checkClear, option: option, clear: clear, output: lastOutput }
       }
     }
   } else {
 
   }
   // CreateAST(script)
-  
+  // console.log('runcode:')
   return { status: 'WA', reason: 'why?runendCode', info: checkClear }
-};
+}
 
-function DomProcess (text) {
+function DomProcess(text) {
   const tags = []
   const tagCount = {} // そのタグが開かれている時true
   const domTree = {}
@@ -309,7 +450,15 @@ function DOMAnalysis (dom) {
     // let blanckCount = []
     //
     const candidateOthers = []
-    for (let i = 1; i < tags.length - 1; i++) {
+    if (tags[tags.length - 1] !== '>') {
+      tags[tags.length - 1] = tags[tags.length - 1].split('>')[0]
+      tags.push('>')
+    } else if (tags[tags.length - 1] !== '/>') {
+      tags[tags.length - 1] = tags[tags.length - 1].split('/>')[0]
+      tags.push('/>')
+    }
+    let tagslength = tags.length
+    for (let i = 1; i < tagslength; i++) {
       const tag = tags[i]
       candidateOthers.push(tag)
       if (tag.length > 0) {
@@ -418,6 +567,8 @@ function otherAnalysis (other) {
         splitTarget = target.right.split(' in ')
       }
       target.target = {}
+
+      target.right = splitTarget[1]
       if (splitTarget[0].indexOf('(') >= 0 && splitTarget[0].indexOf(')') >= 0) {
         const catchCandidate = []
         let candidate = []
@@ -443,9 +594,10 @@ function otherAnalysis (other) {
     if (target.right.indexOf('(') > 0 && target.right.indexOf(')') > 0) {
       // function
       target.type = 'function'
-      target.right = otherSplit[1].split('(')[0]
-      const argument = otherSplit[1].split('(')[1].substr(0, otherSplit[1].split('(')[1].length - 1)
+      // target.right = otherSplit[1].split('(')[0]
+      const argument = target.right.split('(')[1].substr(0, target.right.split('(')[1].length - 1)
       //
+      target.functionTarget = target.right.split('(')[0]
       target.functionArgument = argument.split(',')
     } else {
       // variable
@@ -488,12 +640,12 @@ function createDomTree (depths) {
     for (const seed of Object.values(depths[i])) {
       if (!seed.close && seed.parentId >= 0) {
         if (!depths[i - 1][seed.parentId].children) {
-          depths[i - 1][seed.parentId].children = {}
+          depths[i - 1][seed.parentId].children = []
         }
-        if (!depths[i - 1][seed.parentId].children[seed.name]) {
-          depths[i - 1][seed.parentId].children[seed.name] = []
-        }
-        depths[i - 1][seed.parentId].children[seed.name].push(seed)
+        // if (!depths[i - 1][seed.parentId].children[seed.name]) {
+        //   depths[i - 1][seed.parentId].children[seed.name] = []
+        // }
+        depths[i - 1][seed.parentId].children.push(seed)
       } else {
       }
     }
@@ -508,7 +660,7 @@ function textAnalysis (text) {
   // 配列で受け取る?
   const output = {}
   output.value = text.join('')
-  output.reserves = {}
+  output.reserves = []
   let targetText = ''
   for (let i = 0; i < text.length; i++) {
     targetText = text[i]
@@ -531,8 +683,10 @@ function textAnalysis (text) {
         }
         targetTexts.push(targetText)
       }
+      i += 1
       const targetCheck = targetTexts.join('')
       target.text = targetCheck
+      target.textRawValue = targetCheck
       if (targetTexts.indexOf('(') > 0 && targetTexts.indexOf(')') > 0) {
         // function
         target.type = 'function'
@@ -545,318 +699,99 @@ function textAnalysis (text) {
         target.type = 'variable'
         target.variableType = 'global'
       }
-      output.reserves[target.text] = target
+      output.reserves.push(target)
+    } else if (targetText !== '{') {
+      // {{}} でかこまれてないやつ
+      // console.lo('aaaa', targetText, text.length)
+      const target = {}
+      target.start = i
+      const targetTexts = []
+      for (;i < text.length; i++) {
+        targetText = text[i]
+        if (targetText === '{' && text[i + 1] === '{') {
+          target.end = i - 1
+          targetTexts.push(targetText)
+          i--
+          break
+        }
+        targetTexts.push(targetText)
+      }
+      const targetCheck = targetTexts.join('')
+      target.text = targetCheck
+      target.textRawValue = targetCheck
+      target.type = 'direct'
+      target.variableType = 'string'
+      output.reserves.push(target)
     }
   }
   return output
 }
 
-function moduleProcess(ast) {
-  // 
-  
-  const firstBody = ast.program.body[0].declaration.properties
-  const modules = {}
-  for (const body of firstBody) {
-    // 
-    modules[body.key.name] = body
-  }
-  for (const key of Object.keys(modules)) {
-    switch (key) {
-      case 'props':
-        mergeObject(propsProcess(modules[key]))
-        break
-      case 'methods':
-        mergeObject(methodsProcess(modules[key]))
-        break
-      case 'data':
-        mergeObject(dataProcess(modules[key]))
-        break
-      case 'computed':
-        mergeObject(computedProcess(modules[key]))
-        break
-      case 'mounted':
-        break
-    }
-  }
-  // 
-  
-  const output = execScript(global.testObject, global.text)
-  
-  // 
-  return modules
-}
-function mergeObject (obj) {
-  Object.keys(obj).forEach(key => {
-    global[key] = obj[key]
-  })
-}
-
-function findBlock (text, firstIndex) {
-  let cntFirst = 0
-  let cntEnd = 0
-  const slice = []
-  for (let i = firstIndex; i < text.length; i++) {
-    if (cntFirst !== 0 && cntFirst === cntEnd) {
-      const str = slice.join('')
-      return str
-    }
-    if (text.charAt(i) === '{') {
-      cntFirst++
-      continue
-    }
-    if (text.charAt(i) === '}') {
-      cntEnd++
-      continue
-    }
-    slice.push(text.charAt(i))
-  }
-}
-
-function ScriptProcess (text) {
-  // const generate = require('@babel/generator').default
-  const ast = CreateAST(text)
-  const module = moduleProcess(ast)
-  // const generated = generate(ast)
-  // ('interpre', myInterpreter, myInterpreter.run())
-  // ('generate', generate.code(ast, { sourceType: 'module', sourceMaps: true }))
-  const dataLength = 'data ()'.length
-  const methodLength = 'methods:'.length
-  const dataFirst = text.indexOf('data ()') + dataLength
-  const methodFirst = text.indexOf('methods:') + methodLength
-  const dataBlock = findBlock(text, dataFirst)
-  const methodBlock = findBlock(text, methodFirst)
-  return module
-  // (dataBlock, methodBlock)
-}
-
-function strict (text) {
-  'use strict'
-  eval(text)
-}
-
-function CreateAST (script) {
+function CreateAST(script) {
   // var esprima = require('esprima')
-  // const code = 
+  const code = 'console.log("Hello, World!")'
+  // console.log('script', script)
   const { parse } = require('@babel/parser')
   const ast = parse(script, { sourceType: 'module' })
-  // 
+  // console.log('ast', JSON.stringify(ast, null, 2))
   return ast
-  // 引数のコードをASTに変換する
-  // var ast = esprima.parseModule(script)
-  // 
-  // 引数のコードをTokenの一覧を取得する
-  // var tokens = esprima.tokenize(code)
-  // 
+
 }
 
-function CheckProperty (body, option) {
-  // name,valueは予約されている??
-  // output {name: name, value: value}
-
-  const output = {}
-  if (body && body.key && body.key.name) {
-    output.name = body.key.name
-  }
-  let bodyType = body.value && body.value.type ? body.value.type : body.type
-  let bodyValue = body.value || body
-  if (bodyType === 'ArrayExpression') {
-    output.value = []
-    const targetElement = bodyValue.elements || body.elements
-    for (const element of targetElement) {
-      const get = CheckProperty(element)
-      output.value.push(Object.values(get || {})[0])
-    }
-  } else if (bodyType === 'ObjectExpression') {
-    for (const property of bodyValue.properties) {
-      const get = CheckProperty(property)
-      
-      for (const key of Object.keys(get || {})) {
-        if (key !== 'noneDataEDEKQWLDCOLASXMW') {
-          output[key] = get[key]
-        }
-      }
-    }
-    if (bodyValue.properties.length === 0) {
-      output.value = {}
-    }
-  } else if (bodyType === 'CallExpression') {
-    let argument = []
-    if (bodyValue.hasOwnProperty('arguments')) {
-      argument = bodyValue.argument
-    }
-    let target = bodyValue
-    let couho = []
-    while (true) {
-      const flag = false
-
-      if (!flag) {
-        break
-      }
-    }
-  } else if (bodyType === 'BooleanLiteral') {
-    // true or false
-    output.value = body.value
-  } else if (bodyType === 'ThisExpression') {
-    output.value = global
-  } else {
-    // 配列でもオブジェクトでもない型
-    if (body.value && body.value.extra) {
-      output.value = body.value.extra.rawValue
-    } else if (body.extra) {
-      output.value = body.extra.rawValue
-    } else {
-
-    }
-  }
-  let out
-  if (output.hasOwnProperty('value')) {
-    out = output.value
-  } else {
-    // noneDataEDEKQWLDCOLASXMW はdataがない時のやつ
-    out = {}
-  }
-  for (const key of Object.keys(output || {})) {
-    if (key === 'd') {
-    }
-    if (key !== 'name' && key !== 'value' && key !== 'noneDataEDEKQWLDCOLASXMW') {
-      out[key] = output[key]
-    }
-  }
-
-  if (output.name) {
-    return { [output.name || 'name']: out }
-  } else {
-    return { name: out }
-  }
-}
-
-function getProperty (body, local, funcArguments) {
-  
-  if (!body) {
-    console.error('maybe body is null or undifiend?', body, local)
-    return false
-  }
-  const key = Object.keys(body || {})[0]
-  if (body && body.type === 'ThisExpression') {
-    return global
-  } else if (body.type && body.type === 'Identifier' && body.name) {
-    
-    if (local.hasOwnProperty(body.name)) {
-      return local[body.name]
-    } else {
-      // maybe javascript default item
-      switch (body.name) {
-        case 'Object':
-          return Object
-        case 'Array':
-          return Array
-        case 'Number':
-          return Number
-        case 'String':
-          return String
-        case 'Boolean':
-          return Boolean
-      }
-    }
-  } else if (body.type && body.type === 'MemberExpression' && body.object) {
-    
-    if (body.name) {
-      return getProperty(body.object, local)[body.name]
-    } else if (body.property) {
-      const outputData = getProperty(body.object, local)
-      // 
-      // 
-      if (!!funcArguments) {
-        return outputData[body.property.name](...funcArguments)
-      } else if (body.property.name) {
-        
-        if (!outputData[body.property.name]) {
-          return outputData[getProperty(body.property, local)]
-        } else {
-          return outputData[body.property.name]
-        }
-      } else if (body.property.extra) {
-        return outputData[getProperty(body.property, local)]
-      }
-    }
-    return getProperty(body.object, local)
-  } else if (body.type === 'CallExpression') {
-    let propertyArguments = []
-    if (body.arguments) {
-      for (let param of body.arguments) {
-        if (param.type === 'FunctionExpression') {
-          console.error('sorry!! argument dont use function!!')
-          return false
-        } else {
-          propertyArguments.push(getProperty(param, local))
-        }
-      }
-      if (body.callee) {
-        
-        const outputData = getProperty(body.callee, local, propertyArguments)
-        
-        return outputData
-      }
-    }
-  } else {
-    let data = CheckProperty(body)
-    let key = 'key'
-    if (typeof data === 'object') {
-      key = Object.keys(data || {})[0]
-    }
-    
-    return data[key]
-  }
-}
-
-function  propsProcess (body) {
-  const output = {}
-  
-  if (body.value.type === 'ObjectExpression') {
-    // オブジェクト??
-    for (const take of body.value.properties) {
-      if (take.value.type === 'Identifier') {
-        // 変数: type型
-        output[take.key.name] = {}
-        output[take.key.name].name = take.key.name
-        output[take.key.name].type = take.value.name
-      } else {
-        // 変数: {}
-        output[take.key.name] = {}
-        output[take.key.name].name = take.key.name
-        for (const property of take.value.properties) {
-          if (property.value.type === 'Identifier') {
-            output[take.key.name][property.key.name] = property.value.name
-            continue
-          }
-          if (property.value.type === 'StringLiteral') {
-            output[take.key.name][property.key.name] = property.value.value
-          }
-        }
-      }
-    }
-  } else if (body.value.type === 'ArrayExpression') {
-    // 配列??
-    for (const take of body.value.elements) {
-      if (take.value.type === 'Identifier') {
-        // 変数: type型
-        output[take.key.name] = {}
-        output[take.key.name].name = take.key.name
-      }
-    }
-  }
-  return output
-}
-
-function methodsProcess(body) {
+function computedProcess(body) {
   const output = {}
   for (const property of body.value.properties) {
-    output[property.key.name] = property.value
-    if (output[property.key.name]) {
-      output[property.key.name].func = true
+    output[property.key.name] = property.body
+    if (!property.body) {
+      continue
+    } else {
+
+    }
+    output[property.key.name].computed = true
+    output[property.key.name].func = true
+  }
+  return output
+}
+
+function dataProcess(body) {
+  const output = {}
+  for (const property of body.body.body[0].argument.properties) {
+    const getter = CheckProperty(property)
+    for (const key of Object.keys(getter)) {
+      // O(1)
+      output[key] = getter[key]
     }
   }
   return output
+}
+
+function domProperty (text, params) {
+  const script = scriptCreateAST(text)
+  const ToParams = params || {}
+  const toDomScript = Object.assign(ToParams, global)
+  if (script.expression) {
+    return isBool(script.expression, toDomScript)
+  } else if (script.value) {
+    return isBool(script.value, toDomScript)
+  }
+  // console.lo('checcer', script)
+  // console.lo('scriptDom', script, toDomScript, isBool(script.expression, toDomScript))
+}
+
+function scriptCreateAST (script) {
+  const { parse } = require('@babel/parser')
+  try {
+    const ast = parse(script)
+    if (ast && ast.program && ast.program.body && ast.program.body[0]) {
+    // 一行解析
+      return ast.program.body[0]
+    }
+    if (ast && ast.program && ast.program.directives && ast.program.directives[0]) {
+      return ast.program.directives[0]
+    }
+  } catch (e) {
+    console.log('error', e)
+  }
 }
 
 function getScript (body, array, preLocal) {
@@ -867,7 +802,7 @@ function execScript (body, array, preLocal) {
   // output {name: name, value: value}
   let local = {}
   if (preLocal) {
-    
+    // console.lo('local', local, preLocal)
     local = Object.assign(local, preLocal)
   }
   const localInfo = {}
@@ -879,15 +814,15 @@ function execScript (body, array, preLocal) {
       local[body.params[i].name] = array[i]
     }
   }
-  
+  // console.lo('array', array, local)
   for (let key of Object.keys(local || {})) {
-    
+    // console.lo('output', local[key])
   }
   //
   //
   // 実際に読み込む
   //
-  
+  // console.lo('body', body)
   if (body.body && body.body.type === 'BlockStatement') {
     access = body.body
   }
@@ -923,28 +858,28 @@ function execScript (body, array, preLocal) {
         }
         break
       case 'ExpressionStatement':
-        
+        // console.lo('argument', access.body[i])
         if (access.body[i].expression && access.body[i].expression.type === 'CallExpression') {
           const target = access.body[i].expression.callee
           if (target.object && target.object.type === 'ThisExpression') {
             execScript(global[target.property.name], access.body[i].expression.arguments)
           }
         } else if (access.body[i].expression && access.body[i].expression.type === 'AssignmentExpression') {
-          
+          // console.lo('chhhhhh', access.body[i].expression)
           if (access.body[i].expression.left.name && local.hasOwnProperty(access.body[i].expression.left.name)) {
             local[access.body[i].expression.left.name] = calculation(access.body[i].expression.right, local)
-            
+            // console.lo('checcer', calculation(access.body[i].expression.right, local))
           } else if (access.body[i].expression.left.property && access.body[i].expression.left.property.name) {
             global[access.body[i].expression.left.property.name] = calculation(access.body[i].expression.right, local)
           }
         } else if (access.body[i].expression && access.body[i].expression.type === 'UpdateExpression') {
-          
+          // console.lo('update:argument')
           const targetUpate = access.body[i].expression.argument
           if (targetUpate.name && local.hasOwnProperty(targetUpate.name)) {
-            
+            // console.lo('update:argument:local', calculation(targetUpate, local))
             local[targetUpate.name] = calculation(access.body[i].expression, local)
           } else if (targetUpate.name && global.hasOwnProperty(targetUpate.name)) {
-            
+            // console.lo('update:argument:glbal')
             global[targetUpate.name] = calculation(access.body[i].expression, local)
           }
         }
@@ -961,7 +896,7 @@ function execScript (body, array, preLocal) {
           // argument?
           updateCalculation = target.update
         }
-        
+        // console.lo('update', readyupdate)
         let updateName = ''
         if (readyupdate.left) {
           updateName = readyupdate.left.name
@@ -971,7 +906,7 @@ function execScript (body, array, preLocal) {
         }
         // const updateName = readyupdate.left.name
         const readyBool = target.test
-        
+        // console.lo('isBool(readyBool, { ...local, [initName]: initIndex })', isBool(readyBool, { ...local, [initName]: initIndex }))
         while (isBool(readyBool, { ...local, [initName]: initIndex })) {
           let get = execScript(target.body, array, { ...local, [initName]: initIndex })
           Object.keys(get.returnLocal || {}).forEach(key => {
@@ -1036,7 +971,7 @@ function execScript (body, array, preLocal) {
         let outputReturn = { returnArguments: {}, returnLocal: { ...preLocal }, returnOrder: 'return' }
         const returnData = getProperty(argument, local)
         outputReturn.returnArguments = returnData
-        
+        // console.lo('getter', outputReturn, argument, returnData, local)
         Object.keys(preLocal || {}).forEach(key => {
           outputReturn.returnLocal[key] = local[key]
         })
@@ -1053,11 +988,11 @@ function execScript (body, array, preLocal) {
         const discriminantValue = getProperty(discriminant, local)
         for (let takeCase of cases) {
           const testValue = getProperty(takeCase.test, local)
-          
+          // console.lo('discriminantValue', discriminantValue, 'testValue', testValue)
           if (!testValue) {
             // maybeDefault
             const get = execScript(takeCase, array, local)
-            
+            // console.lo('switchGet', get)
             if (get.returnOrder === 'break') {
               break
             }
@@ -1065,13 +1000,13 @@ function execScript (body, array, preLocal) {
           }
           const createBool = scriptCreateAST(String(discriminantValue) + '===' + String(testValue)).expression
           const check = isBool(createBool, local)
-          
-          
+          // console.lo('checkerr', check, createBool)
+          // console.lo('checker', createBool)
           if (check) {
             // このケースに該当する
-            
+            // console.lo('bbo', createBool)
             const get = execScript(takeCase, array, local)
-            
+            // console.lo('switchGet', get)
             if (get.returnOrder === 'break') {
               break
             }
@@ -1176,29 +1111,52 @@ function scriptCreateAST (script) {
   }
 }
 
-function dataProcess (body) {
+function methodsProcess(body) {
   const output = {}
-  for (const property of body.body.body[0].argument.properties) {
-    const getter = CheckProperty(property)
-    for (const key of Object.keys(getter)) {
-      // O(1)
-      output[key] = getter[key]
+  for (const property of body.value.properties) {
+    output[property.key.name] = property.value
+    if (output[property.key.name]) {
+      output[property.key.name].func = true
     }
   }
   return output
 }
 
-function computedProcess(body) {
+function propsProcess(body) {
   const output = {}
-  for (const property of body.value.properties) {
-    output[property.key.name] = property.body
-    if (!property.body) {
-      continue
-    } else {
-
+  console.log('take', body)
+  if (body.value.type === 'ObjectExpression') {
+    // オブジェクト??
+    for (const take of body.value.properties) {
+      if (take.value.type === 'Identifier') {
+        // 変数: type型
+        output[take.key.name] = {}
+        output[take.key.name].name = take.key.name
+        output[take.key.name].type = take.value.name
+      } else {
+        // 変数: {}
+        output[take.key.name] = {}
+        output[take.key.name].name = take.key.name
+        for (const property of take.value.properties) {
+          if (property.value.type === 'Identifier') {
+            output[take.key.name][property.key.name] = property.value.name
+            continue
+          }
+          if (property.value.type === 'StringLiteral') {
+            output[take.key.name][property.key.name] = property.value.value
+          }
+        }
+      }
     }
-    output[property.key.name].computed = true
-    output[property.key.name].func = true
+  } else if (body.value.type === 'ArrayExpression') {
+    // 配列??
+    for (const take of body.value.elements) {
+      if (take.value.type === 'Identifier') {
+        // 変数: type型
+        output[take.key.name] = {}
+        output[take.key.name].name = take.key.name
+      }
+    }
   }
   return output
 }

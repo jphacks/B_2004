@@ -6,10 +6,5 @@ export default function (script) {
   const ast = parse(script, { sourceType: 'module' })
   // console.log('ast', JSON.stringify(ast, null, 2))
   return ast
-  // 引数のコードをASTに変換する
-  // var ast = esprima.parseModule(script)
-  // console.log(JSON.stringify(ast))
-  // 引数のコードをTokenの一覧を取得する
-  // var tokens = esprima.tokenize(code)
-  // console.log(JSON.stringify(tokens))
+
 }

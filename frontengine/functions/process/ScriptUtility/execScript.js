@@ -13,7 +13,7 @@ function execScript (body, array, preLocal) {
   // output {name: name, value: value}
   let local = {}
   if (preLocal) {
-    console.log('local', local, preLocal)
+    // console.log('local', local, preLocal)
     local = Object.assign(local, preLocal)
   }
   const localInfo = {}
@@ -25,15 +25,15 @@ function execScript (body, array, preLocal) {
       local[body.params[i].name] = array[i]
     }
   }
-  console.log('array', array, local)
+  // console.log('array', array, local)
   for (let key of Object.keys(local || {})) {
-    console.log('output', local[key])
+    // console.log('output', local[key])
   }
   //
   //
   // 実際に読み込む
   //
-  console.log('body', body)
+  // console.log('body', body)
   if (body.body && body.body.type === 'BlockStatement') {
     access = body.body
   }
@@ -69,28 +69,28 @@ function execScript (body, array, preLocal) {
         }
         break
       case 'ExpressionStatement':
-        console.log('argument', access.body[i])
+        // console.log('argument', access.body[i])
         if (access.body[i].expression && access.body[i].expression.type === 'CallExpression') {
           const target = access.body[i].expression.callee
           if (target.object && target.object.type === 'ThisExpression') {
             execScript(global[target.property.name], access.body[i].expression.arguments)
           }
         } else if (access.body[i].expression && access.body[i].expression.type === 'AssignmentExpression') {
-          console.log('chhhhhh', access.body[i].expression)
+          // console.log('chhhhhh', access.body[i].expression)
           if (access.body[i].expression.left.name && local.hasOwnProperty(access.body[i].expression.left.name)) {
             local[access.body[i].expression.left.name] = calculation(access.body[i].expression.right, local)
-            console.log('checcer', calculation(access.body[i].expression.right, local))
+            // console.log('checcer', calculation(access.body[i].expression.right, local))
           } else if (access.body[i].expression.left.property && access.body[i].expression.left.property.name) {
             global[access.body[i].expression.left.property.name] = calculation(access.body[i].expression.right, local)
           }
         } else if (access.body[i].expression && access.body[i].expression.type === 'UpdateExpression') {
-          console.log('update:argument')
+          // console.log('update:argument')
           const targetUpate = access.body[i].expression.argument
           if (targetUpate.name && local.hasOwnProperty(targetUpate.name)) {
-            console.log('update:argument:local', calculation(targetUpate, local))
+            // console.log('update:argument:local', calculation(targetUpate, local))
             local[targetUpate.name] = calculation(access.body[i].expression, local)
           } else if (targetUpate.name && global.hasOwnProperty(targetUpate.name)) {
-            console.log('update:argument:glbal')
+            // console.log('update:argument:glbal')
             global[targetUpate.name] = calculation(access.body[i].expression, local)
           }
         }
@@ -107,7 +107,7 @@ function execScript (body, array, preLocal) {
           // argument?
           updateCalculation = target.update
         }
-        console.log('update', readyupdate)
+        // console.log('update', readyupdate)
         let updateName = ''
         if (readyupdate.left) {
           updateName = readyupdate.left.name
@@ -117,7 +117,7 @@ function execScript (body, array, preLocal) {
         }
         // const updateName = readyupdate.left.name
         const readyBool = target.test
-        console.log('isBool(readyBool, { ...local, [initName]: initIndex })', isBool(readyBool, { ...local, [initName]: initIndex }))
+        // console.log('isBool(readyBool, { ...local, [initName]: initIndex })', isBool(readyBool, { ...local, [initName]: initIndex }))
         while (isBool(readyBool, { ...local, [initName]: initIndex })) {
           let get = execScript(target.body, array, { ...local, [initName]: initIndex })
           Object.keys(get.returnLocal || {}).forEach(key => {
@@ -182,7 +182,7 @@ function execScript (body, array, preLocal) {
         let outputReturn = { returnArguments: {}, returnLocal: { ...preLocal }, returnOrder: 'return' }
         const returnData = getProperty(argument, local)
         outputReturn.returnArguments = returnData
-        console.log('getter', outputReturn, argument, returnData, local)
+        // console.log('getter', outputReturn, argument, returnData, local)
         Object.keys(preLocal || {}).forEach(key => {
           outputReturn.returnLocal[key] = local[key]
         })
@@ -199,11 +199,11 @@ function execScript (body, array, preLocal) {
         const discriminantValue = getProperty(discriminant, local)
         for (let takeCase of cases) {
           const testValue = getProperty(takeCase.test, local)
-          console.log('discriminantValue', discriminantValue, 'testValue', testValue)
+          // console.log('discriminantValue', discriminantValue, 'testValue', testValue)
           if (!testValue) {
             // maybeDefault
             const get = execScript(takeCase, array, local)
-            console.log('switchGet', get)
+            // console.log('switchGet', get)
             if (get.returnOrder === 'break') {
               break
             }
@@ -211,13 +211,13 @@ function execScript (body, array, preLocal) {
           }
           const createBool = scriptCreateAST(String(discriminantValue) + '===' + String(testValue)).expression
           const check = isBool(createBool, local)
-          console.log('checkerr', check, createBool)
-          console.log('checker', createBool)
+          // console.log('checkerr', check, createBool)
+          // console.log('checker', createBool)
           if (check) {
             // このケースに該当する
-            console.log('bbo', createBool)
+            // console.log('bbo', createBool)
             const get = execScript(takeCase, array, local)
-            console.log('switchGet', get)
+            // console.log('switchGet', get)
             if (get.returnOrder === 'break') {
               break
             }

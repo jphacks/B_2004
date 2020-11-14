@@ -12,7 +12,7 @@ const global = {}
 exports.global = global
 exports.moduleProcess = function (ast) {
   // console.log('ast', ast)
-  console.log('getkakuninn!!', ast.program.body)
+  // console.log('getkakuninn!!', ast.program.body)
   const firstBody = ast.program.body[0].declaration.properties
   const modules = {}
   for (const body of firstBody) {
@@ -38,9 +38,9 @@ exports.moduleProcess = function (ast) {
     }
   }
   // console.log('srhjeosije', global.text)
-  console.log('output!!!!!', global)
+  // console.log('output!!!!!', global)
   const output = execScript(global.testObject, global.text)
-  console.log('output!!!', output, global)
+  // console.log('output!!!', output, global)
   // console.log('moduleOutput', global, modules)
   return modules
 }

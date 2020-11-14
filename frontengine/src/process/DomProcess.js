@@ -122,7 +122,15 @@ function DOMAnalysis (dom) {
     // let blanckCount = []
     //
     const candidateOthers = []
-    for (let i = 1; i < tags.length - 1; i++) {
+    if (tags[tags.length - 1] !== '>') {
+      tags[tags.length - 1] = tags[tags.length - 1].split('>')[0]
+      tags.push('>')
+    } else if (tags[tags.length - 1] !== '/>') {
+      tags[tags.length - 1] = tags[tags.length - 1].split('/>')[0]
+      tags.push('/>')
+    }
+    let tagslength = tags.length
+    for (let i = 1; i < tagslength; i++) {
       const tag = tags[i]
       candidateOthers.push(tag)
       if (tag.length > 0) {
@@ -231,6 +239,8 @@ function otherAnalysis (other) {
         splitTarget = target.right.split(' in ')
       }
       target.target = {}
+
+      target.right = splitTarget[1]
       if (splitTarget[0].indexOf('(') >= 0 && splitTarget[0].indexOf(')') >= 0) {
         const catchCandidate = []
         let candidate = []
@@ -256,9 +266,10 @@ function otherAnalysis (other) {
     if (target.right.indexOf('(') > 0 && target.right.indexOf(')') > 0) {
       // function
       target.type = 'function'
-      target.right = otherSplit[1].split('(')[0]
-      const argument = otherSplit[1].split('(')[1].substr(0, otherSplit[1].split('(')[1].length - 1)
+      // target.right = otherSplit[1].split('(')[0]
+      const argument = target.right.split('(')[1].substr(0, target.right.split('(')[1].length - 1)
       //
+      target.functionTarget = target.right.split('(')[0]
       target.functionArgument = argument.split(',')
     } else {
       // variable
@@ -301,12 +312,12 @@ function createDomTree (depths) {
     for (const seed of Object.values(depths[i])) {
       if (!seed.close && seed.parentId >= 0) {
         if (!depths[i - 1][seed.parentId].children) {
-          depths[i - 1][seed.parentId].children = {}
+          depths[i - 1][seed.parentId].children = []
         }
-        if (!depths[i - 1][seed.parentId].children[seed.name]) {
-          depths[i - 1][seed.parentId].children[seed.name] = []
-        }
-        depths[i - 1][seed.parentId].children[seed.name].push(seed)
+        // if (!depths[i - 1][seed.parentId].children[seed.name]) {
+        //   depths[i - 1][seed.parentId].children[seed.name] = []
+        // }
+        depths[i - 1][seed.parentId].children.push(seed)
       } else {
       }
     }
@@ -321,7 +332,7 @@ function textAnalysis (text) {
   // 配列で受け取る?
   const output = {}
   output.value = text.join('')
-  output.reserves = {}
+  output.reserves = []
   let targetText = ''
   for (let i = 0; i < text.length; i++) {
     targetText = text[i]
@@ -344,8 +355,10 @@ function textAnalysis (text) {
         }
         targetTexts.push(targetText)
       }
+      i += 1
       const targetCheck = targetTexts.join('')
       target.text = targetCheck
+      target.textRawValue = targetCheck
       if (targetTexts.indexOf('(') > 0 && targetTexts.indexOf(')') > 0) {
         // function
         target.type = 'function'
@@ -358,7 +371,29 @@ function textAnalysis (text) {
         target.type = 'variable'
         target.variableType = 'global'
       }
-      output.reserves[target.text] = target
+      output.reserves.push(target)
+    } else if (targetText !== '{') {
+      // {{}} でかこまれてないやつ
+      // console.lo('aaaa', targetText, text.length)
+      const target = {}
+      target.start = i
+      const targetTexts = []
+      for (;i < text.length; i++) {
+        targetText = text[i]
+        if (targetText === '{' && text[i + 1] === '{') {
+          target.end = i - 1
+          targetTexts.push(targetText)
+          i--
+          break
+        }
+        targetTexts.push(targetText)
+      }
+      const targetCheck = targetTexts.join('')
+      target.text = targetCheck
+      target.textRawValue = targetCheck
+      target.type = 'direct'
+      target.variableType = 'string'
+      output.reserves.push(target)
     }
   }
   return output

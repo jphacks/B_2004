@@ -7,72 +7,33 @@
     <!-- <Exam1/> -->
     <!--<Exam2/>-->
     <h1>問題：{{ getExam.name }}</h1>
+    <span v-if="!getLoginId">※ログインしていない場合提出できません</span>
     <!--<h1>難易度：{{getExam.difficult}}</h1>-->
       <b-card class="b-card">
       <b-card-text>
-        {{getExam.examInfo.explain.join('')}}<br><br>
-        {{getExamInfo}}<br>
-        {{getExamDataForm}}<br><br>
-        <!--<b-card>
-          <b-card-text>
-            入力例1<br>
-            {{getExam.examInfo.testCases.pascalCase.enter.join(',')}}<br>
-          </b-card-text>
-          <b-card-text>
-            出力例1<br>
-            {{getExam.examInfo.testCases.pascalCase.exit[0]}}<br>
-            {{getExam.examInfo.testCases.pascalCase.exit[1]}}<br>
-          </b-card-text>
-        </b-card>
-        <b-card>
-          <b-card-text>
-            入力例2<br>
-            {{getExam.examInfo.testCases.randomCase.enter.join(',')}}<br>
-          </b-card-text>
-          <b-card-text>
-            出力例2<br>
-            {{getExam.examInfo.testCases.randomCase.exit[0]}}<br>
-            {{getExam.examInfo.testCases.randomCase.exit[1]}}<br>
-            {{getExam.examInfo.testCases.randomCase.exit[2]}}<br>
-            {{getExam.examInfo.testCases.randomCase.exit[3]}}<br>
-            {{getExam.examInfo.testCases.randomCase.exit[4]}}<br>
-          </b-card-text>
-        </b-card>-->
+        <span v-for="(value) of getExplain" :key="value">{{value}}<br></span><br>
+        <span v-for="(value) of getEnter" :key="value">{{value}}<br></span><br>
         <b-card>
           <b-card-text>
             入力例1<br>
-            {{getExam.examInfo.testCases.sampleCase.enter.join(',')}}<br>
+            {{getSumpleInput.join(',')}}<br>
           </b-card-text>
           <b-card-text>
             出力例1<br>
-            <span v-for="(smCase, index) in Object.keys(getExam.examInfo.testCases.sampleCase.exit || {})" :key="index" >
-              {{String(getExam.examInfo.testCases.sampleCase.exit[index])}}<br>
+            <span v-for="(smCase, key) in Object.keys(getSumpleOutput || {})" :key="key" >
+              {{String(getSumpleOutput[key])}}<br>
             </span>
           </b-card-text>
         </b-card>
-        <!--<b-card>
-          <b-card-text>
-            入力例4<br>
-            {{getExam.examInfo.testCases.sampleCase2.enter.join(',')}}<br>
-          </b-card-text>
-          <b-card-text>
-            出力例4<br>
-            {{getExam.examInfo.testCases.sampleCase2.exit[0]}}<br>
-            {{getExam.examInfo.testCases.sampleCase2.exit[1]}}<br>
-            {{getExam.examInfo.testCases.sampleCase2.exit[2]}}<br>
-            {{getExam.examInfo.testCases.sampleCase2.exit[3]}}<br>
-            {{getExam.examInfo.testCases.sampleCase2.exit[4]}}<br>
-            {{getExam.examInfo.testCases.sampleCase2.exit[5]}}<br>
-            {{getExam.examInfo.testCases.sampleCase2.exit[6]}}<br>
-            {{getExam.examInfo.testCases.sampleCase2.exit[7]}}<br>
-            {{getExam.examInfo.testCases.sampleCase2.exit[8]}}<br>
-          </b-card-text>
-        </b-card>-->
       </b-card-text>
     </b-card>
   </div>
   <br>
   <!-- Answer Form Area -->
+  <div class="sample-output">
+    <span>サンプル出力:testCase</span>
+    <b-form-textarea v-model="sumpleOutputText" :disabled="true" :rows="8"/>
+  </div>
   <div class="problemdetail">
     <b-button variant="outline-primary" @click="sumplePush()">サンプルを設置する</b-button>
       <b-form-textarea
@@ -82,7 +43,10 @@
       placeholder="解答を入力してください。"
       rows="6"
     ></b-form-textarea>
-    <b-button @click="getDom()">送信</b-button>
+    <div class="detail-buttons">
+    <b-button v-if="getLoginId" @click="getDom()">送信</b-button>
+    <b-button @click="sumpleTest()">サンプルを出力</b-button>
+    </div>
     <!-- <br><br><br><router-link :to="{name: 'ProblemResult', params: {examId: $route.params.examId}}">問題結果画面に遷移します。</router-link> -->
   </div>
   </body>
@@ -122,7 +86,9 @@ export default {
         existString: true
       },
       exam: {
-      }
+      },
+      sumpleOutput: [],
+      wait: false
     }
   },
   props: {
@@ -146,15 +112,49 @@ export default {
         optionSumple: this.option
       })
         .then(res => {
-          console.log(res)
-          this.$router.push({ name: 'ProblemResult', params: { examId: this.$route.params.examId } })
+          console.log('res', res)
+          this.$router.push({ name: 'ProblemResult', params: { examId: this.$route.params.examId, resOutput: res } })
         })
         .catch(e => {
-          console.log(e)
+          console.log('e', e)
         })
     },
     sumpleTest: function () {
-      console.log('TANOMU AC', MainProcess(this.text, this.input, this.clear, this.option))
+      if (this.text.length > 0 && !this.wait) {
+        this.sumpleOutput = []
+        const getExam = this.getExam
+        const sumpleInput = getExam.examInfo.testCases.sampleCase.enter
+        const sumpleClear = getExam.examInfo.testCases.sampleCase.exit
+        const option = getExam.examInfo.option
+        this.sumpleOutput.push('input testCases...')
+        for (let i = 0; i < sumpleInput.length; i++) {
+          this.sumpleOutput.push(sumpleInput[i])
+        }
+        this.sumpleOutput.push('input option...')
+        Object.keys(option || {}).forEach(key => {
+          this.sumpleOutput.push(key + ': ' + String(option[key]))
+        })
+        this.sumpleOutput.push('読み込み中...')
+        this.wait = true
+        MainProcess(this.text, sumpleInput, sumpleClear, option).then(res => {
+          this.sumpleOutput.pop()
+          this.sumpleOutput.push('')
+          if (res.reason === 'noneClear') {
+            this.sumpleOutput.push(res.reason)
+            this.sumpleOutput.push('failed: [' + res.targetIndex + ']: ' + res.targetNone)
+            this.sumpleOutput.push('clearCase: [' + res.targetIndex + ']: ' + res.target)
+          } else {
+            this.sumpleOutput.push(res.reason)
+          }
+          if (res.noneTarget) {
+            this.sumpleOutput.push('failedIndex: ' + res.noneTarget)
+          }
+          if (res.output) {
+            this.sumpleOutput.push('output: ' + res.output)
+          }
+          this.wait = false
+        })
+      }
     },
     sumplePush: function () {
       this.text = this.getSumpleText
@@ -179,6 +179,19 @@ export default {
     ...mapGetters(['getExams', 'getUserId']),
     getText () {
       return "''"
+    },
+    sumpleOutputText () {
+      const out = []
+      let k = 0
+      for (let i = 0; i < this.sumpleOutput.length; i++) {
+        if (this.sumpleOutput[i].length == 0) {
+          out.push('')
+          k--
+          continue
+        }
+        out.push('[' + (i + k) + ']: ' + this.sumpleOutput[i])
+      }
+      return out.join('\n')
     },
     getExam () {
       return this.exam
@@ -238,13 +251,36 @@ export default {
       output.events.push({ id: 'sortButtonName', event: 'click' })
       return output
     },
-    getExamInfo () {
-      return this.getExam.examInfo.exEnter[0]
+    getEnter () {
+      if (!this.getExam || !this.getExam.examInfo) {
+        return {}
+      }
+      return this.getExam.examInfo.exEnter
     },
-    getExamDataForm () {
-      return this.getExam.examInfo.exEnter[1]
+    getExplain () {
+      if (!this.getExam || !this.getExam.examInfo) {
+        return {}
+      }
+      return this.getExam.examInfo.explain
+    },
+    getExamInfo () {
+      if (!this.getExam || !this.getExam.examInfo) {
+        return {}
+      }
+      return this.getExam.examInfo
+    },
+    getSumpleOutput () {
+      if (!this.getExamInfo.testCases) {
+        return {}
+      }
+      return this.getExamInfo.testCases.sampleCase.exit
+    },
+    getSumpleInput () {
+      if (!this.getExamInfo.testCases) {
+        return []
+      }
+      return this.getExamInfo.testCases.sampleCase.enter
     }
-
   }
 }
 </script>

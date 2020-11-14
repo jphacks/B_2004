@@ -39,7 +39,7 @@ exports.moduleProcess = function (ast) {
   }
   // console.log('srhjeosije', global.text)
   console.log('output!!!!!', global)
-  const output = execScript(global.testObject, global.text)
+  // const output = execScript(global.testObject, global.text)
   console.log('output!!!', output, global)
   // console.log('moduleOutput', global, modules)
   return modules

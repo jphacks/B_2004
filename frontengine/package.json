@@ -81,7 +81,8 @@
       "prefer-const": "off",
       "eqeqeq": "off",
       "no-case-declarations": "off",
-      "no-extra-boolean-cast": "off"
+      "no-extra-boolean-cast": "off",
+      "valid-typeof": "off"
     }
   },
   "browserslist": [

@@ -3,8 +3,9 @@ import CreateAST from './CreateAST.js'
 import ScriptProcess from './ScriptProcess.js'
 import DomProcess from './DomProcess.js'
 import { global } from './moduleProcess.js'
+import { domProperty } from './ScriptUtility/domUtility.js'
 import { execScript, getScript } from './ScriptUtility/execScript.js'
-export default function (text, props, clear, option) {
+export default async function (text, props, clear, option) {
   const templateLength = '<template>'.length
   const scriptLength = '<script>'.length
   const styleLength = '<style scoped>'.length
@@ -14,13 +15,24 @@ export default function (text, props, clear, option) {
   // ('解析 template:', templates, 'script:', script, 'style:', style)
   // ('解析script ', script)
   const domTree = DomProcess(templates)
-  const scriptRe = ScriptProcess(script)
-  const data = execScript(global.testObject, ['userId'])
-  console.log('scriptRe', domTree)
+  const module = ScriptProcess(script)
+  // const data = execScript(global, ['userId'])
+  // console.lo('scriptRe', global, module, option, clear)
+  // console.lo('dom', domTree)
   const errors = []
+  let toProps = {}
+  if (Array.isArray(props)) {
+    toProps.input = props
+  } else {
+    // obj型
+    toProps = Object.assign(toProps, props)
+  }
+  // オブジェクト型で例題作ってなかった><
+  // const toProps = { input: props }
+
   if (props) {
-    Object.keys(props || {}).forEach(key => {
-      global[key] = props[key]
+    Object.keys(toProps || {}).forEach(key => {
+      global[key] = toProps[key]
     })
   }
   // const getClear = clear
@@ -28,134 +40,176 @@ export default function (text, props, clear, option) {
   let checkClear = 0
   let targetIndex = 0
   let output = { status: 'WA', reason: '' }
+  let lastOutput = []
+  let outputIndex = 0
   const vForGlobal = {}
-  console.log('outputtt', text, props, clear, option)
+  // console.log('outputtt', text, props, clear, option)
   if (option && option.mode === 'answerDOM') {
     if (option.existString) {
+      let resultOutput = [] // 文字列型の場合は、outputが見れるはず
       let tooru = true
       // let target = domTree
       const targets = []
       targets.push(domTree)
       while (targets.length > 0) {
-        const getTar = targets.shift()
+        const ifBool = true
+        const getTar = targets.pop()
         const tar = Object.assign({}, getTar)
         if (tar.params) {
-          console.log('targets!!', tar.params, tar)
+          // console.lo('targets!!', tar.params, tar)
         }
         tooru = false
         // -- v-for
         if (tar['v-for']) {
           const target = tar['v-for']
-          if (target.type === 'variable') {
-            if (target.variableType === 'global') {
-              if (global.hasOwnProperty(target.right)) {
-                if (global[target.right]) {
-                  let data = global[target.right]
-                  if (data.func) {
-                    // argumentはまだ未対応><
-                    data = getScript(global[target.right], [])
-                  }
-                  for (let i = 0; i < global[target.right].length; i++) {
-                    // tar.params = {}
-                    let nextTarget = Object.assign({}, tar)
-                    const params = {}
-                    if (target && target.target && target.target.index) {
-                      params.index = i
-                    } else {
-                    }
-                    nextTarget.paramIndex = i
-                    nextTarget.paramValue = global[target.right][i]
-                    params.value = global[target.right][i]
-                    nextTarget.params = Object.assign({}, params)
-                    console.log('nextTarget', nextTarget)
-                    delete nextTarget['v-for']
-                    targets.push(nextTarget)
-                  }
-                  continue
+          if (target.type === 'variable' || target.type === 'function') {
+            let data = domProperty(target.right, tar.params)
+            // とりあえずdataはArray想定 本来ではObjectも考えないといけないよ
+            if (Array.isArray(data)) {
+              for (let i = data.length - 1; i >= 0; i--) {
+                // tar.params = {}
+                let nextTarget = Object.assign({}, tar)
+                const params = {}
+                const keys = Object.values(target.target)
+                params[keys[0]] = data[i]
+                if (keys.length === 2) {
+                  params[keys[1]] = i
                 }
-              } else {
-                return { status: 'WA', reason: 'no!!' + target.rights + ' is not defined!!' }
+                nextTarget.paramIndex = i
+                nextTarget.paramValue = data[i]
+                nextTarget.params = Object.assign({}, params)
+                // console.lo('nextTarget', nextTarget)
+                delete nextTarget['v-for']
+                targets.push(nextTarget)
               }
             } else {
-              return { status: 'WA', reason: 'sorry!! no use not Global v-for' }
+              // obj
+              const keys = Object.keys(data)
+              data = Object.values(data)
+              for (let i = data.length - 1; i >= 0; i--) {
+                // tar.params = {}
+                let nextTarget = Object.assign({}, tar)
+                const params = {}
+                const keys = Object.values(target.target)
+                params[keys[0]] = data[i]
+                if (keys.length === 2) {
+                  params[keys[1]] = keys[i]
+                }
+                nextTarget.paramIndex = keys[i]
+                nextTarget.paramValue = data[i]
+                nextTarget.params = Object.assign({}, params)
+                // console.lo('nextTarget', nextTarget)
+                delete nextTarget['v-for']
+                targets.push(nextTarget)
+              }
             }
+            continue
           } else {
             // func
           }
         }
         // 8-- v-for
+        // v-if
+        if (tar['v-if']) {
+          let data = !!domProperty(tar['v-if'].right, tar.params)
+          if (!data) {
+            continue
+          }
+        }
+        // 8-- v-if
         if (tar.name === 'reserveText') {
-          console.log('tarValue:none', tar)
+          // console.log('tarValue:none', tar)
+          const output = []
           for (let reserve of Object.values(tar.reserves)) {
             const strValueStart = tar.value.substr(0, reserve.start)
             const strValueEnd = tar.value.substr(reserve.end + 1, tar.value.length)
             if (reserve.type === 'function') {
+              const get = domProperty(reserve.textRawValue, tar.params)
               // とりあえずglobalのみ対応
               const args = []
-              for (let argument of reserve.functionArgument) {
-                if (tar.params.hasOwnProperty(argument)) {
-                  args.push(tar.params[argument])
-                } else if (global.hasOwnProperty(argument)) {
-                  args.push(global[argument])
-                }
-              }
-              console.log('getterqq', global, tar, args)
-              if (!global.hasOwnProperty(reserve.text)) {
-                return { status: 'WA', reason: 'funtion no' }
-              }
-              const getReturn = getScript(global[reserve.text], args)
-              const toStr = String(getReturn)
-              console.log('getter', global, getReturn, args, toStr)
-              tar.value = strValueStart + toStr + strValueEnd
+              const toStr = String(get)
+              output.push(toStr)
             } else if (reserve.type === 'variable') {
-              // tar.value = global[reserve.text]
-              const toStr = String(tar.value)
-              tar.value = strValueStart + toStr + strValueEnd
+              const get = domProperty(reserve.textRawValue, tar.params)
+              let toStr = String(get)
+              // tar.value = strValueStart + toStr + strValueEnd
+              output.push(toStr)
+              // console.log('pppRRR', reserve, tar.value, global)
+            } else if (reserve.type === 'direct') {
+              output.push(reserve.text)
             }
           }
+          tar.value = output.join('')
         }
         if (tar.answer && tar.name === 'reserveText') {
           // とりあえずexistStringなので....
-          console.log('tarValue', tar, targetIndex)
-          if (tar.value === clear[targetIndex]) {
-            checkClear++
-          } else {
-            return { status: 'WA', reason: 'noneClear', target: clear[targetIndex], targetNone: tar.value }
+          // console.log('tarValue', tar, targetIndex)
+          if (typeof lastOutput[outputIndex] !== 'string') {
+            lastOutput[outputIndex] = ''
           }
-          targetIndex++
-          if (clear.length === checkClear) {
-            return { status: 'AC', reason: 'all Accept' }
-          }
+          lastOutput[outputIndex] = lastOutput[outputIndex] + tar.value
+          // if (tar.value === clear[targetIndex]) {
+          //   checkClear++
+          // } else {
+          //   return { status: 'WA', reason: 'noneClear', target: clear[targetIndex], targetNone: tar.value, targetIndex: targetIndex }
+          // }
+          // targetIndex++
+          // if (clear.length === checkClear) {
+          //   return { status: 'AC', reason: 'all Accept', output: lastOutput }
+          // }
+        } else if (tar.answer) {
+          // console.log('tarValue:without', tar)
         }
         // -- lastPropagate
-        let i = 0
-        console.log('tar.children', tar.children, tar)
-        Object.values(tar.children || {}).forEach(array => {
-          array.forEach(value => {
-            let nextObject = {}
-            nextObject = Object.assign({}, value)
-            if (tar.hasOwnProperty('params')) {
-              nextObject.params = Object.assign({}, tar.params)
-            }
-            if (tar.hasOwnProperty('paramIndex')) {
-              nextObject.paramIndex = tar.paramIndex
-            }
-            if (tar.name === 'answer') {
-              nextObject.answer = true
-              nextObject.answerIndex = i
-              i = i + 1
-            }
-            console.log('cheek', nextObject)
-            targets.push(nextObject)
-          })
-        })
-        // -- lastPrpagate
+        // 子供に伝播
+        if (tar.name === 'br') {
+          outputIndex++
+        }
+        let pushChildren = tar.children || []
+        for (let i = pushChildren.length - 1; i >= 0; i--) {
+          const value = pushChildren[i]
+          let nextObject = {}
+          nextObject = Object.assign({}, value)
+          if (tar.hasOwnProperty('params')) {
+            nextObject.params = Object.assign({}, tar.params)
+          }
+          if (tar.hasOwnProperty('paramIndex')) {
+            nextObject.paramIndex = tar.paramIndex
+          }
+          if (tar.hasOwnProperty('answer')) {
+            nextObject.answer = tar.answer
+          }
+          if (tar.name === 'answer') {
+            nextObject.answer = true
+            nextObject.answerIndex = i
+          }
+          // console.log('cheek', nextObject)
+          targets.push(nextObject)
+          // -- lastPrpagate
+        }
+      }
+      if (option.existString) {
+        let flag = true
+        let noneTarget = []
+        for (let i = 0; i < clear.length; i++) {
+          if (lastOutput[i] !== clear[i]) {
+            flag = false
+            noneTarget.push(i)
+          }
+        }
+        if (flag) {
+          return { status: 'AC', reason: 'all Accept', info: checkClear, option: option, clear: clear, output: lastOutput }
+        } else {
+          return { status: 'WA', reason: 'noClear', info: checkClear, option: option, clear: clear, output: lastOutput, noneTarget: noneTarget }
+        }
+      } else {
+        return { status: 'WA', reason: 'runCode', info: checkClear, option: option, clear: clear, output: lastOutput }
       }
     }
   } else {
 
   }
   // CreateAST(script)
-  console.log('runcode:')
+  // console.log('runcode:')
   return { status: 'WA', reason: 'why?runendCode', info: checkClear }
 }
