@@ -13,7 +13,12 @@
 <script>
 // @ is an alias to /src
 import { domPreviewParse } from '@/process/ScriptUtility/domPreviewParse.js'
+import { global } from '@/process/moduleProcess.js'
 import Vue from 'vue/dist/vue.esm.js'
+import Answer from '@/components/preview/answer'
+import { domProperty } from '@/process/ScriptUtility/domUtility.js'
+import PreviewCard from '@/components/preview/previewItem/PreviewCard'
+import BootstrapVue from 'bootstrap-vue'
 export default {
   name: 'PreviewField',
   components: {
@@ -37,11 +42,16 @@ export default {
     this.testPush()
   },
   methods: {
-    domEvent: function (order, path) {
+    domEvent: function (order, path, ...arg) {
       // domのfunction系を一旦ここに噛ませる
       // orderはfunction名
       // pathはcomponentファイル名
-      console.log('order', order, path)
+      console.log('orderPPP', order, path, arg)
+      let toParam = global
+      arg.forEach(x => {
+        toParam = Object.assign(toParam, x)
+      })
+      return domProperty(order, toParam)
     },
     classEvent: function (path, ...orders) {
       // class名を受け取る
@@ -61,6 +71,11 @@ export default {
           domEvent: domEvent,
           classEvent: classEvent
         },
+        components: {
+          Answer,
+          PreviewCard,
+          BootstrapVue
+        },
         style: {
           size: {
             width: '500px',
@@ -69,6 +84,7 @@ export default {
         }
       })
       let vm = new Vue({
+        Answer,
         render: h => h(newPreviewDom)
       })
       // this.pushPreview = newPreviewDom
