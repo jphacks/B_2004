@@ -3,7 +3,8 @@
     <b-button v-if="dom" @click="previewParse()">プレビューを表示する</b-button>
     <b-card>
       <div :id="'targetPreview'" class="targetPreviewFiled">
-
+        <div>
+        </div>
       </div>
     </b-card>
   </div>
@@ -47,30 +48,33 @@ export default {
       console.log('class', path, orders)
     },
     previewParse: function () {
-      this.outputDom = domPreviewParse(this.dom, 'default')
+      const getDDD = domPreviewParse(this.dom, 'default')
+      this.outputDom = getDDD
       const self = this
       const domEvent = this.domEvent
       const classEvent = this.classEvent
-      const testSumple = '<div v-if="true" @click="domEvent()">sumplePush</div>'
+      const testSumple = getDDD
+      console.log('checce', getDDD)
       let newPreviewDom = Vue.component('newPreviewDom', {
-        // data: function () {
-        //   // ここに対象のglobal入れる
-        //   return {
-        //     template: 20
-        //   }
-        // },
-        template: testSumple,
+        template: getDDD,
         methods: {
           domEvent: domEvent,
           classEvent: classEvent
+        },
+        style: {
+          size: {
+            width: '500px',
+            position: 'absolute'
+          }
         }
       })
       let vm = new Vue({
         render: h => h(newPreviewDom)
       })
       // this.pushPreview = newPreviewDom
-      console.log('check', newPreviewDom, this.vue, Vue)
-      vm.$mount(document.getElementById('targetPreview'))
+      const targetDomChange = document.getElementById('targetPreview').children[0]
+      console.log('check', vm)
+      vm.$mount(targetDomChange)
     },
     testPush: function () {
       console.log('document', document, this.document)

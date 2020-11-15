@@ -46,6 +46,10 @@ export default function (text) {
           tagCount[info.name]--
           tags[unique].depth--
           depth--
+          if (!tags[parentId]) {
+            console.error('maybe is not openTag')
+            return
+          }
           parentId = tags[parentId].parentId
         }
         if (!depths[tags[unique].depth]) {
