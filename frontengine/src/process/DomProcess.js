@@ -46,6 +46,10 @@ export default function (text) {
           tagCount[info.name]--
           tags[unique].depth--
           depth--
+          if (!tags[parentId]) {
+            console.error('maybe is not openTag')
+            return
+          }
           parentId = tags[parentId].parentId
         }
         if (!depths[tags[unique].depth]) {
@@ -122,12 +126,13 @@ function DOMAnalysis (dom) {
     // let blanckCount = []
     //
     const candidateOthers = []
-    if (tags[tags.length - 1] !== '>') {
+    if (tags[tags.length - 1].substr(tags[tags.length - 1].length - 1, 1) === '>') {
       tags[tags.length - 1] = tags[tags.length - 1].split('>')[0]
-      tags.push('>')
-    } else if (tags[tags.length - 1] !== '/>') {
+      // tags.push('>')
+    } else if (tags[tags.length - 1].substr(tags[tags.length - 1].length - 2, 2) === '/>') {
       tags[tags.length - 1] = tags[tags.length - 1].split('/>')[0]
-      tags.push('/>')
+      info.close = true
+      // tags.push('/>')
     }
     let tagslength = tags.length
     for (let i = 1; i < tagslength; i++) {
@@ -142,7 +147,9 @@ function DOMAnalysis (dom) {
     for (let i = 0; i < candidatetag.length; i++) {
       const candidateKey = candidatetag[i]
       const other = candidateOthers[candidateKey]
-
+      if (other === '>' || other === '/>') {
+        continue
+      }
       const quoteLength = (other.match(/"/g) || []).length
       //
       if (kisu) {
@@ -200,6 +207,18 @@ function DOMAnalysis (dom) {
       }
       if (otherInfo.left === 'v-if') {
         info['v-if'] = otherInfo
+      }
+      if (otherInfo.left === 'class') {
+        info.class = otherInfo
+        info.class.variables = []
+        const candidateClassVariables = otherInfo.right.split(' ')
+        for (let i = 0; i < candidateClassVariables.length; i++) {
+          const variab = candidateClassVariables[i]
+          if (variab.length === 0) {
+            continue
+          }
+          info.class.variables.push(variab)
+        }
       }
     }
     if (otherInfo.hasOwnProperty('key')) {
@@ -382,7 +401,6 @@ function textAnalysis (text) {
         targetText = text[i]
         if (targetText === '{' && text[i + 1] === '{') {
           target.end = i - 1
-          targetTexts.push(targetText)
           i--
           break
         }

@@ -21,6 +21,8 @@ export default async function (text, props, clear, option) {
   // console.lo('dom', domTree)
   const errors = []
   let toProps = {}
+  const fileInfo = {} // ここに単一ファイル情報を記載
+  fileInfo.fileName = 'dafault'
   if (Array.isArray(props)) {
     toProps.input = props
   } else {
@@ -198,12 +200,40 @@ export default async function (text, props, clear, option) {
           }
         }
         if (flag) {
-          return { status: 'AC', reason: 'all Accept', info: checkClear, option: option, clear: clear, output: lastOutput }
+          return {
+            status: 'AC',
+            reason: 'all Accept',
+            info: checkClear,
+            option: option,
+            clear: clear,
+            output: lastOutput,
+            domTree: domTree,
+            fileInfo: fileInfo
+          }
         } else {
-          return { status: 'WA', reason: 'noClear', info: checkClear, option: option, clear: clear, output: lastOutput, noneTarget: noneTarget }
+          return {
+            status: 'WA',
+            reason: 'noClear',
+            info: checkClear,
+            option: option,
+            clear: clear,
+            output: lastOutput,
+            noneTarget: noneTarget,
+            domTree: domTree,
+            fileInfo: fileInfo
+          }
         }
       } else {
-        return { status: 'WA', reason: 'runCode', info: checkClear, option: option, clear: clear, output: lastOutput }
+        return {
+          status: 'WA',
+          reason: 'runCode',
+          info: checkClear,
+          option: option,
+          clear: clear,
+          output: lastOutput,
+          domTree: domTree,
+          fileInfo: fileInfo
+        }
       }
     }
   } else {
@@ -211,5 +241,5 @@ export default async function (text, props, clear, option) {
   }
   // CreateAST(script)
   // console.log('runcode:')
-  return { status: 'WA', reason: 'why?runendCode', info: checkClear }
+  return { status: 'WA', reason: 'why?runendCode', info: checkClear, domTree: domTree }
 }
