@@ -19,6 +19,7 @@ import Answer from '@/components/preview/answer'
 import { domProperty } from '@/process/ScriptUtility/domUtility.js'
 import PreviewCard from '@/components/preview/previewItem/PreviewCard'
 import BootstrapVue from 'bootstrap-vue'
+import { globalStyle } from '@/process/MainProcess.js'
 export default {
   name: 'PreviewField',
   components: {
@@ -55,7 +56,12 @@ export default {
     },
     classEvent: function (path, ...orders) {
       // class名を受け取る
-      console.log('class', path, orders)
+      let outputObj = {}
+      orders.forEach(key => {
+        outputObj = Object.assign(outputObj, globalStyle[path].class[key])
+      })
+      console.log('class', path, orders, globalStyle, outputObj)
+      return outputObj
     },
     previewParse: function () {
       const getDDD = domPreviewParse(this.dom, 'default')

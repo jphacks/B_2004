@@ -1,12 +1,12 @@
 export { styleProperty }
 
-function styleProperty (style) {
+function styleProperty (style, path) {
   console.log('style:test', style)
   const output = {}
   output.class = {}
   output.id = {}
   output.tag = {}
-  const target = []
+  let target = []
   for (let i = 0; i < style.length; i++) {
     const val = style[i]
     if (val == ' ' || val == '\n' || val == '/s' || val == '↵') {
@@ -28,20 +28,43 @@ function styleProperty (style) {
       console.log('style:target', targetVal, targetInput)
       output[targetInput][targetVal] = {}
       i++
-      const take = []
-      for (; ; i++) {
+      let outputKey = []
+      let value = []
+      let coron = false
+      for (;i < style.length; i++) {
+        if (style[i] == '}') {
+          // とりあえずclassの階層構造は無視
+          break
+        }
         if (style[i] != ';') {
-          if (val == ' ' || val == '\n' || val == '/s' || val == '↵') {
+          if (style[i] == ':') {
+            coron = true
             continue
           }
-          take.push(style[i])
+          if (!coron) {
+            if (style[i] == ' ' || style[i] == '\n' || style[i] == '/s' || style[i] == '↵') {
+              continue
+            }
+            outputKey.push(style[i])
+          } else {
+            value.push(style[i])
+          }
         } else {
-
+          output[targetInput][targetVal][outputKey.join('')] = value.join('')
+          outputKey = []
+          value = []
+          coron = false
         }
       }
+      target = []
     } else {
       target.push(val)
     }
   }
   console.log('style:output', output)
+  let str = path
+  if (!str) {
+    str = 'default'
+  }
+  return { [str]: output }
 }
