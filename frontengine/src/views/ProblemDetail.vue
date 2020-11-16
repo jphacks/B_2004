@@ -56,7 +56,7 @@
 
 <script>
 // @ is an alias to /src
-import MainProcess from '@/process/MainProcess.js'
+import { MainProcess } from '@/process/MainProcess.js'
 import { mapGetters, mapActions } from 'vuex'
 import Exam1 from '@/components/Exam1.vue'
 import firebase from 'firebase'
@@ -245,6 +245,21 @@ export default {
       output.push('  }')
       output.push('}')
       output.push('</' + 'script>')
+      output.push('<style scoped>')
+      output.push('.testClass {')
+      output.push('  display: flex;')
+      output.push('  width: 100px;')
+      output.push(' }')
+      output.push(' h1 {')
+      output.push('  height: 50px;')
+      output.push(' }')
+      output.push(' #targetId {')
+      output.push('   color: red;')
+      output.push('  }')
+      output.push(' .problemdetail {')
+      output.push('  width: 300px;')
+      output.push('}')
+      output.push('</style>')
       return output.join('\n')
     },
     getClearModel () {
@@ -299,5 +314,8 @@ export default {
 .b-card {
   border: solid 0.5px gray;
   margin: auto;
+}
+.problemdetail {
+  width: 300px;
 }
 </style>
