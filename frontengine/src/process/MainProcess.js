@@ -5,6 +5,7 @@ import DomProcess from './DomProcess.js'
 import { global } from './moduleProcess.js'
 import { domProperty } from './ScriptUtility/domUtility.js'
 import { execScript, getScript } from './ScriptUtility/execScript.js'
+import { styleProperty } from './styleProcess.js'
 export default async function (text, props, clear, option) {
   const templateLength = '<template>'.length
   const scriptLength = '<script>'.length
@@ -16,6 +17,7 @@ export default async function (text, props, clear, option) {
   // ('解析script ', script)
   const domTree = DomProcess(templates)
   const module = ScriptProcess(script)
+  styleProperty(style)
   // const data = execScript(global, ['userId'])
   // console.lo('scriptRe', global, module, option, clear)
   // console.lo('dom', domTree)

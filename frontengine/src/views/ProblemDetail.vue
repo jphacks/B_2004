@@ -245,6 +245,18 @@ export default {
       output.push('  }')
       output.push('}')
       output.push('</' + 'script>')
+      output.push('<style scoped>')
+      output.push('.testClass {')
+      output.push('  display: flex;')
+      output.push('  width: 100px;')
+      output.push(' }')
+      output.push(' h1 {')
+      output.push('  height: 50px;')
+      output.push(' }')
+      output.push(' #targetId {')
+      output.push('   color: red;')
+      output.push('  }')
+      output.push('</style>')
       return output.join('\n')
     },
     getClearModel () {
