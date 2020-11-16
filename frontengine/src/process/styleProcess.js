@@ -26,13 +26,22 @@ function styleProperty (style) {
       }
       let targetVal = target.join('')
       console.log('style:target', targetVal, targetInput)
-      output[targetVal] = {}
+      output[targetInput][targetVal] = {}
       i++
+      const take = []
       for (; ; i++) {
+        if (style[i] != ';') {
+          if (val == ' ' || val == '\n' || val == '/s' || val == '↵') {
+            continue
+          }
+          take.push(style[i])
+        } else {
 
+        }
       }
     } else {
       target.push(val)
     }
   }
+  console.log('style:output', output)
 }

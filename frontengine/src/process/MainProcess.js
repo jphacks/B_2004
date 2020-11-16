@@ -17,7 +17,7 @@ export default async function (text, props, clear, option) {
   // ('解析script ', script)
   const domTree = DomProcess(templates)
   const module = ScriptProcess(script)
-  styleProperty(style)
+  // styleProperty(style)
   // const data = execScript(global, ['userId'])
   // console.lo('scriptRe', global, module, option, clear)
   // console.lo('dom', domTree)
