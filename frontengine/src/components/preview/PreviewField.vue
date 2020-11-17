@@ -18,8 +18,12 @@ import Vue from 'vue/dist/vue.esm.js'
 import Answer from '@/components/preview/answer'
 import { domProperty } from '@/process/ScriptUtility/domUtility.js'
 import PreviewCard from '@/components/preview/previewItem/PreviewCard'
-import BootstrapVue from 'bootstrap-vue'
+import BootstrapVue, { Bcard } from 'bootstrap-vue'
 import { globalStyle } from '@/process/MainProcess.js'
+import { importBootstrap, bootstrapImports } from '@/process/addBootstrapComponents.js'
+import 'bootstrap/dist/css/bootstrap.min.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
+
 export default {
   name: 'PreviewField',
   components: {
@@ -44,6 +48,13 @@ export default {
     },
     uniqueKey () {
       return this.unique + 'targetPreview'
+    },
+    importCompo () {
+      const output = {}
+      output.Answer = Answer
+      output.PreviewCard = PreviewCard
+      output.Bcard = Bcard
+      return output
     }
   },
   watch: {
@@ -82,7 +93,8 @@ export default {
       const domEvent = this.domEvent
       const classEvent = this.classEvent
       const testSumple = getDDD
-      console.log('checce', getDDD)
+      console.log('checce', getDDD, importBootstrap, bootstrapImports)
+      bootstrapImports()
       let newPreviewDom = Vue.component('newPreviewDom', {
         template: getDDD,
         methods: {
@@ -92,7 +104,7 @@ export default {
         components: {
           Answer,
           PreviewCard,
-          BootstrapVue
+          ...importBootstrap
         },
         style: {
           size: {
@@ -101,6 +113,7 @@ export default {
           }
         }
       })
+      console.log('boot', BootstrapVue)
       let vm = new Vue({
         Answer,
         render: h => h(newPreviewDom)
