@@ -16,3 +16,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.home {
+  text-align: center;
+}
+</style>
