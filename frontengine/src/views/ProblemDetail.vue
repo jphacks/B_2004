@@ -1,11 +1,14 @@
 <template>
-  <body class="problemArea">
-  <!--<div class="ploblemBody">
-    <span>{{ getExam ? getExam.name : 'testmode' }}</span>
-  </div>-->
-  <div class="problemView">
-    <!-- <Exam1/> -->
-    <!--<Exam2/>-->
+  <div class="problemArea">
+  <b-tabs content-class="mt-3">
+  <b-tab title="ホーム" active>
+    <div class="checkBoxes">
+      <span v-for="(value, key) of viewCheckBox" :key="key">
+        <input :id="key" type="checkbox" v-model="viewCheckBox[key]">
+        {{ checkBoxString[key] }}
+      </span>
+    </div>
+  <div class="problemView" v-if="viewCheckBox.exam">
     <h1>問題：{{ getExam.name }}</h1>
     <span v-if="!getLoginId">※ログインしていない場合提出できません</span>
     <!--<h1>難易度：{{getExam.difficult}}</h1>-->
@@ -30,11 +33,11 @@
   </div>
   <br>
   <!-- Answer Form Area -->
-  <div class="sample-output">
+  <div class="sample-output" v-if="viewCheckBox.sumpleOutput">
     <span>サンプル出力:testCase</span>
     <b-form-textarea v-model="sumpleOutputText" :disabled="true" :rows="8"/>
   </div>
-  <div class="problemdetail">
+  <div class="problemdetail" v-if="viewCheckBox.inputArea">
     <b-button variant="outline-primary" @click="sumplePush()">サンプルを設置する</b-button>
       <b-form-textarea
       id="textarea"
@@ -44,14 +47,20 @@
       rows="6"
     ></b-form-textarea>
     <div class="detail-buttons">
-    <b-button v-if="getLoginId" @click="getDom()">送信</b-button>
-    <b-button @click="sumpleTest()">サンプルを出力</b-button>
+      <b-button v-if="getLoginId" @click="getDom()">送信</b-button>
+      <b-button @click="sumpleTest()">サンプルを出力</b-button>
     </div>
     <!-- <br><br><br><router-link :to="{name: 'ProblemResult', params: {examId: $route.params.examId}}">問題結果画面に遷移します。</router-link> -->
   </div>
-  <preview-field :dom="getDomTree">
+  <preview-field :dom="getDomTree" v-if="viewCheckBox.previewArea">
   </preview-field>
-  </body>
+  </b-tab>
+    <b-tab title="プレビュー画面">
+      <preview-field :dom="getDomTree" unique="tabPage">
+      </preview-field>
+    </b-tab>
+  </b-tabs>
+  </div>
 </template>
 
 <script>
@@ -91,7 +100,19 @@ export default {
       },
       sumpleOutput: [],
       wait: false,
-      getDomTree: {}
+      getDomTree: {},
+      viewCheckBox: {
+        exam: true,
+        sumpleOutput: true,
+        inputArea: true,
+        previewArea: true
+      },
+      checkBoxString: {
+        exam: "問題詳細",
+        sumpleOutput: "サンプル出力",
+        inputArea: "解答入力欄",
+        previewArea: "プレビュー画面"
+      }
     }
   },
   props: {
@@ -315,7 +336,7 @@ export default {
   border: solid 0.5px gray;
   margin: auto;
 }
-.problemdetail {
-  width: 300px;
+.detail-buttons {
+  display: flex;
 }
 </style>

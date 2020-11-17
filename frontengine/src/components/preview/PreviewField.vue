@@ -1,8 +1,8 @@
 <template>
   <div class="PreviewField">
-    <b-button v-if="dom" @click="previewParse()">プレビューを表示する</b-button>
+    <!--<b-button v-if="dom" @click="previewParse()">プレビューを表示する</b-button>-->
     <b-card>
-      <div :id="'targetPreview'" class="targetPreviewFiled">
+      <div :id="uniqueKey" class="targetPreviewFiled">
         <div>
         </div>
       </div>
@@ -26,7 +26,11 @@ export default {
   },
   props: {
     dom: {},
-    inputScript: {}
+    inputScript: {},
+    unique: {
+      type: String,
+      default: ''
+    }
   },
   data () {
     return {
@@ -37,6 +41,14 @@ export default {
   computed: {
     getDom () {
       return this.dom
+    },
+    uniqueKey () {
+      return this.unique + 'targetPreview'
+    }
+  },
+  watch: {
+    dom: function () {
+      this.previewParse()
     }
   },
   mounted: function () {
@@ -94,7 +106,7 @@ export default {
         render: h => h(newPreviewDom)
       })
       // this.pushPreview = newPreviewDom
-      const targetDomChange = document.getElementById('targetPreview').children[0]
+      const targetDomChange = document.getElementById(this.uniqueKey).children[0]
       console.log('check', vm)
       vm.$mount(targetDomChange)
     },
