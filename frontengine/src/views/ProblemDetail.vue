@@ -121,7 +121,8 @@ export default {
       }
     }
   },
-  props: {},
+  props: {
+  },
   mounted: function () {
     this.setExam()
     console.log("exam", this.exam)
@@ -357,6 +358,9 @@ export default {
         return []
       }
       return this.getExamInfo.testCases.sampleCase.enter
+    },
+    getTimeStamp () {
+      return {}
     }
   }
 }
