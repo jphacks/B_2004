@@ -1,8 +1,8 @@
 <template>
   <div class="PreviewField">
-    <b-button v-if="dom" @click="previewParse()">プレビューを表示する</b-button>
+    <!--<b-button v-if="dom" @click="previewParse()">プレビューを表示する</b-button>-->
     <b-card>
-      <div :id="'targetPreview'" class="targetPreviewFiled">
+      <div :id="uniqueKey" class="targetPreviewFiled">
         <div>
         </div>
       </div>
@@ -19,13 +19,18 @@ import Answer from '@/components/preview/answer'
 import { domProperty } from '@/process/ScriptUtility/domUtility.js'
 import PreviewCard from '@/components/preview/previewItem/PreviewCard'
 import BootstrapVue from 'bootstrap-vue'
+import { globalStyle } from '@/process/MainProcess.js'
 export default {
   name: 'PreviewField',
   components: {
   },
   props: {
     dom: {},
-    inputScript: {}
+    inputScript: {},
+    unique: {
+      type: String,
+      default: ''
+    }
   },
   data () {
     return {
@@ -36,6 +41,14 @@ export default {
   computed: {
     getDom () {
       return this.dom
+    },
+    uniqueKey () {
+      return this.unique + 'targetPreview'
+    }
+  },
+  watch: {
+    dom: function () {
+      this.previewParse()
     }
   },
   mounted: function () {
@@ -55,7 +68,12 @@ export default {
     },
     classEvent: function (path, ...orders) {
       // class名を受け取る
-      console.log('class', path, orders)
+      let outputObj = {}
+      orders.forEach(key => {
+        outputObj = Object.assign(outputObj, globalStyle[path].class[key])
+      })
+      console.log('class', path, orders, globalStyle, outputObj)
+      return outputObj
     },
     previewParse: function () {
       const getDDD = domPreviewParse(this.dom, 'default')
@@ -88,7 +106,7 @@ export default {
         render: h => h(newPreviewDom)
       })
       // this.pushPreview = newPreviewDom
-      const targetDomChange = document.getElementById('targetPreview').children[0]
+      const targetDomChange = document.getElementById(this.uniqueKey).children[0]
       console.log('check', vm)
       vm.$mount(targetDomChange)
     },
