@@ -160,14 +160,28 @@ export default {
         })
         .catch((e) => {
           // console.log("feiofjow", this.getLoginId, examId)
+          const self = this
           firebase
             .firestore()
             .collection("users")
             .doc(String(this.getLoginId))
             .collection("join")
             .doc(String(examId))
-            .update({
-              endAt: firebase.firestore.Timestamp.fromDate(new Date())
+            .get()
+            .then(function (doc) {
+              console.log("checkstartat", doc.data().endAt)
+              if (!doc.data().endAt) {
+                console.log("kiteruyo")
+                firebase
+                  .firestore()
+                  .collection("users")
+                  .doc(self.getLoginId)
+                  .collection("join")
+                  .doc(String(examId))
+                  .update({
+                    endAt: firebase.firestore.Timestamp.fromDate(new Date())
+                  })
+              }
             })
           console.log("e", e)
         })
