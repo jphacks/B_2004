@@ -44,7 +44,7 @@ export default {
         .doc(this.problemId)
         .get()
         .then(function (doc) {
-          console.log("checkstartat", doc.data().startAt)
+          // console.log("checkstartat", doc.data().startAt)
           if (!doc.data().startAt) {
             console.log("kiteruyo")
             firebase
