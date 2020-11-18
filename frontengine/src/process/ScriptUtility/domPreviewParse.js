@@ -17,7 +17,7 @@ function domPreviewParse (domTree, fileName) {
           targetDom.push('\'' + key + '\'')
         })
       }
-      parseDom['v-bind:style'] = 'this.classEvent(' + targetDom.join(',') + ')'
+      parseDom['v-bind:style'] = 'classEvent(' + targetDom.join(',') + ')'
     }
     if (take.hasOwnProperty('v-for')) {
       const targetValue = []

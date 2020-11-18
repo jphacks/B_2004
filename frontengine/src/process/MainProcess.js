@@ -7,7 +7,6 @@ import { domProperty } from './ScriptUtility/domUtility.js'
 import { execScript, getScript } from './ScriptUtility/execScript.js'
 import { styleProperty } from './styleProcess.js'
 let globalStyle = {}
-export { globalStyle, MainProcess }
 async function MainProcess (text, props, clear, option) {
   const templateLength = '<template>'.length
   const scriptLength = '<script>'.length
@@ -247,3 +246,4 @@ async function MainProcess (text, props, clear, option) {
   // console.log('runcode:')
   return { status: 'WA', reason: 'why?runendCode', info: checkClear, domTree: domTree }
 }
+export { globalStyle, MainProcess }

@@ -1,10 +1,17 @@
 <template>
-    <div><span class="sizeing"><slot></slot></span></div>
+    <div><b-card class="sizeing"><slot></slot></b-card></div>
 </template>
 
 <script>
-export default {
+import BootstrapVue, { BCard } from 'bootstrap-vue'
+import 'bootstrap/dist/css/bootstrap.min.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
+import Vue from 'vue/dist/vue.esm.js'
 
+export default {
+  components: {
+    BCard
+  }
 }
 </script>
 
