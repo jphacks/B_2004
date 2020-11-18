@@ -2,17 +2,20 @@
   <div class="home">
     <img alt="frontEngine logo" src="../assets/frontEngineLogo.png">
     <HomeDesign msg="frontEngineへようこそ"/>
+    <Terminal/>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
 import HomeDesign from '@/components/HomeDesign.vue'
+import Terminal from '@/components/Terminal.vue'
 
 export default {
   name: 'Home',
   components: {
-    HomeDesign
+    HomeDesign,
+    Terminal
   }
 }
 </script>
