@@ -79,14 +79,14 @@ export default {
     const self = this
     let promise = new Promise((resolve, reject) => {
       this.problemInfo = this.getExam
-      resolve(this.getUserFlag())
+      this.userFlag = getUserFlag()
+      resolve()
     })
-    promise.then((data) => {
-      this.userFlag = data
+    promise.then(() => {
       console.log("AAAAAAAA")
       return this.getUserInfo()
     }).then(() => {
-      console.log("BBBBBB", self.userFlag)
+      console.log("BBBBBB", this.userFlag)
       console.log("CCCCCCCCCC")
       return this.culcRateUser()
     }).then(() => {
@@ -248,8 +248,8 @@ export default {
       const userId = this.getLoginId
       const examId = this.examId
       const self = this
-      console.log("ktooooooooooooooota", self.userFlag)
-      return firebase
+      console.log("ktooooooooooooooota", self.userInfo)
+      firebase
         .firestore()
         .collection("users")
         .doc(String(userId))
@@ -258,7 +258,7 @@ export default {
         .get()
         .then(function (doc) {
           let docData = doc.data()
-          console.log("DOCDATA", docData)
+          console.log("DOCDATA", self.userFlag)
           if (docData.challenged || 0) {
             return true
           }

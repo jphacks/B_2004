@@ -143,15 +143,28 @@ export default {
       })
         .then((res) => {
           console.log("res", res)
+          const self = this
           firebase
             .firestore()
             .collection("users")
             .doc(String(this.getLoginId))
             .collection("join")
             .doc(String(examId))
-            .update({
-              endAt: firebase.firestore.Timestamp.fromDate(new Date())
-              // ここに適宜必要な情報を追加。現在バックエンドが帰ってこないので.catchに記載。
+            .get()
+            .then(function (doc) {
+              console.log("checkstartat", doc.data().endAt)
+              if (!doc.data().endAt) {
+                console.log("kiteruyo")
+                firebase
+                  .firestore()
+                  .collection("users")
+                  .doc(self.getLoginId)
+                  .collection("join")
+                  .doc(String(examId))
+                  .update({
+                    endAt: firebase.firestore.Timestamp.fromDate(new Date())
+                  })
+              }
             })
           this.$router.push({
             name: "ProblemResult",
@@ -160,14 +173,28 @@ export default {
         })
         .catch((e) => {
           // console.log("feiofjow", this.getLoginId, examId)
+          const self = this
           firebase
             .firestore()
             .collection("users")
             .doc(String(this.getLoginId))
             .collection("join")
             .doc(String(examId))
-            .update({
-              endAt: firebase.firestore.Timestamp.fromDate(new Date())
+            .get()
+            .then(function (doc) {
+              console.log("checkstartat", doc.data().endAt)
+              if (!doc.data().endAt) {
+                console.log("kiteruyo")
+                firebase
+                  .firestore()
+                  .collection("users")
+                  .doc(self.getLoginId)
+                  .collection("join")
+                  .doc(String(examId))
+                  .update({
+                    endAt: firebase.firestore.Timestamp.fromDate(new Date())
+                  })
+              }
             })
           console.log("e", e)
         })
@@ -213,6 +240,10 @@ export default {
           this.wait = false
         })
       }
+      this.$router.push({
+        name: "ProblemResult",
+        params: { examId: this.$route.params.examId }
+      })
     },
     sumplePush: function () {
       this.text = this.getSumpleText

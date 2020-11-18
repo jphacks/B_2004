@@ -5,7 +5,6 @@
       <h3>今回の結果はこちら：{{ name }}</h3>
       <!-- {{ userInfo.challenged }} <br>
       {{ this.problemInfo.rating }} -->
-      {{ this.userFlag }}
     </span>
     <div v-if="output.length > 0">
       <b-container class="bv-example-row">
@@ -69,24 +68,25 @@ export default {
       userStatus: true,
       userNewRating: {},
       problemNewRating: {},
-      problemInfo: {},
-      userInfo: {},
-      userFlag: false
+      problemInfo: {}
       // ユーザーが解けたと仮定、これを！すれば問題に対しての勝ち負けになる。
     }
   },
   mounted: function () {
     const self = this
+    let userInfo = {}
     let promise = new Promise((resolve, reject) => {
       this.problemInfo = this.getExam
-      resolve(this.getUserFlag())
+      resolve()
     })
-    promise.then((data) => {
-      this.userFlag = data
+    promise.then(() => {
       console.log("AAAAAAAA")
       return this.getUserInfo()
     }).then(() => {
-      console.log("BBBBBB", self.userFlag)
+      // console.log("FFFFFFFF", this.userInfo)
+      return this.getUserFlag()
+    }).then(() => {
+      console.log("BBBBBB", userInfo)
       console.log("CCCCCCCCCC")
       return this.culcRateUser()
     }).then(() => {
@@ -169,9 +169,18 @@ export default {
         .get()
         .then(function (doc) {
           let docData = doc.data()
-          console.log("DOCUSERDATA", docData)
+          console.log("DOCDATA", docData)
           self.userInfo = doc.data()
         })
+    },
+    getUserFlag: function () {
+      const userId = this.getLoginId
+      const examId = this.examId
+      const self = this
+      console.log("ktooooooooooooooota", self.userInfo)
+      if (this.userInfo.challenged || {}) {
+        this.userInfo.challenged = true
+      }
     },
     culcRateUser: function () {
       // culcRating
@@ -205,7 +214,7 @@ export default {
       } else {
         updateUserRate.r = this.userInfo.rating
         updateUserRate.RD = this.userInfo.ratingDiviation
-        console.log("ZZZZZZZZZZZ", this.userFlag)
+        console.log("ZZZZZZZZZZZ", this.userInfo.challenged)
       }
       console.log("ratehyouzi", updateUserRate.r + updateUserRate.RD)
       // this.updateProblemRate.r = this.getExams[this.examId].rating
@@ -243,28 +252,6 @@ export default {
       // 問題の更新
       // 問題の更新
       // culcRating
-    },
-    getUserFlag: function () {
-      const userId = this.getLoginId
-      const examId = this.examId
-      const self = this
-      console.log("ktooooooooooooooota", self.userFlag)
-      return firebase
-        .firestore()
-        .collection("users")
-        .doc(String(userId))
-        .collection("join")
-        .doc(String(examId))
-        .get()
-        .then(function (doc) {
-          let docData = doc.data()
-          console.log("DOCDATA", docData)
-          if (docData.challenged || 0) {
-            return true
-          }
-          console.log("DOCDATA", self.userFlag)
-          return false
-        })
     },
     culcRateProblem: function () {
       // culcRating
@@ -339,11 +326,11 @@ export default {
       const userId = this.getLoginId
       const examId = this.examId
       const self = this
-      // console.log("nanndekounaruno", self.userInfo.challenged)
-      if (self.userFlag || 0) {
-        return ""
+      console.log("nanndekounaruno", self.userInfo)
+      if (self.userInfo.challenged || {}) {
+        return {}
       }
-      console.log("nanndekounaruno", self.userFlag)
+      console.log("nanndekounaruno", self.userInfo)
       firebase
         .firestore()
         .collection("users")

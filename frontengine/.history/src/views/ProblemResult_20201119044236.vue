@@ -79,14 +79,16 @@ export default {
     const self = this
     let promise = new Promise((resolve, reject) => {
       this.problemInfo = this.getExam
-      resolve(this.getUserFlag())
+      resolve()
     })
-    promise.then((data) => {
-      this.userFlag = data
+    promise.then(() => {
       console.log("AAAAAAAA")
       return this.getUserInfo()
     }).then(() => {
-      console.log("BBBBBB", self.userFlag)
+      console.log("CCCCCCCCCC", this.userInfo)
+      return this.getUserFlag()
+    }).then(() => {
+      console.log("BBBBBB", this.userFlag)
       console.log("CCCCCCCCCC")
       return this.culcRateUser()
     }).then(() => {
@@ -205,7 +207,7 @@ export default {
       } else {
         updateUserRate.r = this.userInfo.rating
         updateUserRate.RD = this.userInfo.ratingDiviation
-        console.log("ZZZZZZZZZZZ", this.userFlag)
+        console.log("ZZZZZZZZZZZ", this.userInfo.challenged)
       }
       console.log("ratehyouzi", updateUserRate.r + updateUserRate.RD)
       // this.updateProblemRate.r = this.getExams[this.examId].rating
@@ -248,8 +250,8 @@ export default {
       const userId = this.getLoginId
       const examId = this.examId
       const self = this
-      console.log("ktooooooooooooooota", self.userFlag)
-      return firebase
+      console.log("ktooooooooooooooota", self.userInfo)
+      firebase
         .firestore()
         .collection("users")
         .doc(String(userId))
@@ -258,12 +260,11 @@ export default {
         .get()
         .then(function (doc) {
           let docData = doc.data()
-          console.log("DOCDATA", docData)
+          console.log("DOCDATA", self.userFlag)
           if (docData.challenged || 0) {
-            return true
+            self.userFlag = !self.userFlag
           }
           console.log("DOCDATA", self.userFlag)
-          return false
         })
     },
     culcRateProblem: function () {
