@@ -79,10 +79,10 @@ export default {
     const self = this
     let promise = new Promise((resolve, reject) => {
       this.problemInfo = this.getExam
-      resolve(this.getUserFlag())
+      this.userFlag = this.getUserFlag()
+      resolve()
     })
-    promise.then((data) => {
-      this.userFlag = data
+    promise.then(() => {
       console.log("AAAAAAAA")
       return this.getUserInfo()
     }).then(() => {
@@ -339,6 +339,7 @@ export default {
       const userId = this.getLoginId
       const examId = this.examId
       const self = this
+      console.log("nanndekounaruno", self.userFlag)
       // console.log("nanndekounaruno", self.userInfo.challenged)
       if (self.userFlag || 0) {
         return ""

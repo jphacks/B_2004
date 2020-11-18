@@ -82,8 +82,7 @@ export default {
       resolve(this.getUserFlag())
     })
     promise.then((data) => {
-      this.userFlag = data
-      console.log("AAAAAAAA")
+      console.log("AAAAAAAA", data)
       return this.getUserInfo()
     }).then(() => {
       console.log("BBBBBB", self.userFlag)
