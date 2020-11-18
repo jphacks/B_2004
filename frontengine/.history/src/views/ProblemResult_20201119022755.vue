@@ -69,8 +69,7 @@ export default {
       userStatus: true,
       userNewRating: {},
       problemNewRating: {},
-      problemInfo: {},
-      userInfo: {}
+      problemInfo: {}
       // ユーザーが解けたと仮定、これを！すれば問題に対しての勝ち負けになる。
     }
   },
@@ -83,23 +82,23 @@ export default {
     })
     promise.then(() => {
       console.log("AAAAAAAA")
-      return this.getUserInfo()
+      this.getUserInfo()
     }).then(() => {
       // console.log("FFFFFFFF", this.userInfo)
-      return this.getUserFlag()
+      this.getUserFlag()
+      console.log("BBBBBB", userInfo)
     }).then(() => {
-      console.log("BBBBBB", this.userInfo)
+      this.culcRateUser()
       console.log("CCCCCCCCCC")
-      return this.culcRateUser()
     }).then(() => {
+      this.culcRateProblem()
       console.log("DDDDDDDD")
-      return this.culcRateProblem()
     }).then(() => {
+      this.setNewExamRate()
       console.log("EEEEEEE")
-      return this.setNewExamRate()
     }).then(() => {
       console.log("FFFFFFFF")
-      return this.setNewUserRate()
+      this.setNewUserRate()
     }).catch(() => { // エラーハンドリング
       console.error('Something wrong!')
     })

@@ -86,9 +86,9 @@ export default {
       return this.getUserInfo()
     }).then(() => {
       // console.log("FFFFFFFF", this.userInfo)
+      console.log("BBBBBB", userInfo)
       return this.getUserFlag()
     }).then(() => {
-      console.log("BBBBBB", this.userInfo)
       console.log("CCCCCCCCCC")
       return this.culcRateUser()
     }).then(() => {

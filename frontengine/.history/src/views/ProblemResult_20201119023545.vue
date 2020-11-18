@@ -81,28 +81,28 @@ export default {
       this.problemInfo = this.getExam
       resolve()
     })
-    promise.then(() => {
-      console.log("AAAAAAAA")
-      return this.getUserInfo()
-    }).then(() => {
+    promise.then(() => 
+      console.log("AAAAAAAA"),
+      this.getUserInfo()
+    ).then(() => 
       // console.log("FFFFFFFF", this.userInfo)
-      return this.getUserFlag()
-    }).then(() => {
-      console.log("BBBBBB", this.userInfo)
+      this.getUserFlag(),
+      console.log("BBBBBB", userInfo)
+    ).then(() => 
+      this.culcRateUser(),
       console.log("CCCCCCCCCC")
-      return this.culcRateUser()
-    }).then(() => {
+    ).then(() => 
+      this.culcRateProblem(),
       console.log("DDDDDDDD")
-      return this.culcRateProblem()
-    }).then(() => {
+    ).then(() => 
+      this.setNewExamRate(),
       console.log("EEEEEEE")
-      return this.setNewExamRate()
-    }).then(() => {
-      console.log("FFFFFFFF")
-      return this.setNewUserRate()
-    }).catch(() => { // エラーハンドリング
+    ).then(() => 
+      console.log("FFFFFFF"),
+      this.setNewUserRate()
+    ).catch(() =>  // エラーハンドリング
       console.error('Something wrong!')
-    })
+    )
     this.testCase()
     console.log("param", this.$route.params)
     if (this.$route.params.resOutput) {

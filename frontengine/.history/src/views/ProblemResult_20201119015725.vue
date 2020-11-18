@@ -5,7 +5,6 @@
       <h3>今回の結果はこちら：{{ name }}</h3>
       <!-- {{ userInfo.challenged }} <br>
       {{ this.problemInfo.rating }} -->
-      {{ userInfo }}
     </span>
     <div v-if="output.length > 0">
       <b-container class="bv-example-row">
@@ -76,30 +75,42 @@ export default {
   },
   mounted: function () {
     const self = this
-    let userInfo = {}
     let promise = new Promise((resolve, reject) => {
       this.problemInfo = this.getExam
       resolve()
     })
     promise.then(() => {
-      console.log("AAAAAAAA")
-      return this.getUserInfo()
+      return new Promise((resolve, reject) => {
+        this.getUserInfo()
+        console.log("FFFFFFFF", this.getUserInfo())
+        resolve()
+      })
     }).then(() => {
-      // console.log("FFFFFFFF", this.userInfo)
-      return this.getUserFlag()
+      console.log("FFFFFFFF", this.userInfo)
+      return new Promise((resolve, reject) => {
+        this.getUserFlag()
+        resolve()
+      })
     }).then(() => {
-      console.log("BBBBBB", this.userInfo)
-      console.log("CCCCCCCCCC")
-      return this.culcRateUser()
+      return new Promise((resolve, reject) => {
+        this.culcRateUser()
+        resolve()
+      })
     }).then(() => {
-      console.log("DDDDDDDD")
-      return this.culcRateProblem()
+      return new Promise((resolve, reject) => {
+        this.culcRateProblem()
+        resolve()
+      })
     }).then(() => {
-      console.log("EEEEEEE")
-      return this.setNewExamRate()
+      return new Promise((resolve, reject) => {
+        this.setNewExamRate()
+        resolve()
+      })
     }).then(() => {
-      console.log("FFFFFFFF")
-      return this.setNewUserRate()
+      return new Promise((resolve, reject) => {
+        this.setNewUserRate()
+        resolve()
+      })
     }).catch(() => { // エラーハンドリング
       console.error('Something wrong!')
     })
@@ -170,9 +181,9 @@ export default {
         .doc(String(userId))
         .get()
         .then(function (doc) {
-          let docData = doc.data()
-          console.log("DOCDATA", docData)
-          self.userInfo = doc.data()
+          const docData = doc.data()
+          self.userInfo = docData
+          console.log("DOCDATA", self.userInfo)
         })
     },
     getUserFlag: function () {
@@ -220,8 +231,8 @@ export default {
             return {}
           } */
       console.log("checkstartat", self.userInfo)
-      if (!self.userInfo.rating) {
-        console.log("kiteruyo", self.userInfo)
+      if (!this.userInfo.rating) {
+        console.log("kiteruyo", this.userInfo)
         updateUserRate.r = 1500
         updateUserRate.RD = 300
       } else {

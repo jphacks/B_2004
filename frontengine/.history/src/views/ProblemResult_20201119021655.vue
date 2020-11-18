@@ -5,7 +5,6 @@
       <h3>今回の結果はこちら：{{ name }}</h3>
       <!-- {{ userInfo.challenged }} <br>
       {{ this.problemInfo.rating }} -->
-      {{ userInfo }}
     </span>
     <div v-if="output.length > 0">
       <b-container class="bv-example-row">
@@ -69,8 +68,7 @@ export default {
       userStatus: true,
       userNewRating: {},
       problemNewRating: {},
-      problemInfo: {},
-      userInfo: {}
+      problemInfo: {}
       // ユーザーが解けたと仮定、これを！すれば問題に対しての勝ち負けになる。
     }
   },
@@ -82,24 +80,42 @@ export default {
       resolve()
     })
     promise.then(() => {
-      console.log("AAAAAAAA")
-      return this.getUserInfo()
+      return new Promise((resolve, reject) => {
+        this.getUserInfo()
+        console.log("AAAAAAAA")
+        resolve()
+      })
     }).then(() => {
       // console.log("FFFFFFFF", this.userInfo)
-      return this.getUserFlag()
+      return new Promise((resolve, reject) => {
+        this.getUserFlag()
+        console.log("BBBBBB")
+        resolve()
+      })
     }).then(() => {
-      console.log("BBBBBB", this.userInfo)
-      console.log("CCCCCCCCCC")
-      return this.culcRateUser()
+      return new Promise((resolve, reject) => {
+        this.culcRateUser()
+        console.log("CCCCCCCCCC")
+        resolve()
+      })
     }).then(() => {
-      console.log("DDDDDDDD")
-      return this.culcRateProblem()
+      return new Promise((resolve, reject) => {
+        this.culcRateProblem()
+        console.log("DDDDDDDD")
+        resolve()
+      })
     }).then(() => {
-      console.log("EEEEEEE")
-      return this.setNewExamRate()
+      return new Promise((resolve, reject) => {
+        this.setNewExamRate()
+        console.log("EEEEEEE")
+        resolve()
+      })
     }).then(() => {
-      console.log("FFFFFFFF")
-      return this.setNewUserRate()
+      return new Promise((resolve, reject) => {
+        console.log("FFFFFFFF")
+        this.setNewUserRate()
+        resolve()
+      })
     }).catch(() => { // エラーハンドリング
       console.error('Something wrong!')
     })
@@ -159,20 +175,6 @@ export default {
           this.keys = ss.data().examInfo.testCases
           this.name = ss.data().name
           console.log("outputaa", this.keys)
-        })
-    },
-    getUserInfo: function () {
-      const userId = this.getLoginId
-      const self = this
-      return firebase
-        .firestore()
-        .collection("users")
-        .doc(String(userId))
-        .get()
-        .then(function (doc) {
-          let docData = doc.data()
-          console.log("DOCDATA", docData)
-          self.userInfo = doc.data()
         })
     },
     getUserFlag: function () {
@@ -388,6 +390,20 @@ export default {
     getLoginId () {
       console.log("check", this.getUserId)
       return this.getUserId
+    },
+    getUserInfo: function () {
+      const userId = this.getLoginId
+      const self = this
+      firebase
+        .firestore()
+        .collection("users")
+        .doc(String(userId))
+        .get()
+        .then(function (doc) {
+          let docData = doc.data()
+          console.log("DOCDATA", docData)
+          return doc.data()
+        })
     }
   }
 }

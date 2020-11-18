@@ -87,16 +87,16 @@ export default {
     }).then(() => {
       // console.log("FFFFFFFF", this.userInfo)
       return this.getUserFlag()
+      console.log("BBBBBB", userInfo)
     }).then(() => {
-      console.log("BBBBBB", this.userInfo)
-      console.log("CCCCCCCCCC")
       return this.culcRateUser()
+      console.log("CCCCCCCCCC")
     }).then(() => {
-      console.log("DDDDDDDD")
       return this.culcRateProblem()
+      console.log("DDDDDDDD")
     }).then(() => {
-      console.log("EEEEEEE")
       return this.setNewExamRate()
+      console.log("EEEEEEE")
     }).then(() => {
       console.log("FFFFFFFF")
       return this.setNewUserRate()
