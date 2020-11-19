@@ -3,7 +3,8 @@
     <v-shell
       :banner = "banner"
       :shell_input = "send_to_terminal"
-      :comands = "comands"
+      :commands = "commands"
+      @shell_output="prompt"
     ></v-shell>
   </div>
 </template>
@@ -37,7 +38,7 @@ export default {
         {
           name: "info",
           get () {
-            return `<p>With ❤️ By Salah Bentayeb @halasproject.</p>`
+            return '<p>With ❤️ By Salah Bentayeb @halasproject.</p>'
           }
         },
         {
@@ -54,6 +55,9 @@ export default {
       if (value == "node -v") {
         this.send_to_terminal = process.versions.node
       }
+      var commandArray = value.split(' ')
+      console.log(commandArray, 'Terminal')
+      this.$emit('frontEngine', commandArray)
     }
   }
 }

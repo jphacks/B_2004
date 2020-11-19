@@ -2,7 +2,7 @@
   <div class="home">
     <img alt="frontEngine logo" src="../assets/frontEngineLogo.png">
     <HomeDesign msg="frontEngineへようこそ"/>
-    <Terminal/>
+    <Terminal @frontEngine="engine"/>
   </div>
 </template>
 
@@ -16,6 +16,11 @@ export default {
   components: {
     HomeDesign,
     Terminal
+  },
+  methods: {
+    engine: function (abc) {
+      console.log(abc.join(" "), 'Home')
+    }
   }
 }
 </script>
