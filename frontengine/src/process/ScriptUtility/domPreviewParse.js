@@ -17,7 +17,7 @@ function domPreviewParse (domTree, fileName) {
           targetDom.push('\'' + key + '\'')
         })
       }
-      parseDom['v-bind:style'] = 'this.classEvent(' + targetDom.join(',') + ')'
+      parseDom['v-bind:style'] = 'classEvent(' + targetDom.join(',') + ')'
     }
     if (take.hasOwnProperty('v-for')) {
       const targetValue = []
@@ -45,7 +45,7 @@ function domPreviewParse (domTree, fileName) {
     if (take.hasOwnProperty('others')) {
       // 現状v-forとclassを分けたらいけるか...?
       for (let i = 0; i < take.others.length; i++) {
-        if (take.others[i].left === 'v-for' || take.others[i].left === 'class') {
+        if (take.others[i].left === 'v-for' || take.others[i].left === 'class' || take.others[i].left === 'href') {
           continue
         }
         let key = take.others[i].left
