@@ -234,7 +234,7 @@ export default {
       rDiff = updateUserRate.r + (keisu * (RDdiff ** 2) * seidoProblem * (s - syoritu))
       this.userNewRating.r = rDiff
       this.userNewRating.RD = RDdiff
-      console.log("miruUser", this.userNewRating.r, keisu, this.userNewRating.RD)
+      console.log("miruUser", this.userNewRating.r, keisu)
       /* firebase
               .firestore()
               .collection("users")
@@ -300,7 +300,7 @@ export default {
       if (!this.userInfo.rating) {
         console.log("kiteruyo", self.examId)
         updateUserRate.r = 1500
-        updateUserRate.RD = 650
+        updateUserRate.RD = 300
       } else {
         updateUserRate.r = this.userInfo.rating
         updateUserRate.RD = this.userInfo.ratingDiviation
@@ -323,7 +323,7 @@ export default {
       RDdiff = 1 / Math.sqrt(1 / updateProblemRate.RD ** 2 + 1 / yuudo)
       rDiff = updateProblemRate.r + (keisu * RDdiff ** 2 * seido * (s - syoritu))
       console.log("miru", updateUserRate, updateProblemRate, syoritu, seido)
-      console.log("ratingExam", rDiff, RDdiff, 1, Math.PI)
+      console.log("ratingExam", rDiff, RDdiff, 1)
       this.problemNewRating.r = rDiff
       this.problemNewRating.RD = RDdiff
       /* firebase

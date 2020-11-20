@@ -86,7 +86,7 @@ export default {
       console.log("AAAAAAAA")
       return this.getUserInfo()
     }).then(() => {
-      console.log("BBBBBB", self.userInfo)
+      console.log("BBBBBB", self.userFlag)
       console.log("CCCCCCCCCC")
       return this.culcRateUser()
     }).then(() => {
@@ -166,18 +166,11 @@ export default {
         .firestore()
         .collection("users")
         .doc(String(userId))
-        .collection("rate")
-        .orderBy('time')
         .get()
-        .then((snapsshot) => {
-          snapsshot.forEach((doc) => {
-            let docData = doc.data()
-            console.log("sss", doc.data())
-            self.userInfo.rating = docData.rating
-            self.userInfo.ratingDiviation = docData.ratingDiviation
-            console.log("userINFOOOOO", self.userInfo.rating)
-            return {}
-          })
+        .then(function (doc) {
+          let docData = doc.data()
+          console.log("DOCUSERDATA", docData)
+          self.userInfo = doc.data()
         })
     },
     culcRateUser: function () {
@@ -226,15 +219,15 @@ export default {
       console.log("hyogsguzi", updateProblemRate.r, updateProblemRate.RD)
       console.log("hyogsguzi", updateUserRate.r, updateUserRate.RD)
       // ユーザーについて
-      seido = 1 / Math.sqrt(1 + (3 / (Math.PI ** 2) * keisu * (updateUserRate.RD ** 2)))
-      seidoProblem = 1 / Math.sqrt(1 + (3 / (Math.PI ** 2) * keisu * (updateProblemRate.RD ** 2)))
-      syoritu = 1 / (1 + 10 ** (-seidoProblem * (updateUserRate.r - updateProblemRate.r) / 400))
-      yuudo = 1 / ((keisu ** 2) * (seidoProblem ** 2) * syoritu * (1 - syoritu))
-      RDdiff = 1 / Math.sqrt((1 / (updateUserRate.RD ** 2)) + (1 / yuudo))
-      rDiff = updateUserRate.r + (keisu * (RDdiff ** 2) * seidoProblem * (s - syoritu))
+      seido = 1 / Math.sqrt(1 + (3 / Math.PI ** 2 * keisu * updateUserRate.RD ** 2))
+      seidoProblem = 1 / Math.sqrt(1 + (3 / Math.PI ** 2 * keisu * updateProblemRate.RD ** 2))
+      syoritu = 1 / (1 + 10 ** (seidoProblem * (updateUserRate.r - updateProblemRate.r)))
+      yuudo = 1 / (keisu ** 2 * seidoProblem ** 2 * syoritu * (1 - syoritu))
+      RDdiff = 1 / Math.sqrt(1 / updateUserRate.RD ** 2 + 1 / yuudo)
+      rDiff = updateUserRate.r + (keisu * RDdiff ** 2 * seidoProblem * (s - syoritu))
+      console.log("miruUser", updateUserRate, updateProblemRate, rDiff, RDdiff)
       this.userNewRating.r = rDiff
       this.userNewRating.RD = RDdiff
-      console.log("miruUser", this.userNewRating.r, keisu, this.userNewRating.RD)
       /* firebase
               .firestore()
               .collection("users")
@@ -300,7 +293,7 @@ export default {
       if (!this.userInfo.rating) {
         console.log("kiteruyo", self.examId)
         updateUserRate.r = 1500
-        updateUserRate.RD = 650
+        updateUserRate.RD = 300
       } else {
         updateUserRate.r = this.userInfo.rating
         updateUserRate.RD = this.userInfo.ratingDiviation
@@ -318,12 +311,12 @@ export default {
       // 問題について
       seido = 1 / Math.sqrt(1 + (3 / Math.PI ** 2 * keisu * updateUserRate.RD ** 2))
       seidoProblem = 1 / Math.sqrt(1 + (3 / Math.PI ** 2 * keisu * updateProblemRate.RD ** 2))
-      syoritu = 1 / (1 + 10 ** (-seido * (updateProblemRate.r - updateUserRate.r) / 400))
+      syoritu = 1 / (1 + 10 ** (seido * (updateProblemRate.r - updateUserRate.r)))
       yuudo = 1 / (keisu ** 2 * seido ** 2 * syoritu * (1 - syoritu))
       RDdiff = 1 / Math.sqrt(1 / updateProblemRate.RD ** 2 + 1 / yuudo)
       rDiff = updateProblemRate.r + (keisu * RDdiff ** 2 * seido * (s - syoritu))
       console.log("miru", updateUserRate, updateProblemRate, syoritu, seido)
-      console.log("ratingExam", rDiff, RDdiff, 1, Math.PI)
+      console.log("ratingExam", rDiff, RDdiff, 1)
       this.problemNewRating.r = rDiff
       this.problemNewRating.RD = RDdiff
       /* firebase
@@ -346,21 +339,25 @@ export default {
       const userId = this.getLoginId
       const examId = this.examId
       const self = this
-      const times = String(new Date())
       // console.log("nanndekounaruno", self.userInfo.challenged)
       if (self.userFlag || 0) {
         return ""
       }
       console.log("nanndekounaruno", self.userFlag)
+      let time = String(new Date())
       firebase
         .firestore()
         .collection("users")
         .doc(String(userId))
-        .collection('rate')
         .add({
-          time: firebase.firestore.Timestamp.fromDate(new Date()),
-          rating: self.userNewRating.r,
-          ratingDiviation: self.userNewRating.RD
+          ratehistory: {
+            time: {
+              rate: self.userNewRating.r,
+              RD: self.userNewRating.RD
+            }
+          },
+          /* rating: self.userNewRating.r,
+          ratingDiviation: self.userNewRating.RD */
         })
       firebase
         .firestore()

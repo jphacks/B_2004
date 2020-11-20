@@ -234,7 +234,7 @@ export default {
       rDiff = updateUserRate.r + (keisu * (RDdiff ** 2) * seidoProblem * (s - syoritu))
       this.userNewRating.r = rDiff
       this.userNewRating.RD = RDdiff
-      console.log("miruUser", this.userNewRating.r, keisu, this.userNewRating.RD)
+      console.log("miruUser", this.userNewRating.r, keisu)
       /* firebase
               .firestore()
               .collection("users")
