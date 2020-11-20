@@ -70,7 +70,7 @@ export default {
     console.log("DOUNANOsdOOO", this.datas)
     setTimeout(() => {
       this.renderChart(this.data, this.options)
-    }, 500)
+    }, 1000);
   },
   methods: {
   },

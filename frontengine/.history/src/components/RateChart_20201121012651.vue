@@ -67,10 +67,8 @@ export default {
     test: String
   },
   mounted: function () {
-    console.log("DOUNANOsdOOO", this.datas)
-    setTimeout(() => {
-      this.renderChart(this.data, this.options)
-    }, 500)
+    console.log("DOUNANOdOOO", this.datas)
+    this.renderChart(this.data, this.options)
   },
   methods: {
   },
