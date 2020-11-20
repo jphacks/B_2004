@@ -3,11 +3,7 @@
  <b-row>
    <h2>e</h2>
    <!-- {{ Object.keys(this.userRate) }} -->
-   <rate-chart
-   :datas="this.setTate"
-   :option="this.setYoko"
-   :test="this.ssss"
-   />
+   <RateChart/>
   </b-row>
 </b-container>
 </template>
@@ -21,24 +17,16 @@ import RateChart from './RateChart.vue'
 export default {
   components: { RateChart },
   name: 'chartrate',
+  conponents: {
+    RateChart
+  },
   data () {
     return {
-      ssss: 'hfue',
-      setTate: [],
-      setYoko: [],
       userRate: []
     }
   },
   mounted: function () {
-    let promise = new Promise((resolve, reject) => {
-      resolve(this.getResult())
-    })
-    promise.then((data) => {
-      // console.log('Something wrong!', this.userRate)
-      return this.setRate()
-    }).catch(() => { // エラーハンドリング
-      console.error('Something wrong!')
-    })
+    //this.getResult()
   },
   methods: {
     getResult: function () {
@@ -58,19 +46,7 @@ export default {
             this.userRate[doc.id] = output
           })
           console.log("ou777tputdata", this.userRate)
-          // console.log("jijfiowejop77777", this.setYoko, this.setTate)
         })
-    },
-    setRate: function () {
-      const self = this
-      const demo = this.userRate
-      console.log("jijfiowejop77777", demo)
-      Object.values(demo).forEach((data) => {
-        this.setYoko.push(data.time)
-        this.setTate.push(data.rating)
-        // console.log("setYOKO", data)
-      })
-      console.log("SETTATE", this.setTate, this.setYoko)
     }
   },
   computed: {

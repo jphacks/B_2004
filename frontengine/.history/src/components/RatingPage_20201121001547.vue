@@ -5,7 +5,7 @@
    <!-- {{ Object.keys(this.userRate) }} -->
    <rate-chart
    :datas="this.setTate"
-   :option="this.setYoko"
+   :option="this.setYOKO"
    :test="this.ssss"
    />
   </b-row>
@@ -26,7 +26,7 @@ export default {
       ssss: 'hfue',
       setTate: [],
       setYoko: [],
-      userRate: []
+      userRate: [],
     }
   },
   mounted: function () {

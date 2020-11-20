@@ -4,8 +4,8 @@
    <h2>e</h2>
    <!-- {{ Object.keys(this.userRate) }} -->
    <rate-chart
-   :datas="this.setTate"
-   :option="this.setYoko"
+   :datas="this.data"
+   :option="this.options"
    :test="this.ssss"
    />
   </b-row>
@@ -26,7 +26,37 @@ export default {
       ssss: 'hfue',
       setTate: [],
       setYoko: [],
-      userRate: []
+      userRate: [],
+      data: {
+        /* labels: this.setYoko, */
+        labels: this.setYoko,
+        datasets: [
+          {
+            label: 'Line Dataset',
+            data: this.setTate,
+            borderColor: '#CFD8DC',
+            fill: false,
+            type: 'line',
+            lineTension: 0.3
+          }
+        ]
+      },
+      options: {
+        scales: {
+          xAxes: [{
+            scaleLabel: {
+              display: true,
+              labelString: 'Month'
+            }
+          }],
+          yAxes: [{
+            ticks: {
+              beginAtZero: true,
+              stepSize: 10
+            }
+          }]
+        }
+      }
     }
   },
   mounted: function () {

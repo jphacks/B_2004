@@ -2,12 +2,7 @@
 <b-container class="bv-example-row">
  <b-row>
    <h2>e</h2>
-   <!-- {{ Object.keys(this.userRate) }} -->
-   <rate-chart
-   :datas="this.setTate"
-   :option="this.setYoko"
-   :test="this.ssss"
-   />
+   {{ Object.keys(this.userRate) }}
   </b-row>
 </b-container>
 </template>
@@ -17,28 +12,69 @@ import { LayoutPlugin } from 'bootstrap-vue'
 import firebase from 'firebase'
 import { mapActions, mapGetters } from 'vuex'
 import moment from 'moment'
-import RateChart from './RateChart.vue'
+import { Bar } from 'vue-chartjs'
 export default {
-  components: { RateChart },
-  name: 'chartrate',
+  name: 'MyProfile',
+  conponents: {
+  },
   data () {
     return {
-      ssss: 'hfue',
-      setTate: [],
-      setYoko: [],
-      userRate: []
+      userRate: [],
+      data: {
+        labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+        datasets: [
+          {
+            label: 'Bar Dataset',
+            data: [10, 20, 30, 40, 50, 30],
+            backgroundColor: [
+              'rgba(255, 99, 132, 0.2)',
+              'rgba(54, 162, 235, 0.2)',
+              'rgba(255, 206, 86, 0.2)',
+              'rgba(75, 192, 192, 0.2)',
+              'rgba(153, 102, 255, 0.2)',
+              'rgba(255, 159, 64, 0.2)'
+            ],
+            borderColor: [
+              'rgba(255, 99, 132, 1)',
+              'rgba(54, 162, 235, 1)',
+              'rgba(255, 206, 86, 1)',
+              'rgba(75, 192, 192, 1)',
+              'rgba(153, 102, 255, 1)',
+              'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1
+          },
+          {
+            label: 'Line Dataset',
+            data: [10, 50, 20, 30, 30, 40],
+            borderColor: '#CFD8DC',
+            fill: false,
+            type: 'line',
+            lineTension: 0.3,
+          }
+        ]
+      },
+      options: {
+        scales: {
+          xAxes: [{
+            scaleLabel: {
+              display: true,
+              labelString: 'Month'
+            }
+          }],
+          yAxes: [{
+            ticks: {
+              beginAtZero: true,
+              stepSize: 10,
+            }
+          }]
+        }
+      }
     }
   },
   mounted: function () {
-    let promise = new Promise((resolve, reject) => {
-      resolve(this.getResult())
-    })
-    promise.then((data) => {
-      // console.log('Something wrong!', this.userRate)
-      return this.setRate()
-    }).catch(() => { // エラーハンドリング
-      console.error('Something wrong!')
-    })
+    this.getResult(),
+    this.renderChart(this.data, this.options)
   },
   methods: {
     getResult: function () {
@@ -58,19 +94,7 @@ export default {
             this.userRate[doc.id] = output
           })
           console.log("ou777tputdata", this.userRate)
-          // console.log("jijfiowejop77777", this.setYoko, this.setTate)
         })
-    },
-    setRate: function () {
-      const self = this
-      const demo = this.userRate
-      console.log("jijfiowejop77777", demo)
-      Object.values(demo).forEach((data) => {
-        this.setYoko.push(data.time)
-        this.setTate.push(data.rating)
-        // console.log("setYOKO", data)
-      })
-      console.log("SETTATE", this.setTate, this.setYoko)
     }
   },
   computed: {

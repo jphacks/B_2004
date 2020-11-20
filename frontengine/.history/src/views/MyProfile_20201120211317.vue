@@ -38,9 +38,7 @@ import { mapActions, mapGetters } from 'vuex'
 import moment from 'moment'
 import RatingPage from "@/components/RatingPage.vue"
 export default {
-  components: {
-    RatingPage
-  },
+  components: { RatingPage },
   name: 'MyProfile',
   conponents: {
     RatingPage

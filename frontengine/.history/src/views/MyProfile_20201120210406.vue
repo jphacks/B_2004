@@ -18,13 +18,13 @@
                 <th>Score</th>
             </tr>
         </thead>
-        <!-- <tbody>
+        <tbody>
           <tr v-for="(examId,index) in Object.keys(userItems || {})" :key="examId" :index="index">
             <td>{{isMoment(userItems[examId].startAt.seconds)}}</td>
             <td>{{userItems[examId].name}}</td>
             <td>{{userItems[examId].difficult}}</td>
           </tr>
-        </tbody> -->
+        </tbody>
     </table>
     </b-col>
   </b-row>
@@ -38,9 +38,7 @@ import { mapActions, mapGetters } from 'vuex'
 import moment from 'moment'
 import RatingPage from "@/components/RatingPage.vue"
 export default {
-  components: {
-    RatingPage
-  },
+  components: { RatingPage },
   name: 'MyProfile',
   conponents: {
     RatingPage

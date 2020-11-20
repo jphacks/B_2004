@@ -1,13 +1,31 @@
 <template>
 <b-container class="bv-example-row">
  <b-row>
-   <h2>e</h2>
-   <!-- {{ Object.keys(this.userRate) }} -->
-   <rate-chart
-   :datas="this.setTate"
-   :option="this.setYoko"
-   :test="this.ssss"
-   />
+   <b-col class="userState" >
+     <img src="../assets/frontEngineIcon.png">
+      <h2 class="nameSize">{{this.getEmailState}}</h2>
+     <b>合計 {{ difficultSum }}点</b>
+     <br>
+  </b-col>
+  <b-col class="userPerform" cols="8">
+    <h2>実績</h2><br>
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Contest Name</th>
+                <th>Score</th>
+            </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(examId,index) in Object.keys(userItems || {})" :key="examId" :index="index">
+            <td>{{isMoment(userItems[examId].startAt.seconds)}}</td>
+            <td>{{userItems[examId].name}}</td>
+            <td>{{userItems[examId].difficult}}</td>
+          </tr>
+        </tbody>
+    </table>
+    </b-col>
   </b-row>
 </b-container>
 </template>
@@ -17,31 +35,21 @@ import { LayoutPlugin } from 'bootstrap-vue'
 import firebase from 'firebase'
 import { mapActions, mapGetters } from 'vuex'
 import moment from 'moment'
-import RateChart from './RateChart.vue'
 export default {
-  components: { RateChart },
-  name: 'chartrate',
+  name: 'MyProfile',
+  conponents: {
+  },
   data () {
     return {
-      ssss: 'hfue',
-      setTate: [],
-      setYoko: [],
       userRate: []
     }
   },
   mounted: function () {
-    let promise = new Promise((resolve, reject) => {
-      resolve(this.getResult())
-    })
-    promise.then((data) => {
-      // console.log('Something wrong!', this.userRate)
-      return this.setRate()
-    }).catch(() => { // エラーハンドリング
-      console.error('Something wrong!')
-    })
+    getResult()
   },
   methods: {
     getResult: function () {
+      const output = []
       return firebase
         .firestore()
         .collection("users")
@@ -51,26 +59,11 @@ export default {
         .get()
         .then((snapshot) => {
           snapshot.forEach((doc) => {
-            const output = {}
-            output.rating = doc.data().rating
-            output.ratingDiviation = doc.data().ratingDiviation
-            output.time = doc.data().time
-            this.userRate[doc.id] = output
+            output[doc.id] = doc.data().rate
           })
-          console.log("ou777tputdata", this.userRate)
-          // console.log("jijfiowejop77777", this.setYoko, this.setTate)
+          console.log("outputdata", output)
+          this.userRate = output
         })
-    },
-    setRate: function () {
-      const self = this
-      const demo = this.userRate
-      console.log("jijfiowejop77777", demo)
-      Object.values(demo).forEach((data) => {
-        this.setYoko.push(data.time)
-        this.setTate.push(data.rating)
-        // console.log("setYOKO", data)
-      })
-      console.log("SETTATE", this.setTate, this.setYoko)
     }
   },
   computed: {

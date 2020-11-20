@@ -1,41 +1,77 @@
-<template>
-<b-container class="bv-example-row">
- <b-row>
-   <h2>e</h2>
-   <!-- {{ Object.keys(this.userRate) }} -->
-   <rate-chart
-   :datas="this.setTate"
-   :option="this.setYoko"
-   :test="this.ssss"
-   />
-  </b-row>
-</b-container>
-</template>
-
 <script>
 import { LayoutPlugin } from 'bootstrap-vue'
 import firebase from 'firebase'
 import { mapActions, mapGetters } from 'vuex'
 import moment from 'moment'
-import RateChart from './RateChart.vue'
+import { Bar } from 'vue-chartjs'
 export default {
-  components: { RateChart },
-  name: 'chartrate',
+  extends: Bar,
+  name: 'RateChart',
+  conponents: {
+  },
   data () {
     return {
-      ssss: 'hfue',
+      userRate: [],
       setTate: [],
       setYoko: [],
-      userRate: []
+      demo1: [
+        1500,
+        1500,
+        1500,
+        1523,
+        1547
+      ],
+      demo2: [
+        43242,
+        432424,
+        423423,
+        423424,
+        423423,
+        432423
+      ],
+      data: {
+        /* labels: this.setYoko, */
+        labels: this.demo1,
+        datasets: [
+          {
+            label: 'Line Dataset',
+            data: this.demo2,
+            borderColor: '#CFD8DC',
+            fill: false,
+            type: 'line',
+            lineTension: 0.3
+          }
+        ]
+      },
+      options: {
+        scales: {
+          xAxes: [{
+            scaleLabel: {
+              display: true,
+              labelString: 'Month'
+            }
+          }],
+          yAxes: [{
+            ticks: {
+              beginAtZero: true,
+              stepSize: 10
+            }
+          }]
+        }
+      }
     }
   },
   mounted: function () {
+    // this.renderChart(this.data, this.options)
     let promise = new Promise((resolve, reject) => {
       resolve(this.getResult())
     })
     promise.then((data) => {
       // console.log('Something wrong!', this.userRate)
       return this.setRate()
+    }).then((data) => {
+      console.log('88888888888', this.setTate, this.setYoko, this.demo1, this.demo2)
+      this.renderChart(this.data, this.options)
     }).catch(() => { // エラーハンドリング
       console.error('Something wrong!')
     })
@@ -68,9 +104,8 @@ export default {
       Object.values(demo).forEach((data) => {
         this.setYoko.push(data.time)
         this.setTate.push(data.rating)
-        // console.log("setYOKO", data)
+        console.log("setYOKO", data)
       })
-      console.log("SETTATE", this.setTate, this.setYoko)
     }
   },
   computed: {
@@ -93,16 +128,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-.userState {
-    text-align: left;
-}
-.userPerform {
-    text-align: left;
-}
-.nameSize {
-    padding-top: 25px;
-    font-size: 25px;
-}
-</style>
