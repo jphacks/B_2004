@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@babel/generator": "^7.12.1",
+    "@branu-jp/v-drag": "^0.1.0",
     "acorn": "^8.0.4",
     "ast-pretty-print": "^2.0.1",
     "babel-log": "^2.0.0",
