@@ -1,38 +1,52 @@
 <template>
   <div class="terminal">
-    <v-shell
-      :banner = "banner"
-      :shell_input = "send_to_terminal"
-      :commands = "commands"
-      @shell_output="prompt"
-    ></v-shell>
+    <b-button class="md-raised md-primary" @click="dialogToggle">ターミナルを表示</b-button>
+    <transition>
+      <div class="dialog" v-drag v-if="isShow" :style="dialogStyle">
+        <div class="terminal-header">
+          <img alt="frontEngine logo" src="../assets/frontEngineSmallIcon.png">
+          <span>frontengine-Shell</span>
+          <i class="terminal-close" @click="dialogToggle">
+            ×
+          </i>
+        </div>
+        <v-shell
+          :banner = "banner"
+          :shell_input = "send_to_terminal"
+          :commands = "commands"
+          @shell_output="prompt"
+        ></v-shell>
+      </div>
+    </transition>
   </div>
 </template>
 
 <script>
 import Vue from "vue"
 import shell from 'vue-shell'
+import drag from '@branu-jp/v-drag'
 Vue.use(shell)
+
 export default {
+  name: "Terminal",
+  directives: {
+    drag
+  },
   data () {
     return {
+      isShow: false,
+      dialogStyle: {
+        top: 16 + "px",
+        right: 16 + "px"
+      },
       send_to_terminal: "",
       banner: {
-        header: "Vue Shell",
-        subHeader: "Shell is power just enjoy 🔥",
+        // subHeader: "Shell is power just enjoy 🔥",
         helpHeader: 'Enter "help" for more information.',
         emoji: {
-          first: "🔅",
-          second: "🔅",
           time: 750
         },
-        sign: "VueShell $",
-        img: {
-          align: "left",
-          link: "/logo.png",
-          width: 100,
-          height: 100
-        }
+        sign: "$"
       },
       commands: [
         {
@@ -42,10 +56,7 @@ export default {
           }
         },
         {
-          name: "uname",
-          get () {
-            return navigator.appVersion
-          }
+          name: "uname"
         }
       ]
     }
@@ -58,14 +69,33 @@ export default {
       var commandArray = value.split(' ')
       console.log(commandArray, 'Terminal')
       this.$emit('frontEngine', commandArray)
+    },
+    dialogToggle: function () {
+      this.isShow = !this.isShow
     }
   }
 }
 </script>
 <style scoped>
-.terminal {
-  width: 670px;
-  align-self: center;
-  border: 1px #00adb5;
+.dialog {
+  position: absolute;
+  width: 480px;
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.2);
+  background-color: #fff;
+  z-index: 99999;
+  border-radius: 2px;
+  border: 1px solid gray;
+  cursor: move;
+}
+.terminal-header{
+  background-color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0px 8px;
+}
+.terminal-close {
+  color: #ff0000;
+  font-size: 25px;
 }
 </style>
