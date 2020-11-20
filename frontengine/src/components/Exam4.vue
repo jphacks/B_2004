@@ -1,7 +1,7 @@
 <template>
   <div class="exam4">
     <b-card class="hanoi" @click="utusu('left')">
-      <b-card v-for="(value, index) of input" @click="trans(value, 'left')" :key="index">{{value}}</b-card>
+      <b-card v-for="(value, index) of left" @click="trans(value, 'left', index)" :key="index">{{value}}</b-card>
     </b-card>
     <b-card class="hanoi" @click="utusu('center')">
       <b-card v-for="(value, index) of center" @click="trans(value, 'center')" :key="index">{{value}}</b-card>

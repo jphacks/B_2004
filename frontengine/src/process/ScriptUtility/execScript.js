@@ -5,6 +5,7 @@ function getScript (body, array, preLocal) {
   return execScript(body, array, preLocal).returnArguments
 }
 function execScript (body, array, preLocal) {
+  console.log(body, array, preLocal, 'execScript:Start')
   // name,valueは予約されている??
   // output {name: name, value: value}
   let local = {}
@@ -152,7 +153,9 @@ function execScript (body, array, preLocal) {
             targetDo = targetGO
             break
           }
-          if (!isBool(targetGO.test, local)) {
+          let resultBool = isBool(targetGO.test, local)
+          console.log('resultBool', targetGO.test, local, resultBool, targetGO)
+          if (!resultBool) {
             // false
             if (targetGO.alternate) {
               targetGO = targetGO.alternate
@@ -166,6 +169,7 @@ function execScript (body, array, preLocal) {
           }
         }
         if (targetDo) {
+          console.log('resultBool:DoneIf', targetDo)
           let get = execScript(targetDo, array, local)
 
           Object.keys(get.returnLocal || {}).forEach(key => {
@@ -231,6 +235,7 @@ function execScript (body, array, preLocal) {
 }
 
 function calculation (body, local, params, err, type) {
+  console.log('calculation', body, local, global)
   if (err) {
     return 'err'
   }
@@ -273,6 +278,7 @@ function naibuKansu (body, local) {
 }
 
 function isBool (body, local, params, err, type) {
+  console.log('isBool!!', body, local, global)
   if (err) {
     return 'err'
   }
@@ -280,6 +286,7 @@ function isBool (body, local, params, err, type) {
     return 'err'
   }
   if (body.operator) {
+    console.log('operator', body.operator, body, local)
     switch (body.operator) {
       case '!':
         return !isBool(body.argument, local, params, err, type)
@@ -303,6 +310,10 @@ function isBool (body, local, params, err, type) {
         return isBool(body.left, local, params, err, type) && isBool(body.right, local, params, err, type)
       case '&':
         return isBool(body.left, local, params, err, type) & isBool(body.right, local, params, err, type)
+      case '!==':
+        return isBool(body.left, local, params, err, type) !== isBool(body.right, local, params, err, type)
+      case '!=':
+        return isBool(body.left, local, params, err, type) !== isBool(body.right, local, params, err, type)
     }
     return calculation(body, local, params, err, type)
   }

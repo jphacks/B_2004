@@ -83,6 +83,7 @@ function CheckProperty (body, option) {
 }
 
 function getProperty (body, local, funcArguments) {
+  console.log('getProperty', body, local, funcArguments, global)
   if (!body) {
     console.error('maybe body is null or undifiend?', body, local)
     return false
@@ -96,6 +97,7 @@ function getProperty (body, local, funcArguments) {
       if (local[body.name] && local[body.name].hasOwnProperty('func') && local[body.name].computed) {
         return getScript(local[body.name], [], local)
       }
+      console.log('localBodyName', local[body.name], body, local, funcArguments)
       return local[body.name]
     } else {
       // maybe javascript default item
@@ -119,11 +121,12 @@ function getProperty (body, local, funcArguments) {
       const outputData = getProperty(body.object, local)
       // // console.log('join?', body, outputData, body.property.name, outputData[body.property.name](''), funcArguments)
       // // console.log('join', outputData[body.property.name](...funcArguments), !!funcArguments)
+      console.log('MemberExpression:Test', outputData, body.property, outputData[body.property.name])
       if (!!funcArguments && outputData && outputData[body.property.name]) {
         return outputData[body.property.name](...funcArguments)
       } else if (body.property.name) {
         // console.log('bodymemberrr', outputData[body.property.name], outputData, body.property.name)
-        if (!outputData[body.property.name]) {
+        if (!outputData.hasOwnProperty(body.property.name)) {
           return outputData[getProperty(body.property, local)]
         } else {
           return outputData[body.property.name]

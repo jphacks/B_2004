@@ -1,3 +1,4 @@
+import { global } from '../moduleProcess.js'
 export { domPreviewParse }
 function domPreviewParse (domTree, fileName) {
   console.log('getDomPreviewParse', domTree)
@@ -55,7 +56,9 @@ function domPreviewParse (domTree, fileName) {
         let targetInput = ''
         const targetDom = []
         if (take.others[i].type) {
-          targetDom.push('\'' + take.others[i].right + '\'')
+          let otherRight = take.others[i].right
+          otherRight = otherRight.replace(/\'/g, '\\\'')
+          targetDom.push('\'' + otherRight + '\'')
           targetDom.push('\'' + fileName + '\'')
           // targetDom.push(Object.keys(parentParam))
           Object.keys(parentParam).forEach(key => {

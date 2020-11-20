@@ -23,7 +23,7 @@
               <b-card>
                 <b-card-text>
                   入力例1<br />
-                  {{ getSumpleInput.join(",") }}<br />
+                  {{ getSumpleInput }}<br />
                 </b-card-text>
                 <b-card-text>
                   出力例1<br />
@@ -357,7 +357,7 @@ export default {
       if (!this.getExamInfo.testCases) {
         return []
       }
-      return this.getExamInfo.testCases.sampleCase.enter
+      return Array.isArray(this.getExamInfo.testCases.sampleCase.enter) ? this.getExamInfo.testCases.sampleCase.enter.join(",") : this.getExamInfo.testCases.sampleCase.enter
     },
     getTimeStamp () {
       return {}

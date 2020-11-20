@@ -4,14 +4,19 @@ export { domProperty }
 function domProperty (text, params) {
   const type = typeof Boolean(text)
   console.log('type', type)
+  console.log('checcker', text, params)
   const script = scriptCreateAST(text)
   const ToParams = params || {}
   const toDomScript = Object.assign(ToParams, global)
   const scriptExpression = script.expression || script
   if (script && script.expression) {
-    return isBool(script.expression, toDomScript)
+    const returnBool = isBool(script.expression, toDomScript)
+    console.log('returnBool', returnBool)
+    return returnBool
   } else if (script && script.value) {
-    return isBool(script.value, toDomScript)
+    const returnBool = isBool(script.value, toDomScript)
+    console.log('returnBool', returnBool)
+    return returnBool
   }
   // console.lo('checcer', script)
   // console.lo('scriptDom', script, toDomScript, isBool(script.expression, toDomScript))
