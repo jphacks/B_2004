@@ -269,13 +269,11 @@ function runVueDom (targetDomTree, option) {
       if (target.type === 'variable' || target.type === 'function') {
         let data = domProperty(target.right, tar.params)
         // とりあえずdataはArray想定 本来ではObjectも考えないといけないよ
-        console.log('keysArray::', target, data, global)
         if (typeof data === 'string') {
           // たぶんparseする時にjoin(',')で参照渡し的にこっちもmergeされちゃってるので...
           data = data.split(',')
         }
         if (Array.isArray(data)) {
-          console.log('Array', data, target)
           for (let i = data.length - 1; i >= 0; i--) {
             // tar.params = {}
             let nextTarget = Object.assign({}, tar)
@@ -288,7 +286,6 @@ function runVueDom (targetDomTree, option) {
               params[keys[1]] = i
               parseParams[keys[1]] = i
             }
-            console.log('keysArray', keys, params, parseParams)
             nextTarget.paramIndex = i
             nextTarget.paramValue = data[i]
             nextTarget.params = Object.assign({}, params)

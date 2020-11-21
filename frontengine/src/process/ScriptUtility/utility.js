@@ -88,7 +88,6 @@ function getProperty (body, local, funcArguments) {
     console.error('maybe body is null or undifiend?', body, local)
     return false
   }
-  console.log('checkproperty', body, local, funcArguments)
   const key = Object.keys(body || {})[0]
   if (body && body.type === 'ThisExpression') {
     return global
@@ -122,7 +121,6 @@ function getProperty (body, local, funcArguments) {
       // // console.log('join?', body, outputData, body.property.name, outputData[body.property.name](''), funcArguments)
       // // console.log('join', outputData[body.property.name](...funcArguments), !!funcArguments)
       // const testGlobal = Object.assign({}, global)
-      console.log('MemberExpression:Test', outputData, body.property, outputData[body.property.name], body)
       if (!!funcArguments && outputData && outputData[body.property.name]) {
         return outputData[body.property.name](...funcArguments)
       } else if (body.property.name) {

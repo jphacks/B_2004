@@ -70,17 +70,17 @@ export default {
       // domのfunction系を一旦ここに噛ませる
       // orderはfunction名
       // pathはcomponentファイル名
-      console.log('orderPPP', order, path, userAction, arg)
+      console.log('orderPPP', order, path, userAction, arg, global)
       let toParam = Object.assign({}, global)
       arg.forEach(x => {
         toParam = Object.assign(toParam, x)
       })
+      const domPro = domProperty(order, toParam)
       if (userAction) {
-        console.log('userAction!')
+        console.log('userAction!', toParam, order)
         this.outputDom = domPreviewParse(saveDomTree, path)
         this.previewParse()
       }
-      const domPro = domProperty(order, toParam)
       console.log('domproprety', domPro, global, order, arg)
       return domPro
     },

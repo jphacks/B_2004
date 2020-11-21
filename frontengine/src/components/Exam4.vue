@@ -1,7 +1,7 @@
 <template>
   <div class="exam4">
-    <b-card class="hanoi">
-      <b-card v-for="(value, index) of left" @click="trans(value, 'left', index)" :key="index">{{value}}</b-card>
+    <b-card class="hanoi" @click="utusu('left')">
+      <b-card v-for="(value, index) of input" @click="trans(value, 'left')" :key="index">{{value}}</b-card>
     </b-card>
     <b-card class="hanoi" @click="utusu('center')">
       <b-card v-for="(value, index) of center" @click="trans(value, 'center')" :key="index">{{value}}</b-card>
@@ -14,6 +14,7 @@
 
 <script>
 export default {
+  // ハノイの塔を作る問題-解答
   name: 'Exam4',
   props: {
     input: Array
@@ -29,12 +30,23 @@ export default {
     }
   },
   methods: {
-    trans: function (val, houkou) {
-      this.center.push(val)
+    trans: function (value, houkou) {
+      if (this.pocketBool && this.pocketSelect !== houkou) {
+        this[houkou].push(this.pocket)
+        this.pocketBool = false
+      } else if (!this.pocketBool) {
+        this.pocket = value
+        const search = this[houkou].indexOf(value)
+        this[houkou].splice(search, 1)
+        this.pocketBool = true
+        this.pocketSelect = houkou
+      }
     },
     utusu: function (target) {
-      this[target].push(this.pocket)
-      this.pocketBool = false
+      if (this.pocketBool && this.pocketSelect !== target) {
+        this[target].push(this.pocket)
+        this.pocketBool = false
+      }
     }
   }
 }

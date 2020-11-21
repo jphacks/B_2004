@@ -66,10 +66,8 @@ function execScript (body, array, preLocal) {
         break
       case 'ExpressionStatement':
         // console.lo('argument', access.body[i])
-        console.log('functionExpress::!!!:Express', body, array, preLocal)
         if (access.body[i].expression && access.body[i].expression.type === 'CallExpression') {
           const target = access.body[i].expression.callee
-          console.log('functionExpress::!!!:call', body, array, preLocal, target)
           if (target.object && target.object.type === 'ThisExpression') {
             execScript(global[target.property.name], access.body[i].expression.arguments)
           } else {
@@ -78,11 +76,11 @@ function execScript (body, array, preLocal) {
             for (let i = 0; i < getRawArgs.length; i++) {
               args.push(getProperty(getRawArgs[i], local))
             }
-            const getter = getProperty(target, local, args)
+            getProperty(target, local, args)
             // console.log('getter', getter, args)
           }
         } else if (access.body[i].expression && access.body[i].expression.type === 'AssignmentExpression') {
-          console.log('functionExpress::!!!:assign', body, array, preLocal)
+          // console.log('functionExpress::!!!:assign', body, array, preLocal)
           // console.lo('chhhhhh', access.body[i].expression)
           if (access.body[i].expression.left.name && local.hasOwnProperty(access.body[i].expression.left.name)) {
             local[access.body[i].expression.left.name] = calculation(access.body[i].expression.right, local)
