@@ -75,10 +75,11 @@ export default {
       arg.forEach(x => {
         toParam = Object.assign(toParam, x)
       })
-      // if (userAction) {
-      //   this.outputDom = domPreviewParse(saveDomTree, path)
-      //   this.previewParse()
-      // }
+      if (userAction) {
+        console.log('userAction!')
+        this.outputDom = domPreviewParse(saveDomTree, path)
+        this.previewParse()
+      }
       const domPro = domProperty(order, toParam)
       console.log('domproprety', domPro, global, order, arg)
       return domPro

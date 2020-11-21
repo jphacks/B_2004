@@ -79,7 +79,7 @@ function execScript (body, array, preLocal) {
               args.push(getProperty(getRawArgs[i], local))
             }
             const getter = getProperty(target, local, args)
-            console.log('getter', getter, args)
+            // console.log('getter', getter, args)
           }
         } else if (access.body[i].expression && access.body[i].expression.type === 'AssignmentExpression') {
           console.log('functionExpress::!!!:assign', body, array, preLocal)
