@@ -86,8 +86,10 @@ export default {
       return outputObj
     },
     previewParse: function () {
-      const getDDD = domPreviewParse(this.dom, 'default')
-      this.outputDom = getDDD
+      // const getDDD = domPreviewParse(this.dom, 'default')
+      this.outputDom = this.dom
+      console.log('outputdom', this.dom, this.outputDom)
+      const getDDD = this.dom
       const self = this
       const domEvent = this.domEvent
       const classEvent = this.classEvent

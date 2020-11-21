@@ -12,6 +12,12 @@ let lastOutput = []
 let outputIndex = 0
 async function MainProcess (text, props, clear, option) {
   let toProps = {}
+  if (Array.isArray(props)) {
+    toProps.input = props
+  } else {
+    // obj型
+    toProps = Object.assign(toProps, props)
+  }
   const fileInfo = {} // ここに単一ファイル情報を記載
   fileInfo.fileName = 'dafault'
   const templateLength = '<template>'.length
@@ -35,12 +41,6 @@ async function MainProcess (text, props, clear, option) {
   let output = { status: 'WA', reason: '' }
   const vForGlobal = {}
   const parseOutput = []
-  if (Array.isArray(props)) {
-    toProps.input = props
-  } else {
-    // obj型
-    toProps = Object.assign(toProps, props)
-  }
   // オブジェクト型で例題作ってなかった><
   // const toProps = { input: props }
   if (props) {
@@ -86,7 +86,7 @@ async function MainProcess (text, props, clear, option) {
             delete nextTarget['v-for']
             targets.push(nextTarget)
           }
-        } else {
+        } else if (typeof data === 'object') {
           // obj
           const keys = Object.keys(data)
           data = Object.values(data)
@@ -269,7 +269,7 @@ function runVueDom (targetDomTree, option) {
       if (target.type === 'variable' || target.type === 'function') {
         let data = domProperty(target.right, tar.params)
         // とりあえずdataはArray想定 本来ではObjectも考えないといけないよ
-        console.log('keysArray::', target.target, data)
+        console.log('keysArray::', target, data, global)
         if (typeof data === 'string') {
           // たぶんparseする時にjoin(',')で参照渡し的にこっちもmergeされちゃってるので...
           data = data.split(',')
@@ -297,7 +297,7 @@ function runVueDom (targetDomTree, option) {
             delete nextTarget['v-for']
             targets.push(nextTarget)
           }
-        } else {
+        } else if (typeof data === 'object') {
           // obj
           const keys = Object.keys(data)
           data = Object.values(data)

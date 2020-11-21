@@ -21,10 +21,10 @@ function findBlock (text, firstIndex) {
   }
 }
 
-export default function (text) {
+export default function (text, props) {
   const generate = require('@babel/generator').default
   const ast = CreateAST(text)
-  const module = moduleProcess(ast)
+  const module = moduleProcess(ast, props)
   // const generated = generate(ast)
   // ('interpre', myInterpreter, myInterpreter.run())
   // ('generate', generate.code(ast, { sourceType: 'module', sourceMaps: true }))

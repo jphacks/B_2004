@@ -119,6 +119,8 @@ function getProperty (body, local, funcArguments) {
       const outputData = getProperty(body.object, local)
       // // console.log('join?', body, outputData, body.property.name, outputData[body.property.name](''), funcArguments)
       // // console.log('join', outputData[body.property.name](...funcArguments), !!funcArguments)
+      // const testGlobal = Object.assign({}, global)
+      console.log('MemberExpression:Test', outputData, body.property, outputData[body.property.name], body)
       if (!!funcArguments && outputData && outputData[body.property.name]) {
         return outputData[body.property.name](...funcArguments)
       } else if (body.property.name) {
@@ -169,6 +171,7 @@ function getProperty (body, local, funcArguments) {
     return getScript(body, [], local)
   } else if (body.type === 'ObjectProperty') {
     const lustGet = getProperty(body.value, local, funcArguments)
+    console.log('body:data::', lustGet, body)
     return lustGet
   } else {
     let data = CheckProperty(body)

@@ -65,11 +65,11 @@
           </div>
           <!-- <br><br><br><router-link :to="{name: 'ProblemResult', params: {examId: $route.params.examId}}">問題結果画面に遷移します。</router-link> -->
         </div>
-        <preview-field :dom="getDomTree" v-if="viewCheckBox.previewArea">
+        <preview-field :dom="parseToDom" v-if="viewCheckBox.previewArea">
         </preview-field>
       </b-tab>
       <b-tab title="プレビュー画面">
-        <preview-field :dom="getDomTree" unique="tabPage"> </preview-field>
+        <preview-field :dom="parseToDom" unique="tabPage"> </preview-field>
       </b-tab>
     </b-tabs>
   </div>
@@ -82,6 +82,7 @@ import { mapGetters, mapActions } from "vuex"
 import Exam1 from "@/components/Exam1.vue"
 import firebase from "firebase"
 import PreviewField from "@/components/preview/PreviewField"
+import { pureDomPreviewParse, domPreviewParse } from '@/process/ScriptUtility/domPreviewParse.js'
 // import Exam1 from '@/components/Exam1.vue'
 // import Exam2 from '@/components/Exam2.vue'
 export default {
@@ -240,6 +241,9 @@ export default {
     ...mapGetters(["getExams", "getUserId"]),
     getText () {
       return "''"
+    },
+    parseToDom () {
+      return domPreviewParse(this.getDomTree, 'default')
     },
     sumpleOutputText () {
       const out = []

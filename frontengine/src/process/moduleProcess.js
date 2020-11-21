@@ -10,7 +10,7 @@ export default function (ast, props) {
   global = {}
   const firstBody = ast.program.body[0].declaration.properties
   const modules = {}
-  console.log('props', props)
+  console.log('props', props, global)
   if (props) {
     Object.keys(props || {}).forEach(key => {
       global[key] = props[key]
