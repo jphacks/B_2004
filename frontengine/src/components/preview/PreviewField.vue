@@ -12,7 +12,7 @@
 
 <script>
 // @ is an alias to /src
-import { pureDomPreviewParse, domPreviewParse } from '@/process/ScriptUtility/domPreviewParse.js'
+import { pureDomPreviewParse, domPreviewParse, saveDomTree } from '@/process/ScriptUtility/domPreviewParse.js'
 import { global } from '@/process/moduleProcess.js'
 import Vue from 'vue/dist/vue.esm.js'
 import Answer from '@/components/preview/answer'
@@ -58,6 +58,7 @@ export default {
   },
   watch: {
     dom: function () {
+      this.outputDom = this.dom
       this.previewParse()
     }
   },
@@ -65,16 +66,22 @@ export default {
     this.testPush()
   },
   methods: {
-    domEvent: function (order, path, ...arg) {
+    domEvent: function (order, path, userAction, ...arg) {
       // domのfunction系を一旦ここに噛ませる
       // orderはfunction名
       // pathはcomponentファイル名
-      console.log('orderPPP', order, path, arg)
-      let toParam = global
+      console.log('orderPPP', order, path, userAction, arg)
+      let toParam = Object.assign({}, global)
       arg.forEach(x => {
         toParam = Object.assign(toParam, x)
       })
-      return domProperty(order, toParam)
+      // if (userAction) {
+      //   this.outputDom = domPreviewParse(saveDomTree, path)
+      //   this.previewParse()
+      // }
+      const domPro = domProperty(order, toParam)
+      console.log('domproprety', domPro, global, order, arg)
+      return domPro
     },
     classEvent: function (path, ...orders) {
       // class名を受け取る
@@ -87,9 +94,8 @@ export default {
     },
     previewParse: function () {
       // const getDDD = domPreviewParse(this.dom, 'default')
-      this.outputDom = this.dom
       console.log('outputdom', this.dom, this.outputDom)
-      const getDDD = this.dom
+      const getDDD = this.outputDom
       const self = this
       const domEvent = this.domEvent
       const classEvent = this.classEvent

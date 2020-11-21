@@ -1,6 +1,7 @@
 import { global } from '../moduleProcess.js'
 import { runVueDom } from '../MainProcess.js'
-export { pureDomPreviewParse, domPreviewParse }
+let saveDomTree = {}
+export { pureDomPreviewParse, domPreviewParse, saveDomTree }
 function pureDomPreviewParse (domTree, fileName) {
   console.log('getDomPreviewParse', domTree)
   const output = []
@@ -144,6 +145,7 @@ function pureDomPreviewParse (domTree, fileName) {
 function domPreviewParse (domTree, fileName) {
   const output = []
   const parentParam = {}
+  saveDomTree = domTree
   output.push('<div id="previewDOM">')
   const runVueCode = runVueDom(domTree)
   console.log('runVueCode', runVueCode)
@@ -179,6 +181,12 @@ function domPreviewParse (domTree, fileName) {
           otherRight = otherRight.replace(/\'/g, '\\\'')
           targetDom.push('\'' + otherRight + '\'')
           targetDom.push('\'' + fileName + '\'')
+          console.log('keey', key, key.match('click'))
+          if (key.indexOf('click') >= 0) {
+            targetDom.push('true')
+          } else {
+            targetDom.push('false')
+          }
           // targetDom.push(Object.keys(parentParam))
           if (take.parseParams) {
             Object.keys(take.parseParams).forEach(key => {
@@ -205,7 +213,7 @@ function domPreviewParse (domTree, fileName) {
           const targetDom = []
           targetDom.push('\'' + reserveVal.textRawValue + '\'')
           targetDom.push('\'' + fileName + '\'')
-          // targetDom.push(Object.keys(parentParam))
+          targetDom.push('false')
           if (take.parseParams) {
             Object.keys(take.parseParams).forEach(key => {
               let value = take.parseParams[key]
@@ -213,6 +221,7 @@ function domPreviewParse (domTree, fileName) {
               if (valueType !== 'number' && valueType !== 'boolean') {
                 value = '\'' + value + '\''
               }
+              console.log('targetDom', key, value, take.parentParam)
               targetDom.push('{' + key + ': ' + value + '}')
             })
           }

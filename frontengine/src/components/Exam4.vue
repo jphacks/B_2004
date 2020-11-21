@@ -14,7 +14,6 @@
 
 <script>
 export default {
-  // ハノイの塔を作る問題-解答
   name: 'Exam4',
   props: {
     input: Array
@@ -30,24 +29,14 @@ export default {
     }
   },
   methods: {
-    trans: function (value, houkou) {
-      if (this.pocketBool && this.pocketSelect !== houkou) {
-        this[houkou].push(this.pocket)
-        this.pocketBool = false
-      } else if (!this.pocketBool) {
-        this.pocket = value
-        const search = this[houkou].indexOf(value)
-        this[houkou].splice(search, 1)
-        this.pocketBool = true
-        this.pocketSelect = houkou
-      }
+    trans: function (val, houkou) {
+      let hairetu = []
+      hairetu.push(1)
+      this.center = hairetu
     },
     utusu: function (target) {
-      console.log('$el', this.$el, this)
-      if (this.pocketBool && this.pocketSelect !== target) {
-        this[target].push(this.pocket)
-        this.pocketBool = false
-      }
+      this[target].push(this.pocket)
+      this.pocketBool = false
     }
   }
 }
