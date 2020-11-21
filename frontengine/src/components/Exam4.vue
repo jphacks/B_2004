@@ -1,6 +1,6 @@
 <template>
   <div class="exam4">
-    <b-card class="hanoi" @click="utusu('left')">
+    <b-card class="hanoi">
       <b-card v-for="(value, index) of left" @click="trans(value, 'left', index)" :key="index">{{value}}</b-card>
     </b-card>
     <b-card class="hanoi" @click="utusu('center')">
@@ -30,8 +30,6 @@ export default {
   },
   methods: {
     trans: function (val, houkou) {
-      let hairetu = []
-      hairetu.push(1)
       this.center.push(val)
     },
     utusu: function (target) {

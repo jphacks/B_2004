@@ -88,6 +88,7 @@ function getProperty (body, local, funcArguments) {
     console.error('maybe body is null or undifiend?', body, local)
     return false
   }
+  console.log('checkproperty', body, local, funcArguments)
   const key = Object.keys(body || {})[0]
   if (body && body.type === 'ThisExpression') {
     return global
@@ -166,6 +167,7 @@ function getProperty (body, local, funcArguments) {
       }
     }
   } else if (body.type === 'FunctionExpression') {
+    console.log('functionExpress', body, funcArguments, local)
     return getScript(body, funcArguments, local)
   } else if (body.type === 'BlockStatement' && body.computed) {
     // console.log('computed', body)
