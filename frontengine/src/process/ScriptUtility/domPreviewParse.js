@@ -1,6 +1,7 @@
 import { global } from '../moduleProcess.js'
-export { domPreviewParse }
-function domPreviewParse (domTree, fileName) {
+import { runVueDom } from '../MainProcess.js'
+export { pureDomPreviewParse, domPreviewParse }
+function pureDomPreviewParse (domTree, fileName) {
   console.log('getDomPreviewParse', domTree)
   const output = []
   let stack = [domTree]
@@ -135,6 +136,110 @@ function domPreviewParse (domTree, fileName) {
     }
     // --子供に対する作用
     // --whileEnd
+  }
+  console.log('output', output)
+  output.push('</div>')
+  return output.join('')
+}
+function domPreviewParse (domTree, fileName) {
+  const output = []
+  const parentParam = {}
+  output.push('<div id="previewDOM">')
+  const runVueCode = runVueDom(domTree)
+  console.log('runVueCode', runVueCode)
+  // ループが起きると困るので、userアクション(v-on:clickとか@clickとか)の時に最描画するようにする
+  for (let i = 0; i < runVueCode.length; i++) {
+    const take = runVueCode[i]
+    const parseDom = {}
+    const yoyaku = {}
+    if (take.hasOwnProperty('class')) {
+      let targetDom = []
+      targetDom.push('\'' + fileName + '\'')
+      if (take.class.hasOwnProperty('variables')) {
+        take.class.variables.forEach(key => {
+          targetDom.push('\'' + key + '\'')
+        })
+      }
+      parseDom['v-bind:style'] = 'classEvent(' + targetDom.join(',') + ')'
+    }
+    if (take.hasOwnProperty('others')) {
+      // 現状v-forとclassを分けたらいけるか...?
+      for (let i = 0; i < take.others.length; i++) {
+        if (take.others[i].left === 'v-for' || take.others[i].left === 'class' || take.others[i].left === 'href') {
+          continue
+        }
+        let key = take.others[i].left
+        if (take.others[i].directive) {
+          key = ':' + key
+        }
+        let targetInput = ''
+        const targetDom = []
+        if (take.others[i].type) {
+          let otherRight = take.others[i].right
+          otherRight = otherRight.replace(/\'/g, '\\\'')
+          targetDom.push('\'' + otherRight + '\'')
+          targetDom.push('\'' + fileName + '\'')
+          // targetDom.push(Object.keys(parentParam))
+          if (take.parseParams) {
+            Object.keys(take.parseParams).forEach(key => {
+              let value = take.parseParams[key]
+              const valueType = typeof value
+              if (valueType !== 'number' && valueType !== 'boolean') {
+                value = '\'' + value + '\''
+              }
+              targetDom.push('{' + key + ': ' + value + '}')
+            })
+          }
+          targetInput = 'domEvent(' + targetDom.join(',') + ')'
+        }
+        parseDom[key] = targetInput
+      }
+    }
+    if (take.name === 'reserveText' && take.reserves) {
+      const textOutput = []
+      for (let i = 0; i < take.reserves.length; i++) {
+        const reserveVal = take.reserves[i]
+        if (reserveVal.type === 'direct') {
+          textOutput.push(reserveVal.textRawValue)
+        } else {
+          const targetDom = []
+          targetDom.push('\'' + reserveVal.textRawValue + '\'')
+          targetDom.push('\'' + fileName + '\'')
+          // targetDom.push(Object.keys(parentParam))
+          if (take.parseParams) {
+            Object.keys(take.parseParams).forEach(key => {
+              let value = take.parseParams[key]
+              const valueType = typeof value
+              if (valueType !== 'number' && valueType !== 'boolean') {
+                value = '\'' + value + '\''
+              }
+              targetDom.push('{' + key + ': ' + value + '}')
+            })
+          }
+          textOutput.push('{{ domEvent(' + targetDom.join(',') + ') }}')
+        }
+      }
+      parseDom.reserveText = textOutput.join('')
+    }
+    // --各々の作用
+    if (!parseDom.hasOwnProperty('reserveText')) {
+      const pushOutput = []
+      for (let i = 0; i < Object.keys(parseDom).length; i++) {
+        const key = Object.keys(parseDom)[i]
+        pushOutput.push(key + '="' + parseDom[key] + '"')
+      }
+      let endBlock = '>'
+      if (!take.open && !take.close) {
+        endBlock = '/>'
+      }
+      let startBlock = '<'
+      if (take.close) {
+        startBlock = '</'
+      }
+      output.push(startBlock + take.name + ' ' + pushOutput.join(' ') + endBlock)
+    } else {
+      output.push(parseDom.reserveText)
+    }
   }
   console.log('output', output)
   output.push('</div>')

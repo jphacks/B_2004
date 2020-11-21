@@ -12,7 +12,7 @@
 
 <script>
 // @ is an alias to /src
-import { domPreviewParse } from '@/process/ScriptUtility/domPreviewParse.js'
+import { pureDomPreviewParse, domPreviewParse } from '@/process/ScriptUtility/domPreviewParse.js'
 import { global } from '@/process/moduleProcess.js'
 import Vue from 'vue/dist/vue.esm.js'
 import Answer from '@/components/preview/answer'
