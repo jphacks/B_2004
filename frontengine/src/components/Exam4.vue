@@ -32,7 +32,7 @@ export default {
     trans: function (val, houkou) {
       let hairetu = []
       hairetu.push(1)
-      this.center = hairetu
+      this.center.push(val)
     },
     utusu: function (target) {
       this[target].push(this.pocket)

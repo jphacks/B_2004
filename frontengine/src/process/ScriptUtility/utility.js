@@ -2,7 +2,7 @@ import { global } from '../moduleProcess.js'
 import { execScript, getScript } from './execScript.js'
 export { CheckProperty, getProperty }
 // データの代入を支援するfunction {name: value}の形で返される
-function CheckProperty (body, option) {
+function CheckProperty (body, local, option) {
   // name,valueは予約されている??
   // output {name: name, value: value}
 
@@ -16,12 +16,13 @@ function CheckProperty (body, option) {
     output.value = []
     const targetElement = bodyValue.elements || body.elements
     for (const element of targetElement) {
-      const get = CheckProperty(element)
-      output.value.push(Object.values(get || {})[0])
+      const get = getProperty(element, local)
+      // console.log('arrayGet', get, element, local)
+      output.value.push(get)
     }
   } else if (bodyType === 'ObjectExpression') {
     for (const property of bodyValue.properties) {
-      const get = CheckProperty(property)
+      const get = getProperty(property, local)
       for (const key of Object.keys(get || {})) {
         if (key !== 'noneDataEDEKQWLDCOLASXMW') {
           output[key] = get[key]
@@ -174,7 +175,7 @@ function getProperty (body, local, funcArguments) {
     console.log('body:data::', lustGet, body)
     return lustGet
   } else {
-    let data = CheckProperty(body)
+    let data = CheckProperty(body, local)
     let key = 'key'
     if (typeof data === 'object') {
       key = Object.keys(data || {})[0]
