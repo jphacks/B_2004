@@ -1,95 +1,46 @@
 <template>
-<b-container class="bv-example-row">
- <b-row>
-   <b-col class="userState" >
-     <img src="../assets/frontEngineIcon.png">
-      <h2 class="nameSize">{{this.getEmailState}}</h2>
-     <b>合計 {{ difficultSum }}点</b>
-     <br>
-  </b-col>
-  <b-col class="userPerform" cols="8">
-    <h2>実績</h2><br>
-    <table>
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Contest Name</th>
-                <th>Score</th>
-            </tr>
-        </thead>
-        <!-- <tbody>
-          <tr v-for="(examId,index) in Object.keys(userItems || {})" :key="examId" :index="index">
-            <td>{{isMoment(userItems[examId].startAt.seconds)}}</td>
-            <td>{{userItems[examId].name}}</td>
-            <td>{{userItems[examId].difficult}}</td>
-          </tr>
-        </tbody> -->
-    </table>
-    </b-col>
-  </b-row>
-</b-container>
+<div>
+  <b-card
+    title="Card Title"
+    img-alt="Image"
+    img-top
+    tag="article"
+    style="max-width: 80rem;"
+    class="text-center"
+  >
+  <div class="bg-secondary text-light">
+      <b-list-group>
+        <b-list-group-item href="#">
+          <span class="btnTitle">name</span>
+          <span class="btnArr">></span>
+          Awesome link
+        </b-list-group-item>
+        <b-list-group-item href="#">Link with active state</b-list-group-item>
+        <b-list-group-item href="#">Action links are easy</b-list-group-item>
+        <b-list-group-item href="#">Disabled link</b-list-group-item>
+      </b-list-group>
+  </div>
+  </b-card>
+</div>
 </template>
 
 <script>
-import { LayoutPlugin } from 'bootstrap-vue'
-import firebase from 'firebase'
-import { mapActions, mapGetters } from 'vuex'
-import moment from 'moment'
 export default {
-  data () {
-    return {
-      userItems: {},
-      difficultSum: 0
-    }
-  },
-  mounted: function () {
-    console.log('check', this.fetchFirebaseUsers)
-    this.fetchFirebaseUsers()
-  },
   methods: {
-    ...mapActions(['setUserItems']),
-    fetchFirebaseUsers: function () {
-      const output = {}
-      return firebase.firestore().collection('users').doc(this.userId).collection('join').get().then(snapsshot => {
-        console.log('ss', snapsshot)
-        snapsshot.forEach(doc => {
-          console.log('chek', this.users)
-          this.setUserItems(doc)
-          output[doc.id] = doc.data()
-          this.difficultSum += output[doc.id].difficult
-        })
-        console.log('cc', this.userItems)
-        this.userItems = output
-      })
-    },
-    isMoment: function (date) {
-      console.log('date', date)
-      const momentDAte = moment.unix(date)
-      return momentDAte.format('YYYY-MM-DD HH:mm:ssZ')
-    }
-  },
-  computed: {
-    ...mapGetters(['getUserId', 'getEmailState']),
-    userId: function () {
-      console.log('aa', this.getUserId)
-      return this.getUserId
-    },
-    getUserName: function () {
-      return this.getEmailState
+    myPro: function () {
+      if (this.$route.path !== '/myProfile') {
+        this.$router.push('/myProfile')
+      }
     }
   }
 }
 </script>
 
 <style scoped>
-.userState {
-    text-align: left;
+.btnTitle {
+  float: left;
 }
-.userPerform {
-    text-align: left;
-}
-.nameSize {
-    padding-top: 25px;
-    font-size: 25px;
+.btnArr {
+  float: right;
 }
 </style>
