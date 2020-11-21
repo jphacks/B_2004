@@ -121,15 +121,14 @@ export default {
           }
         }
       })
-      console.log('boot', BootstrapVue)
       let vm = new Vue({
         Answer,
         render: h => h(newPreviewDom)
       })
       // this.pushPreview = newPreviewDom
       const targetDomChange = document.getElementById(this.uniqueKey).children[0]
-      console.log('check', vm)
       vm.$mount(targetDomChange)
+      console.log('vueStatus', vm.$el, vm)
     },
     testPush: function () {
       console.log('document', document, this.document)
