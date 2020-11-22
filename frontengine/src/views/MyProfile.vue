@@ -3,13 +3,14 @@
  <b-row>
    <b-col class="userState" >
      <img src="../assets/frontEngineIcon.png">
-      <h2 class="nameSize">{{this.getEmailState}}</h2>
+      <h2 class="nameSize">{{this.getEmailState}}</h2><br>
+      <ChangeForm/><br><br>
      <b>合計 {{ difficultSum }}点</b>
      <br>
-     <RatingPage/>
   </b-col>
   <b-col class="userPerform" cols="8">
     <h2>実績</h2><br>
+    <RatingPage/>
     <table>
         <thead>
             <tr>
@@ -37,9 +38,11 @@ import firebase from 'firebase'
 import { mapActions, mapGetters } from 'vuex'
 import moment from 'moment'
 import RatingPage from "@/components/RatingPage.vue"
+import ChangeForm from "@/components/ChangeForm.vue"
 export default {
   components: {
-    RatingPage
+    RatingPage,
+    ChangeForm
   },
   name: 'MyProfile',
   conponents: {
