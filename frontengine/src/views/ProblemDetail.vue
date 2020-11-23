@@ -133,7 +133,8 @@ export default {
   methods: {
     ...mapActions(["setExams"]),
     emitDom: function (value) {
-      console.log('previewDom', value)
+      console.log('previewDom', value, value.children, value.children[0])
+      console.log('previewDom:func', value.children[0], value.children[0].children[1].children[0].getBoundingClientRect(), value.children[0].getBoundingClientRect())
       this.previewDom = value
     },
     getDom: function () {

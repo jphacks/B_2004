@@ -1,5 +1,5 @@
 <template>
-    <b-card @click="action"><slot></slot></b-card>
+    <b-card @click="action" :id="'answerCard'"><slot></slot></b-card>
 </template>
 
 <script>
@@ -22,4 +22,8 @@ export default {
 </script>
 
 <style scoped>
+.defaultClass {
+  width: 0px;
+  height: 0px;
+}
 </style>

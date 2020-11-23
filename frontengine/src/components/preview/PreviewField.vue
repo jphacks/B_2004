@@ -131,7 +131,7 @@ export default {
       const targetDomChange = document.getElementById(this.uniqueKey).children[0]
       vm.$mount(targetDomChange)
       console.log('vueStatus', vm.$el, vm)
-      this.$emit('vueDom', vm.$el)
+      this.$emit('vueDom', vm.$el, vm.$el.children)
     },
     testPush: function () {
       console.log('document', document, this.document)
