@@ -1,5 +1,5 @@
 <template>
-    <div><b-card class=""><slot></slot></b-card></div>
+    <b-card @click="action"><slot></slot></b-card>
 </template>
 
 <script>
@@ -9,15 +9,17 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 import Vue from 'vue/dist/vue.esm.js'
 
 export default {
+  name: "AnswerCard",
   components: {
     BCard
+  },
+  methods: {
+    action: function (...params) {
+      this.$emit('click', ...params)
+    }
   }
 }
 </script>
 
 <style scoped>
-.sizeing {
-    width: 300px;
-    color: blue;
-}
 </style>

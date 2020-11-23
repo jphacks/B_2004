@@ -8,7 +8,15 @@ export { global }
 export default function (ast, props) {
   // console.log('ast', ast)
   global = {}
-  const firstBody = ast.program.body[0].declaration.properties
+  console.log('check@@', ast.program.body[0])
+  let targetBody = null
+  for (let i = 0; i < ast.program.body.length; i++) {
+    // とりあえずimportを無視するように
+    if (ast.program.body[i].hasOwnProperty('declaration')) {
+      targetBody = ast.program.body[i].declaration
+    }
+  }
+  const firstBody = targetBody.properties
   const modules = {}
   console.log('props', props, global)
   if (props) {

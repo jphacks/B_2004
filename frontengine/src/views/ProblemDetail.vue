@@ -69,7 +69,7 @@
         </preview-field>
       </b-tab>
       <b-tab title="プレビュー画面">
-        <preview-field :dom="parseToDom" unique="tabPage"> </preview-field>
+        <preview-field :dom="parseToDom" unique="tabPage" @vueDom="emitDom"> </preview-field>
       </b-tab>
     </b-tabs>
   </div>
@@ -82,6 +82,7 @@ import { mapGetters, mapActions } from "vuex"
 import Exam1 from "@/components/Exam1.vue"
 import firebase from "firebase"
 import PreviewField from "@/components/preview/PreviewField"
+// import answerCard from "@/components/preview/answerCard"
 import { pureDomPreviewParse, domPreviewParse } from '@/process/ScriptUtility/domPreviewParse.js'
 // import Exam1 from '@/components/Exam1.vue'
 // import Exam2 from '@/components/Exam2.vue'
@@ -108,6 +109,7 @@ export default {
       sumpleOutput: [],
       wait: false,
       getDomTree: {},
+      previewDom: {},
       viewCheckBox: {
         exam: true,
         sumpleOutput: true,
@@ -130,6 +132,10 @@ export default {
   },
   methods: {
     ...mapActions(["setExams"]),
+    emitDom: function (value) {
+      console.log('previewDom', value)
+      this.previewDom = value
+    },
     getDom: function () {
       //  MainProcess(this.text)
       const submitExam = firebase.functions().httpsCallable("submitExam")

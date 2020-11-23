@@ -18,6 +18,7 @@ import Vue from 'vue/dist/vue.esm.js'
 import Answer from '@/components/preview/answer'
 import { domProperty } from '@/process/ScriptUtility/domUtility.js'
 import PreviewCard from '@/components/preview/previewItem/PreviewCard'
+import AnswerCard from "@/components/preview/previewItem/AnswerCard"
 import BootstrapVue from 'bootstrap-vue'
 import { globalStyle } from '@/process/MainProcess.js'
 import { importBootstrap, bootstrapImports } from '@/process/addBootstrapComponents.js'
@@ -112,6 +113,7 @@ export default {
         components: {
           Answer,
           PreviewCard,
+          AnswerCard,
           ...importBootstrap
         },
         style: {
@@ -129,6 +131,7 @@ export default {
       const targetDomChange = document.getElementById(this.uniqueKey).children[0]
       vm.$mount(targetDomChange)
       console.log('vueStatus', vm.$el, vm)
+      this.$emit('vueDom', vm.$el)
     },
     testPush: function () {
       console.log('document', document, this.document)
