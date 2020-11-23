@@ -2,7 +2,7 @@
 <b-container class="bv-example-row">
  <b-row>
    <b-col class="userState" >
-     <img src="../assets/frontEngineIcon.png">
+     <b-img src="../assets/frontEngineIcon.png" width="160" height="160" alt="placeholder"></b-img>
       <h2 class="nameSize">{{this.getEmailState}}</h2><br>
       <ChangeForm/><br><br>
      <b>合計 {{ difficultSum }}点</b>
