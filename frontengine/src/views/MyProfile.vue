@@ -11,7 +11,7 @@
   <b-col class="userPerform" cols="8">
     <h2>実績</h2><br>
     <RatingPage/>
-    <table>
+    <!-- <table>
         <thead>
             <tr>
                 <th>Date</th>
@@ -19,14 +19,14 @@
                 <th>Score</th>
             </tr>
         </thead>
-        <!-- <tbody>
+        <tbody>
           <tr v-for="(examId,index) in Object.keys(userItems || {})" :key="examId" :index="index">
             <td>{{isMoment(userItems[examId].startAt.seconds)}}</td>
             <td>{{userItems[examId].name}}</td>
             <td>{{userItems[examId].difficult}}</td>
           </tr>
-        </tbody> -->
-    </table>
+        </tbody>
+    </table> -->
     </b-col>
   </b-row>
 </b-container>
