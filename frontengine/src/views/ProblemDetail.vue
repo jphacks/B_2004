@@ -122,7 +122,8 @@ export default {
         sumpleOutput: "サンプル出力",
         inputArea: "解答入力欄",
         previewArea: "プレビュー画面"
-      }
+      },
+      checked: false
     }
   },
   props: {
@@ -138,13 +139,50 @@ export default {
       // console.log('previewDom:func', value.children[0], value.children[0].children[1].children[0].getBoundingClientRect(), value.children[0].getBoundingClientRect())
       const value = this.checkStyleDom
       let targetStyle = this.getExam.examInfo
-      let targetBool = false
+      let targetBool = true
       if (targetStyle && targetStyle.option && targetStyle.option.styleCheck) {
         targetStyle = targetStyle.option.styleCheck
       } else {
-        targetBool = true
+        this.checked = true
+        return true
       }
-      console.log('previewDom:targetStyle', targetStyle)
+      if (!targetStyle.hasOwnProperty('children')) {
+        // bugでroot層だけchildrenがないパターン(必要なのに)ないパターンがある
+        targetStyle.children = {}
+        Object.keys(targetStyle).forEach(key => {
+          if (key !== 'count' && key !== 'style' && key !== 'children') {
+            targetStyle.children[key] = targetStyle[key]
+          }
+        })
+      }
+      let que = [targetStyle]
+      let domQue = [value.children[0]]
+      while (que.length > 0) {
+        let take = que.shift()
+        let domTake = domQue.shift()
+        if (!take.hasOwnProperty('name')) {
+          // noname
+          if (take.hasOwnProperty('style')) {
+            for (let parentKey of Object.keys(take.style)) {
+              //_区切りでor判定とする
+              const splitKeys = parentKey.split('_')
+              for (let subKey of Object.keys(take.style[parentKey])) {
+                if (subKey.match(/'max' || 'min'/gi)) {
+                  // 幅指定
+
+                } else if (!(subKey === domTake.style[parentKey])) {
+                  // absolute指定
+                  targetBool = false
+                  return targetBool
+                }
+              }
+            }
+          }
+        } else {
+          // nameつき
+        }
+      }
+      console.log('previewDom:targetStyle', que, domQue)
       for (let child of value.children[0].children) {
         console.log('previewDom:dom', child.children[0], child.children[0].getBoundingClientRect())
       }
