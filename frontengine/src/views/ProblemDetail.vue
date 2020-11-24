@@ -136,8 +136,8 @@ export default {
     ...mapActions(["setExams"]),
     emitDom: function () {
       // console.log('previewDom', value, value.children, value.children[0])
-      // console.log('previewDom:func', value.children[0], value.children[0].children[1].children[0].getBoundingClientRect(), value.children[0].getBoundingClientRect())
       const value = this.checkStyleDom
+      console.log('previewDom:func', value.children[0], value.children[0].children[1].children[0].getBoundingClientRect(), value.children[0].getBoundingClientRect())
       let targetStyle = this.getExam.examInfo
       let targetBool = true
       if (targetStyle && targetStyle.option && targetStyle.option.styleCheck) {
@@ -157,27 +157,11 @@ export default {
       }
       let que = [targetStyle]
       let domQue = [value.children[0]]
-      let domPreProcess = {}
-      while (domQue.length > 0) {
-        let take = domQue.shift()
-        let target = {}
-        if (take.id && take.id.length > 0) {
-          target.id = take.id
-        } else {
-          target.id = 'noneName'
-        }
-        if (take.style) {
-          target.cssStyle = take.style
-        }
-        if (take.propagateStyle) {
-          target.style = take.propagateStyle
-        }
-        target.children = []
-      }
       while (que.length > 0) {
         // 正答判定
         let take = que.shift()
         let domTake = domQue.shift()
+        let domStyle = domTake.getBoundingClientRect()
         if (!take.hasOwnProperty('name')) {
           // noname
           if (take.hasOwnProperty('style')) {
@@ -187,10 +171,24 @@ export default {
               let splitBool = []
               for (let i = 0; i < splitKeys.length; i++) {
                 const key = splitKeys[i]
-                for (let subKey of Object.keys(take.style[parentKey])) {
+                for (let subKey of Object.keys(take.style[key])) {
                   if (subKey.match(/'max' || 'min'/gi)) {
                     // 幅指定
-                  } else if (!(subKey === domTake.style[parentKey])) {
+                    if (subKey.match('max')) {
+                      // minの時だけ判定
+                      continue
+                    }
+                    if (domStyle.hasOwnProperty(key)) {
+                      // 他に依存しない
+                      if (take.style[key].min <= domStyle[key] && domStyle[key] <= take.style[key].max) {
+                        continue
+                      } else {
+                        splitBool.push(false)
+                      }
+                    } else {
+                      // 他要素と依存関係にあるstylecheck
+                    }
+                  } else if (!(subKey === domTake.style[key])) {
                     // absolute指定
                     splitBool.push(false)
                   } else {
