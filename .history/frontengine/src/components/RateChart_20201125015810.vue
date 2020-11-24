@@ -16,7 +16,7 @@ export default {
       setYoko: [],
       data: {
         /* labels: this.setYoko, */
-        labels: this.label,
+        /* labels: this.label, */
         datasets: [
           {
             label: '更新後のレート',
@@ -30,17 +30,10 @@ export default {
         ]
       },
       options: {
-        elements: {
-          point: {
-            radius: 4, // 点の大きさ
-            hoverRadius: 20 // 点の大きさ(マウスホバー時)
-          }
-        },
         responsive: true,
         backgroundColor: "#CCFFFF",
         scales: {
           xAxes: [{
-            display: false,
             scaleLabel: {
               type: 'time',
               time: {

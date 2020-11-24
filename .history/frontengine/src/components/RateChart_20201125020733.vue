@@ -32,9 +32,9 @@ export default {
       options: {
         elements: {
           point: {
-            radius: 4, // 点の大きさ
+            radius: 8, // 点の大きさ
             hoverRadius: 20 // 点の大きさ(マウスホバー時)
-          }
+          },
         },
         responsive: true,
         backgroundColor: "#CCFFFF",
