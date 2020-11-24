@@ -14,29 +14,15 @@ export default {
       userRate: [],
       setTate: [],
       setYoko: [],
-      demo1: [
-        1500,
-        1500,
-        1500,
-        1523,
-        1547
-      ],
-      demo2: [
-        43242,
-        432424,
-        423423,
-        423424,
-        423423,
-        432423
-      ],
       data: {
         /* labels: this.setYoko, */
         labels: this.label,
         datasets: [
           {
-            label: 'Line Dataset',
+            label: '更新後のレート',
             data: this.datas,
-            borderColor: '#CFD8DC',
+            backgroundColor: "rgba(50,50,255,0.1)", // グラフの背景色
+            borderColor: "rgba(50,50,255,1)", // グラフの線の色
             fill: false,
             type: 'line',
             lineTension: 0.3
@@ -44,17 +30,25 @@ export default {
         ]
       },
       options: {
+        responsive: true,
+        backgroundColor: "#CCFFFF",
         scales: {
           xAxes: [{
             scaleLabel: {
-              display: true,
-              labelString: 'Month'
+              type: 'time',
+              time: {
+                displayFormats: {
+                  quarter: 'll',
+                  unit: 'month'
+                }
+              }
             }
           }],
           yAxes: [{
             ticks: {
-              beginAtZero: true,
-              stepSize: 10
+              max: 3000,
+              min: 0,
+              stepSize: 100
             }
           }]
         }
@@ -63,14 +57,13 @@ export default {
   },
   props: {
     datas: Array,
-    label: Array,
-    test: String
+    label: Array
   },
   mounted: function () {
-    console.log("DOUNANOsdOOO", this.datas)
-    setTimeout(() => {
-      this.renderChart(this.data, this.options)
-    }, 500)
+    this.$refs.canvas.width = 900
+    // this.$refs.canvas.style.backgroundColor = "#CCFFFF"
+    console.log("DOUNANOdOOO", this.$refs.canvas.width)
+    this.renderChart(this.data, this.options)
   },
   methods: {
   },

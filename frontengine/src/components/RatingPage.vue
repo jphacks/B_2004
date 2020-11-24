@@ -1,47 +1,51 @@
 <template>
-<b-container class="bv-example-row">
- <b-row>
-   <h2>e</h2>
-   <!-- {{ Object.keys(this.userRate) }} -->
-   <rate-chart
-   :datas="this.setTate"
-   :label="this.setYoko"
-   :test="this.ssss"
-   />
-  </b-row>
-</b-container>
+  <b-container class="bv-example-row">
+    <b-row>
+      <h2>e</h2>
+      <!-- {{ Object.keys(this.userRate) }} -->
+      <div v-if="this.flag">
+        <rate-chart
+          class="ratechart"
+          :datas="this.setTate"
+          :label="this.setYoko"
+        />
+      </div>
+    </b-row>
+  </b-container>
 </template>
 
 <script>
-import { LayoutPlugin } from 'bootstrap-vue'
-import firebase from 'firebase'
-import { mapActions, mapGetters } from 'vuex'
-import moment from 'moment'
-import RateChart from './RateChart.vue'
+import { LayoutPlugin } from "bootstrap-vue"
+import firebase from "firebase"
+import { mapActions, mapGetters } from "vuex"
+import moment from "moment"
+import RateChart from "./RateChart.vue"
 export default {
   components: { RateChart },
-  name: 'chartrate',
+  name: "chartrate",
   data () {
     return {
-      ssss: 'hfue',
       setTate: [],
       setYoko: [],
-      userRate: []
+      userRate: [],
+      flag: false
     }
   },
   created: function () {
     let promise = new Promise((resolve, reject) => {
       resolve(this.getResult())
     })
-    promise.then((data) => {
-      // console.log('Something wrong!', this.userRate)
-      return this.setRate()
-    }).catch(() => { // エラーハンドリング
-      console.error('Something wrong!')
-    })
+    promise
+      .then((data) => {
+        // console.log('Something wrong!', this.userRate)
+        return this.setRate()
+      })
+      .catch(() => {
+        // エラーハンドリング
+        console.error("Something wrong!")
+      })
   },
-  mounted: function () {
-  },
+  mounted: function () {},
   methods: {
     getResult: function () {
       return firebase
@@ -49,7 +53,7 @@ export default {
         .collection("users")
         .doc(this.getLoginId)
         .collection("rate")
-        .orderBy('time')
+        .orderBy("time")
         .get()
         .then((snapshot) => {
           snapshot.forEach((doc) => {
@@ -68,11 +72,15 @@ export default {
       const demo = this.userRate
       console.log("jijfiowejop77777", demo)
       Object.values(demo).forEach((data) => {
-        this.setYoko.push(data.time)
-        this.setTate.push(data.rating)
+        let dat = new Date(data.time.toDate())
+        let moment2 = moment(dat).format("YYYY年MM月DD日 HH:mm")
+        this.setYoko.push(moment2)
+        this.setTate.push(Math.floor(data.rating))
         // console.log("setYOKO", data)
+        console.log("SETDAY", moment2)
       })
       console.log("SETTATE", this.setTate, this.setYoko)
+      this.flag = true
     }
   },
   computed: {
@@ -98,13 +106,16 @@ export default {
 
 <style scoped>
 .userState {
-    text-align: left;
+  text-align: left;
 }
 .userPerform {
-    text-align: left;
+  text-align: left;
 }
 .nameSize {
-    padding-top: 25px;
-    font-size: 25px;
+  padding-top: 25px;
+  font-size: 25px;
+}
+.ratechart {
+  padding: 100px;
 }
 </style>

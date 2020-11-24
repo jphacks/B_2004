@@ -6,8 +6,8 @@
       <h2 class="nameSize">{{this.getEmailState}}</h2>
      <b>合計 {{ difficultSum }}点</b>
      <br>
-     <RatingPage/>
   </b-col>
+  <RatingPage/>
   <b-col class="userPerform" cols="8">
     <h2>実績</h2><br>
     <table>
