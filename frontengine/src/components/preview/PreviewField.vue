@@ -7,6 +7,7 @@
         </div>
       </div>
     </b-card>
+    <b-btn primary @click="$emit('style-check')">デザインチェック</b-btn>
   </div>
 </template>
 

@@ -65,11 +65,11 @@
           </div>
           <!-- <br><br><br><router-link :to="{name: 'ProblemResult', params: {examId: $route.params.examId}}">問題結果画面に遷移します。</router-link> -->
         </div>
-        <preview-field :dom="parseToDom" v-if="viewCheckBox.previewArea">
+        <preview-field :dom="parseToDom" v-if="viewCheckBox.previewArea" @vueDom="propagateDom" @style-check="emitDom">
         </preview-field>
       </b-tab>
       <b-tab title="プレビュー画面">
-        <preview-field :dom="parseToDom" unique="tabPage" @vueDom="emitDom"> </preview-field>
+        <preview-field :dom="parseToDom" unique="tabPage"> </preview-field>
       </b-tab>
     </b-tabs>
   </div>
@@ -110,6 +110,7 @@ export default {
       wait: false,
       getDomTree: {},
       previewDom: {},
+      checkStyleDom: {},
       viewCheckBox: {
         exam: true,
         sumpleOutput: true,
@@ -132,10 +133,27 @@ export default {
   },
   methods: {
     ...mapActions(["setExams"]),
-    emitDom: function (value) {
-      console.log('previewDom', value, value.children, value.children[0])
-      console.log('previewDom:func', value.children[0], value.children[0].children[1].children[0].getBoundingClientRect(), value.children[0].getBoundingClientRect())
+    emitDom: function () {
+      // console.log('previewDom', value, value.children, value.children[0])
+      // console.log('previewDom:func', value.children[0], value.children[0].children[1].children[0].getBoundingClientRect(), value.children[0].getBoundingClientRect())
+      const value = this.checkStyleDom
+      let targetStyle = this.getExam.examInfo
+      let targetBool = false
+      if (targetStyle && targetStyle.option && targetStyle.option.styleCheck) {
+        targetStyle = targetStyle.option.styleCheck
+      } else {
+        targetBool = true
+      }
+      console.log('previewDom:targetStyle', targetStyle)
+      for (let child of value.children[0].children) {
+        console.log('previewDom:dom', child.children[0], child.children[0].getBoundingClientRect())
+      }
+      console.log('previewDom:style', value.children, targetStyle)
+      console.log('previewDom:exam', this.getExam)
       this.previewDom = value
+    },
+    propagateDom: function (value) {
+      this.checkStyleDom = value
     },
     getDom: function () {
       //  MainProcess(this.text)
