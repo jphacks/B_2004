@@ -61,6 +61,7 @@
           ></b-form-textarea>
           <div class="detail-buttons">
             <b-button v-if="getLoginId" @click="getDom()">送信</b-button>
+            <b-button @click="sumpleSakai()">テスト（坂井）</b-button>
             <b-button @click="sumpleTest()">サンプルを出力</b-button>
           </div>
           <!-- <br><br><br><router-link :to="{name: 'ProblemResult', params: {examId: $route.params.examId}}">問題結果画面に遷移します。</router-link> -->
@@ -199,6 +200,12 @@ export default {
           console.log("e", e)
         })
     },
+    sumpleSakai: function () {
+      this.$router.push({
+        name: "ProblemResult",
+        params: { examId: this.$route.params.examId }
+      })
+    },
     sumpleTest: function () {
       if (this.text.length > 0 && !this.wait) {
         this.sumpleOutput = []
@@ -240,10 +247,6 @@ export default {
           this.wait = false
         })
       }
-      this.$router.push({
-        name: "ProblemResult",
-        params: { examId: this.$route.params.examId }
-      })
     },
     sumplePush: function () {
       this.text = this.getSumpleText

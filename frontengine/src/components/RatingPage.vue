@@ -75,7 +75,7 @@ export default {
         let dat = new Date(data.time.toDate())
         let moment2 = moment(dat).format("YYYY年MM月DD日 HH:mm")
         this.setYoko.push(moment2)
-        this.setTate.push(Math.floor(data.rating))
+        this.setTate.push(Math.floor(data.rating) - 400)
         // console.log("setYOKO", data)
         console.log("SETDAY", moment2)
       })

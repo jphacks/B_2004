@@ -52,6 +52,7 @@ import firebase from "firebase"
 import { mapActions, mapGetters } from "vuex"
 import ResultCard from "@/components/ResultCard.vue"
 import OutputCard from "@/components/OutputCard.vue"
+import moment from "moment"
 export default {
   name: "ProblemResult",
   components: {
@@ -72,7 +73,8 @@ export default {
       problemNewRating: {},
       problemInfo: {},
       userInfo: {},
-      userFlag: false
+      userFlag: false,
+      solveTime: 0
     }
   },
   mounted: function () {
@@ -265,11 +267,17 @@ export default {
         .get()
         .then(function (doc) {
           let docData = doc.data()
-          console.log("DOCDATA", docData)
+          let from = moment(new Date(docData.startAt.toDate()))
+          let to = moment(new Date(docData.endAt.toDate()))
+          let diffHours = to.diff(from, 'hours')
+          let diffMinutes = to.diff(from, 'minutes')
+          let diffTime = to.diff(from)
+          console.log("DOCDATA", diffHours % 60, diffMinutes % 60)
           if (docData.challenged || 0) {
             return true
           }
-          console.log("DOCDATA", self.userFlag)
+          console.log("DOCDATA", self.endAt)
+          self.solveTime = diffTime
           return false
         })
     },
@@ -369,24 +377,49 @@ export default {
         .collection("join")
         .doc(String(examId))
         .update({
-          challenged: true
+          challenged: true,
+          solveTime: self.solveTime
         })
     },
     setNewExamRate: function () {
       const userId = this.getLoginId
       const examId = this.examId
       const self = this
+      let s
+      if (this.userStatus) {
+        s = 1
+      } else {
+        s = 0
+      }
       if (self.userFlag || 0) {
         return ""
       }
       console.log("nanndekounaruno2")
+      if (this.problemInfo.kaisuu) {
+        firebase
+          .firestore()
+          .collection("exams")
+          .doc(String(examId))
+          .update({
+            rating: self.problemNewRating.r,
+            ratingDiviation: self.problemNewRating.RD,
+            kaisuu: self.problemInfo.kaisuu + 1, // 挑戦回数（ユーザーの）
+            winNum: self.problemInfo.winNum + s, // 勝利数（ユーザーの)
+            averageTime: (self.problemInfo.averageTime * self.problemInfo.kaisuu + self.solveTime) / (self.problemInfo + 1)
+            // メモ問題の正答率を出すときにはwinNum/kaisuu、ないときは０％を出す.
+          })
+        return ""
+      }
       firebase
         .firestore()
         .collection("exams")
         .doc(String(examId))
         .update({
           rating: self.problemNewRating.r,
-          ratingDiviation: self.problemNewRating.RD
+          ratingDiviation: self.problemNewRating.RD,
+          kaisuu: 1, // 挑戦回数（ユーザーの）
+          winNum: s, // 勝利数（問題の）
+          aveSolveTime: self.solveTime
         })
     }
   },
