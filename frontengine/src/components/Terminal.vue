@@ -25,6 +25,7 @@
 import Vue from "vue"
 import shell from 'vue-shell'
 import drag from '@branu-jp/v-drag'
+import Moveable from 'vue-moveable'
 Vue.use(shell)
 
 export default {
