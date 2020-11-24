@@ -210,7 +210,7 @@ export default {
       if (!self.userInfo.rating) {
         console.log("kiteruyo", self.userInfo)
         updateUserRate.r = 1500
-        updateUserRate.RD = 300
+        updateUserRate.RD = 350
       } else {
         updateUserRate.r = this.userInfo.rating
         updateUserRate.RD = this.userInfo.ratingDiviation
@@ -308,7 +308,7 @@ export default {
       if (!this.userInfo.rating) {
         console.log("kiteruyo", self.examId)
         updateUserRate.r = 1500
-        updateUserRate.RD = 650
+        updateUserRate.RD = 350
       } else {
         updateUserRate.r = this.userInfo.rating
         updateUserRate.RD = this.userInfo.ratingDiviation
