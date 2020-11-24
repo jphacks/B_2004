@@ -1,18 +1,20 @@
 <template>
-
-    <div class="terminal">
+<!-- <moveable
+    class="moveable"
+    v-bind="moveable"
+    @drag="handleDrag"
+    @resize="handleResize"
+    @scale="handleScale"
+    @rotate="handleRotate"
+    @warp="handleWarp"
+    @pinch="handlePinch"
+  >
+    <span>Vue Moveable</span>
+  </moveable> -->
+  <div class="terminal">
     <b-button class="md-raised md-primary" @click="dialogToggle">ターミナルを表示</b-button>
+    <transition>
       <div class="dialog" v-drag v-if="isShow" :style="dialogStyle">
-        <moveable
-          class="moveable"
-          v-bind="moveable"
-          @drag="handleDrag"
-          @resize="handleResize"
-          @scale="handleScale"
-          @rotate="handleRotate"
-          @warp="handleWarp"
-          @pinch="handlePinch"
-        >
         <div class="terminal-header">
           <img alt="frontEngine logo" src="../assets/frontEngineSmallIcon.png">
           <span>frontengine-Shell</span>
@@ -26,15 +28,15 @@
           :commands = "commands"
           @shell_output="prompt"
         ></v-shell>
-        </moveable>
       </div>
+    </transition>
   </div>
 </template>
 
 <script>
 import Vue from "vue"
 import shell from 'vue-shell'
-/* import drag from '@branu-jp/v-drag' */
+import drag from '@branu-jp/v-drag'
 import Moveable from 'vue-moveable'
 Vue.use(shell)
 Vue.component('moveable', Moveable)
@@ -72,19 +74,19 @@ export default {
         }
       ],
       moveable: {
-        draggable: true,
-        scalable: true,
-        resizable: false,
-        warpable: false,
-        throttleDrag: 0,
-        throttleResize: 1,
-        keepRatio: false,
-        throttleScale: 0,
-        rotatable: false,
-        throttleRotate: 0,
-        pinchable: false,
-        origin: false
-      }
+      draggable: true,
+      scalable: true,
+      resizable: false,
+      warpable :false,
+      throttleDrag: 0,
+      throttleResize: 1,
+      keepRatio: false,
+      throttleScale: 0,
+      rotatable: true,
+      throttleRotate: 0,
+      pinchable: true,
+      origin: false,
+    }
     }
   },
   methods: {
@@ -99,31 +101,31 @@ export default {
     dialogToggle: function () {
       this.isShow = !this.isShow
     },
-    changeProp: function (prop) {
-      this.moveable.scalable = false
-      this.moveable.resizable = false
-      this.moveable.warpable = false
-      this.moveable[prop] = true
+    changeProp:function(prop) {
+      this.moveable.scalable = false;
+      this.moveable.resizable = false;
+      this.moveable.warpable = false;
+      this.moveable[prop] = true;
     },
-    handleDrag ({ target, transform }) {
-      target.style.transform = transform
+    handleDrag({ target, transform }) {
+      target.style.transform = transform;
     },
-    handleResize ({
-      target, width, height, delta
+    handleResize({
+      target, width, height, delta,
     }) {
-      delta[0] && (target.style.width = `${width}px`)
-      delta[1] && (target.style.height = `${height}px`)
+      delta[0] && (target.style.width = `${width}px`);
+      delta[1] && (target.style.height = `${height}px`);
     },
-    handleScale ({ target, transform, scale }) {
-      target.style.transform = transform
+    handleScale({ target, transform, scale }) {
+      target.style.transform = transform;
     },
-    handleRotate ({ target, dist, transform }) {
-      target.style.transform = transform
+    handleRotate({ target, dist, transform }) {
+      target.style.transform = transform;
     },
-    handleWarp ({ target, transform }) {
-      target.style.transform = transform
+    handleWarp({ target, transform }) {
+      target.style.transform = transform;
     },
-    handlePinch ({ target }) {
+    handlePinch({ target }) {
     }
   }
 }
@@ -137,6 +139,7 @@ export default {
   z-index: 99999;
   border-radius: 2px;
   border: 1px solid gray;
+  cursor: move;
 }
 .terminal-header{
   background-color: #fff;
@@ -154,18 +157,18 @@ export default {
   overflow-y: scroll;
 }
 .moveable {
- /*  position: absolute; */
-  white-space: nowrap;
+  font-family: Roboto,sans-serif;
+  position: relative;
+  width: 300px;
+  height: 200px;
+  text-align: center;
+  font-size: 40px;
+  margin: 0 auto;
+  font-weight: 100;
+  letter-spacing: 1px;
 }
-.moveable terminal-header {
-  /* position: absolute; */
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%,-50%);
-  white-space: nowrap;
-}
-.moveable v-shell {
-  /* position: absolute; */
+.moveable span {
+  position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%,-50%);

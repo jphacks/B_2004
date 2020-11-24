@@ -1,8 +1,6 @@
 <template>
 
-    <div class="terminal">
-    <b-button class="md-raised md-primary" @click="dialogToggle">ターミナルを表示</b-button>
-      <div class="dialog" v-drag v-if="isShow" :style="dialogStyle">
+    
         <moveable
           class="moveable"
           v-bind="moveable"
@@ -13,6 +11,10 @@
           @warp="handleWarp"
           @pinch="handlePinch"
         >
+        <div class="terminal">
+    <b-button class="md-raised md-primary" @click="dialogToggle">ターミナルを表示</b-button>
+    <transition>
+      <div class="dialog" v-drag v-if="isShow" :style="dialogStyle">
         <div class="terminal-header">
           <img alt="frontEngine logo" src="../assets/frontEngineSmallIcon.png">
           <span>frontengine-Shell</span>
@@ -26,9 +28,11 @@
           :commands = "commands"
           @shell_output="prompt"
         ></v-shell>
-        </moveable>
-      </div>
+        </div>
+    </transition>
   </div>
+        </moveable>
+      
 </template>
 
 <script>
@@ -41,9 +45,9 @@ Vue.component('moveable', Moveable)
 
 export default {
   name: "Terminal",
-  directives: {
+  /* directives: {
     // drag
-  },
+  }, */
   data () {
     return {
       isShow: false,
@@ -153,19 +157,18 @@ export default {
   max-height: 300px;
   overflow-y: scroll;
 }
-.moveable {
- /*  position: absolute; */
-  white-space: nowrap;
-}
+/* .moveable {
+  position: relative;
+} */
 .moveable terminal-header {
-  /* position: absolute; */
+  position: relative;
   top: 50%;
   left: 50%;
   transform: translate(-50%,-50%);
   white-space: nowrap;
 }
 .moveable v-shell {
-  /* position: absolute; */
+  position: relative;
   top: 50%;
   left: 50%;
   transform: translate(-50%,-50%);

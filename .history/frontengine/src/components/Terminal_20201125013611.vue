@@ -153,19 +153,18 @@ export default {
   max-height: 300px;
   overflow-y: scroll;
 }
-.moveable {
- /*  position: absolute; */
-  white-space: nowrap;
-}
+/* .moveable {
+  position: relative;
+} */
 .moveable terminal-header {
-  /* position: absolute; */
+  position: relative;
   top: 50%;
   left: 50%;
   transform: translate(-50%,-50%);
   white-space: nowrap;
 }
 .moveable v-shell {
-  /* position: absolute; */
+  position: relative;
   top: 50%;
   left: 50%;
   transform: translate(-50%,-50%);

@@ -154,18 +154,18 @@ export default {
   overflow-y: scroll;
 }
 .moveable {
- /*  position: absolute; */
+  position: absolute;
   white-space: nowrap;
 }
 .moveable terminal-header {
-  /* position: absolute; */
+  position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%,-50%);
   white-space: nowrap;
 }
 .moveable v-shell {
-  /* position: absolute; */
+  position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%,-50%);

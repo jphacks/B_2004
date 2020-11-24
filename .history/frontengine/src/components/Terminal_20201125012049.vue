@@ -2,6 +2,7 @@
 
     <div class="terminal">
     <b-button class="md-raised md-primary" @click="dialogToggle">ターミナルを表示</b-button>
+    <transition>
       <div class="dialog" v-drag v-if="isShow" :style="dialogStyle">
         <moveable
           class="moveable"
@@ -28,13 +29,14 @@
         ></v-shell>
         </moveable>
       </div>
+    </transition>
   </div>
 </template>
 
 <script>
 import Vue from "vue"
 import shell from 'vue-shell'
-/* import drag from '@branu-jp/v-drag' */
+import drag from '@branu-jp/v-drag'
 import Moveable from 'vue-moveable'
 Vue.use(shell)
 Vue.component('moveable', Moveable)
@@ -154,21 +156,20 @@ export default {
   overflow-y: scroll;
 }
 .moveable {
- /*  position: absolute; */
-  white-space: nowrap;
+  position: absolute;
 }
 .moveable terminal-header {
-  /* position: absolute; */
+  position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%,-50%);
-  white-space: nowrap;
+  /* white-space: nowrap; */
 }
 .moveable v-shell {
-  /* position: absolute; */
+  position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%,-50%);
-  white-space: nowrap;
+  /* white-space: nowrap; */
 }
 </style>

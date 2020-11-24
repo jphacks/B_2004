@@ -2,16 +2,17 @@
 
     <div class="terminal">
     <b-button class="md-raised md-primary" @click="dialogToggle">ターミナルを表示</b-button>
+    <transition>
       <div class="dialog" v-drag v-if="isShow" :style="dialogStyle">
         <moveable
-          class="moveable"
-          v-bind="moveable"
-          @drag="handleDrag"
-          @resize="handleResize"
-          @scale="handleScale"
-          @rotate="handleRotate"
-          @warp="handleWarp"
-          @pinch="handlePinch"
+    class="moveable"
+    v-bind="moveable"
+    @drag="handleDrag"
+    @resize="handleResize"
+    @scale="handleScale"
+    @rotate="handleRotate"
+    @warp="handleWarp"
+    @pinch="handlePinch"
         >
         <div class="terminal-header">
           <img alt="frontEngine logo" src="../assets/frontEngineSmallIcon.png">
@@ -28,13 +29,14 @@
         ></v-shell>
         </moveable>
       </div>
+    </transition>
   </div>
 </template>
 
 <script>
 import Vue from "vue"
 import shell from 'vue-shell'
-/* import drag from '@branu-jp/v-drag' */
+import drag from '@branu-jp/v-drag'
 import Moveable from 'vue-moveable'
 Vue.use(shell)
 Vue.component('moveable', Moveable)
@@ -72,7 +74,7 @@ export default {
         }
       ],
       moveable: {
-        draggable: true,
+        draggable: false,
         scalable: true,
         resizable: false,
         warpable: false,
@@ -80,9 +82,9 @@ export default {
         throttleResize: 1,
         keepRatio: false,
         throttleScale: 0,
-        rotatable: false,
+        rotatable: true,
         throttleRotate: 0,
-        pinchable: false,
+        pinchable: true,
         origin: false
       }
     }
@@ -154,18 +156,9 @@ export default {
   overflow-y: scroll;
 }
 .moveable {
- /*  position: absolute; */
-  white-space: nowrap;
+  position: absolute;
 }
 .moveable terminal-header {
-  /* position: absolute; */
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%,-50%);
-  white-space: nowrap;
-}
-.moveable v-shell {
-  /* position: absolute; */
   top: 50%;
   left: 50%;
   transform: translate(-50%,-50%);
