@@ -137,7 +137,8 @@ export default {
     emitDom: function () {
       // console.log('previewDom', value, value.children, value.children[0])
       const value = this.checkStyleDom
-      console.log('previewDom:func', value.children[0], value.children[0].children[1].children[0].getBoundingClientRect(), value.children[0].getBoundingClientRect())
+      console.log('previewDom:func', value.children[0], value.children[0].children[1].children[0].getBoundingClientRect(), value.children[0].getBoundingClientRect(), [value.children[0]])
+      console.log('preview:style', value.children[0].children[0].children[0].getBoundingClientRect(), value.children[0].children[1].children[0].getBoundingClientRect(), value.children[0].children[2].children[0].getBoundingClientRect())
       let targetStyle = this.getExam.examInfo
       let targetBool = true
       if (targetStyle && targetStyle.option && targetStyle.option.styleCheck) {
@@ -160,10 +161,25 @@ export default {
       while (que.length > 0) {
         // 正答判定
         let take = que.shift()
-        let domTake = domQue.shift()
-        let domStyle = domTake.getBoundingClientRect()
-        if (!take.hasOwnProperty('name')) {
-          // noname
+        let countDomTake = []
+        if (take.count > 0) {
+          countDomTake.push(domQue.shift())
+        }
+        const diffStyleCheck = {}
+        const diffStyles = []
+        for (let i = 0; i < countDomTake.length; i++) {
+          let domTake = countDomTake[i]
+          let domStyle = domTake.getBoundingClientRect()
+          if (!take.hasOwnProperty('name')) {
+            // noname
+          } else {
+            // nameつき
+            if (take.name === 'answerCard') {
+              domTake = countDomTake[i].children[0]
+              domStyle = domTake.getBoundingClientRect()
+              domTake.style = Object.assign(countDomTake[i].children[0].style, countDomTake[i].style)
+            }
+          }
           if (take.hasOwnProperty('style')) {
             for (let parentKey of Object.keys(take.style)) {
               // _区切りでor判定とする
@@ -187,6 +203,8 @@ export default {
                       }
                     } else {
                       // 他要素と依存関係にあるstylecheck
+                      diffStyleCheck[parentKey] = true
+                      diffStyles.push(domStyle)
                     }
                   } else if (!(subKey === domTake.style[key])) {
                     // absolute指定
@@ -212,8 +230,65 @@ export default {
               }
             }
           }
-        } else {
-          // nameつき
+        }
+        if (diffStyles.length > 0) {
+          let xDiffs = [...diffStyles]
+          let yDiffs = [...diffStyles]
+          for (let i = 0; i < xDiffs.length; i++) {
+            xDiffs[i].index = i
+            yDiffs[i].index = i
+          }
+          xDiffs.sort((a, b) => a.x - b.x)
+          yDiffs.sort((a, b) => a.y - b.y)
+          for (let i = 1; i < xDiffs.length; i++) {
+            const xDiff = xDiffs[i].x - (xDiffs[i - 1].x + xDiffs[i - 1].width)
+            const yDiff = yDiffs[i].y - (yDiffs[i - 1].y + yDiffs[i - 1].height)
+            xDiffs[i - 1].xDiffRight = xDiff // 右側との差
+            xDiffs[i].xDiffLeft = xDiff // 左側との差
+            yDiff[i - 1].yDiffBottom = yDiff // 下側との差
+            yDiff[i].yDiffTop = yDiff // 上側との差
+          }
+          let orders = Object.keys(diffStyleCheck)
+          for (let order of orders) {
+            let splitOrders = orders.split('_')
+            const splitBool = []
+            for (let key of splitOrders) {
+              const max = take.style[order].max
+              const min = take.style[order].min
+              switch (key) {
+                case 'padding':
+                case 'margin':
+                  // とりあえずこれらをまとめてお互いの距離感として処理する
+                  // とりあえず左右だけ見るようにする -> 縦軸も一応取得してるから、見たい時は違う命令で
+                  let marginCheck = true
+                  for (let i = 0; i < xDiffs.length; i++) {
+                    if (xDiffs[i].xDiffLeft) {
+                      if (!(min <= xDiffs[i].xDiffLeft && xDiffs[i].xDiffLeft <= max)) {
+                        this.checked = false
+                        return false
+                      }
+                    }
+                    if (xDiffs[i].xDiffRight) {
+                      if (!(min <= xDiffs[i].xDiffRight && xDiffs[i].xDiffRight <= max)) {
+                        this.checked = false
+                        return false
+                      }
+                    }
+                  }
+                  break
+              }
+            }
+            let checkSplitBool = false
+            splitBool.forEach(flag => {
+              if (flag) {
+                checkSplitBool = true
+              }
+            })
+            if (!checkSplitBool) {
+              this.checked = false
+              return false
+            }
+          }
         }
       }
       console.log('previewDom:targetStyle', que, domQue)
