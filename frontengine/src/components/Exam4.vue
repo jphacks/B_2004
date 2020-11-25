@@ -1,20 +1,21 @@
 <template>
   <div class="exam4">
-    <b-card class="hanoi" @click="utusu('left')">
-      <b-card v-for="(value, index) of input" @click="trans(value, 'left')" :key="index">{{value}}</b-card>
-    </b-card>
-    <b-card class="hanoi" @click="utusu('center')">
-      <b-card v-for="(value, index) of center" @click="trans(value, 'center')" :key="index">{{value}}</b-card>
-    </b-card>
-    <b-card class="hanoi" @click="utusu('right')">
-      <b-card v-for="(value, index) of right" @click="trans(value, 'right')" :key="index">{{value}}</b-card>
-    </b-card>
+    <answer-card class="hanoi" @click="utusu('left')">
+      <answer-card v-for="(value, index) of input" @click="trans(value, 'left')" :key="index">{{value}}</answer-card>
+    </answer-card>
+    <answer-card class="hanoi" @click="utusu('center')">
+      <answer-card v-for="(value, index) of center" @click="trans(value, 'center')" :key="index">{{value}}</answer-card>
+    </answer-card>
+    <answer-card class="hanoi" @click="utusu('right')">
+      <answer-card v-for="(value, index) of right" @click="trans(value, 'right')" :key="index">{{value}}</answer-card>
+    </answer-card>
   </div>
 </template>
 
 <script>
+import AnswerCard from '@/components/preview/previewItem/AnswerCard.vue'
 export default {
-  // ハノイの塔を作る問題-解答
+  components: { AnswerCard },
   name: 'Exam4',
   props: {
     input: Array
@@ -43,7 +44,6 @@ export default {
       }
     },
     utusu: function (target) {
-      console.log('$el', this.$el, this)
       if (this.pocketBool && this.pocketSelect !== target) {
         this[target].push(this.pocket)
         this.pocketBool = false
@@ -61,6 +61,7 @@ export default {
   margin-right: 50px;
   height: 300px;
   overflow-y: auto;
-  width: 150px;
+  width: 200px;
+  display: block;
 }
 </style>

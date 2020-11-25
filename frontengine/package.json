@@ -88,7 +88,9 @@
       "no-case-declarations": "off",
       "no-extra-boolean-cast": "off",
       "valid-typeof": "off",
-      "quotes": "off"
+      "quotes": "off",
+      "dot-notation": "off",
+      "no-useless-escape": "off"
     }
   },
   "browserslist": [

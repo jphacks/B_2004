@@ -6,6 +6,7 @@ import ProblemDetail from '@/views/ProblemDetail.vue'
 import MyProfile from '@/views/MyProfile.vue'
 import Entry from '@/views/Entry.vue'
 import ProblemResult from '@/views/ProblemResult.vue'
+import createExam from '@/views/createExam.vue'
 Vue.use(VueRouter)
 
 const routes = [
@@ -44,6 +45,11 @@ const routes = [
     path: '/problemResult/:examId',
     name: 'ProblemResult',
     component: ProblemResult
+  },
+  {
+    path: '/problemCreate',
+    name: 'problemCreate',
+    component: createExam
   }
 ]
 

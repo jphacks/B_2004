@@ -7,17 +7,19 @@
         </div>
       </div>
     </b-card>
+    <b-btn primary @click="$emit('style-check')">デザインチェック</b-btn>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import { domPreviewParse } from '@/process/ScriptUtility/domPreviewParse.js'
+import { pureDomPreviewParse, domPreviewParse, saveDomTree } from '@/process/ScriptUtility/domPreviewParse.js'
 import { global } from '@/process/moduleProcess.js'
 import Vue from 'vue/dist/vue.esm.js'
 import Answer from '@/components/preview/answer'
 import { domProperty } from '@/process/ScriptUtility/domUtility.js'
 import PreviewCard from '@/components/preview/previewItem/PreviewCard'
+import AnswerCard from "@/components/preview/previewItem/AnswerCard"
 import BootstrapVue from 'bootstrap-vue'
 import { globalStyle } from '@/process/MainProcess.js'
 import { importBootstrap, bootstrapImports } from '@/process/addBootstrapComponents.js'
@@ -58,6 +60,7 @@ export default {
   },
   watch: {
     dom: function () {
+      this.outputDom = this.dom
       this.previewParse()
     }
   },
@@ -65,16 +68,23 @@ export default {
     this.testPush()
   },
   methods: {
-    domEvent: function (order, path, ...arg) {
+    domEvent: function (order, path, userAction, ...arg) {
       // domのfunction系を一旦ここに噛ませる
       // orderはfunction名
       // pathはcomponentファイル名
-      console.log('orderPPP', order, path, arg)
-      let toParam = global
+      console.log('orderPPP', order, path, userAction, arg, global)
+      let toParam = Object.assign({}, global)
       arg.forEach(x => {
         toParam = Object.assign(toParam, x)
       })
-      return domProperty(order, toParam)
+      const domPro = domProperty(order, toParam)
+      if (userAction) {
+        console.log('userAction!', toParam, order)
+        this.outputDom = domPreviewParse(saveDomTree, path)
+        this.previewParse()
+      }
+      console.log('domproprety', domPro, global, order, arg)
+      return domPro
     },
     classEvent: function (path, ...orders) {
       // class名を受け取る
@@ -86,8 +96,9 @@ export default {
       return outputObj
     },
     previewParse: function () {
-      const getDDD = domPreviewParse(this.dom, 'default')
-      this.outputDom = getDDD
+      // const getDDD = domPreviewParse(this.dom, 'default')
+      console.log('outputdom', this.dom, this.outputDom)
+      const getDDD = this.outputDom
       const self = this
       const domEvent = this.domEvent
       const classEvent = this.classEvent
@@ -103,6 +114,7 @@ export default {
         components: {
           Answer,
           PreviewCard,
+          AnswerCard,
           ...importBootstrap
         },
         style: {
@@ -112,15 +124,15 @@ export default {
           }
         }
       })
-      console.log('boot', BootstrapVue)
       let vm = new Vue({
         Answer,
         render: h => h(newPreviewDom)
       })
       // this.pushPreview = newPreviewDom
       const targetDomChange = document.getElementById(this.uniqueKey).children[0]
-      console.log('check', vm)
       vm.$mount(targetDomChange)
+      console.log('vueStatus', vm.$el, vm)
+      this.$emit('vueDom', vm.$el, vm.$el.children)
     },
     testPush: function () {
       console.log('document', document, this.document)

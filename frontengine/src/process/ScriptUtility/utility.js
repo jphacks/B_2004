@@ -2,7 +2,7 @@ import { global } from '../moduleProcess.js'
 import { execScript, getScript } from './execScript.js'
 export { CheckProperty, getProperty }
 // データの代入を支援するfunction {name: value}の形で返される
-function CheckProperty (body, option) {
+function CheckProperty (body, local, option) {
   // name,valueは予約されている??
   // output {name: name, value: value}
 
@@ -16,12 +16,13 @@ function CheckProperty (body, option) {
     output.value = []
     const targetElement = bodyValue.elements || body.elements
     for (const element of targetElement) {
-      const get = CheckProperty(element)
-      output.value.push(Object.values(get || {})[0])
+      const get = getProperty(element, local)
+      // console.log('arrayGet', get, element, local)
+      output.value.push(get)
     }
   } else if (bodyType === 'ObjectExpression') {
     for (const property of bodyValue.properties) {
-      const get = CheckProperty(property)
+      const get = getProperty(property, local)
       for (const key of Object.keys(get || {})) {
         if (key !== 'noneDataEDEKQWLDCOLASXMW') {
           output[key] = get[key]
@@ -119,11 +120,12 @@ function getProperty (body, local, funcArguments) {
       const outputData = getProperty(body.object, local)
       // // console.log('join?', body, outputData, body.property.name, outputData[body.property.name](''), funcArguments)
       // // console.log('join', outputData[body.property.name](...funcArguments), !!funcArguments)
+      // const testGlobal = Object.assign({}, global)
       if (!!funcArguments && outputData && outputData[body.property.name]) {
         return outputData[body.property.name](...funcArguments)
       } else if (body.property.name) {
         // console.log('bodymemberrr', outputData[body.property.name], outputData, body.property.name)
-        if (!outputData[body.property.name]) {
+        if (!outputData.hasOwnProperty(body.property.name)) {
           return outputData[getProperty(body.property, local)]
         } else {
           return outputData[body.property.name]
@@ -163,15 +165,17 @@ function getProperty (body, local, funcArguments) {
       }
     }
   } else if (body.type === 'FunctionExpression') {
+    console.log('functionExpress', body, funcArguments, local)
     return getScript(body, funcArguments, local)
   } else if (body.type === 'BlockStatement' && body.computed) {
     // console.log('computed', body)
     return getScript(body, [], local)
   } else if (body.type === 'ObjectProperty') {
     const lustGet = getProperty(body.value, local, funcArguments)
+    console.log('body:data::', lustGet, body)
     return lustGet
   } else {
-    let data = CheckProperty(body)
+    let data = CheckProperty(body, local)
     let key = 'key'
     if (typeof data === 'object') {
       key = Object.keys(data || {})[0]
