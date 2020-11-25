@@ -1,5 +1,5 @@
 <template>
-    <b-card @click="action" :id="'answerCard'"><slot></slot></b-card>
+    <b-card @click="action" :id="'AnswerCard'"><slot></slot></b-card>
 </template>
 
 <script>

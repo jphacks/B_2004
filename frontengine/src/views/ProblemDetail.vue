@@ -62,6 +62,7 @@
           <div class="detail-buttons">
             <b-button v-if="getLoginId" @click="getDom()">送信</b-button>
             <b-button @click="sumpleSakai()">テスト（坂井）</b-button>
+            <b-btn @click="routerFilePush()">router提出</b-btn>
             <b-button @click="sumpleTest()">サンプルを出力</b-button>
           </div>
           <!-- <br><br><br><router-link :to="{name: 'ProblemResult', params: {examId: $route.params.examId}}">問題結果画面に遷移します。</router-link> -->
@@ -83,8 +84,9 @@ import { mapGetters, mapActions } from "vuex"
 import Exam1 from "@/components/Exam1.vue"
 import firebase from "firebase"
 import PreviewField from "@/components/preview/PreviewField"
-// import answerCard from "@/components/preview/answerCard"
+// import AnswerCard from "@/components/preview/AnswerCard"
 import { pureDomPreviewParse, domPreviewParse } from '@/process/ScriptUtility/domPreviewParse.js'
+import { routerProcess } from '@/process/ScriptUtility/routerProcess.js'
 // import Exam1 from '@/components/Exam1.vue'
 // import Exam2 from '@/components/Exam2.vue'
 export default {
@@ -180,7 +182,7 @@ export default {
             // noname
           } else {
             // nameつき
-            if (take.name === 'answerCard') {
+            if (take.name === 'AnswerCard') {
               domTake = countDomTake[i].children[0]
               NextChild = countDomTake[0].children[0]
             }
@@ -344,6 +346,9 @@ export default {
     },
     propagateDom: function (value) {
       this.checkStyleDom = value
+    },
+    routerFilePush: function (val) {
+      this.routerProcess(val)
     },
     getDom: function () {
       //  MainProcess(this.text)
