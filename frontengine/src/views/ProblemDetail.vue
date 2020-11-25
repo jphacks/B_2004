@@ -163,52 +163,73 @@ export default {
         let take = que.shift()
         let countDomTake = []
         if (take.count > 0) {
-          countDomTake.push(domQue.shift())
+          for (let i = 0; i < take.count; i++) {
+            countDomTake.push(domQue.shift())
+          }
         }
+        console.log('ccck', take, countDomTake)
         const diffStyleCheck = {}
         const diffStyles = []
+        let NextChild = countDomTake[0]
         for (let i = 0; i < countDomTake.length; i++) {
           let domTake = countDomTake[i]
           let domStyle = domTake.getBoundingClientRect()
+          let domRawStyle = countDomTake[i].style
           if (!take.hasOwnProperty('name')) {
             // noname
           } else {
             // nameつき
             if (take.name === 'answerCard') {
               domTake = countDomTake[i].children[0]
-              domStyle = domTake.getBoundingClientRect()
-              domTake.style = Object.assign(countDomTake[i].children[0].style, countDomTake[i].style)
+              NextChild = countDomTake[0].children[0]
             }
           }
+          console.log('countDomTake', domTake, domStyle)
+          diffStyles.push(domStyle)
           if (take.hasOwnProperty('style')) {
             for (let parentKey of Object.keys(take.style)) {
               // _区切りでor判定とする
+              console.log('take.style', parentKey, take.style)
               const splitKeys = parentKey.split('_')
               let splitBool = []
               for (let i = 0; i < splitKeys.length; i++) {
                 const key = splitKeys[i]
                 for (let subKey of Object.keys(take.style[key])) {
-                  if (subKey.match(/'max' || 'min'/gi)) {
+                  console.log('subKey', subKey, domStyle, key)
+                  if (subKey === 'max' || subKey === 'min') {
                     // 幅指定
                     if (subKey.match('max')) {
                       // minの時だけ判定
                       continue
                     }
-                    if (domStyle.hasOwnProperty(key)) {
+                    if (domStyle[key]) {
                       // 他に依存しない
                       if (take.style[key].min <= domStyle[key] && domStyle[key] <= take.style[key].max) {
                         continue
                       } else {
+                        console.log('依存してないがアウト', take.style[key].min, take.style[key].max, domStyle[key], key)
                         splitBool.push(false)
                       }
                     } else {
                       // 他要素と依存関係にあるstylecheck
                       diffStyleCheck[parentKey] = true
-                      diffStyles.push(domStyle)
                     }
-                  } else if (!(subKey === domTake.style[key])) {
+                  } else if (!(subKey === domRawStyle[key])) {
                     // absolute指定
-                    splitBool.push(false)
+                    if (key === 'overflow') {
+                      // 例外処理
+                      console.log('overflow', key)
+                      const upperSubKey = subKey.toUpperCase()
+                      if (domRawStyle[key + upperSubKey]) {
+                        console.log('overflow', domRawStyle[key + upperSubKey])
+                      } else {
+                        console.log('absolute指定:アウト', subKey, domRawStyle[key], [domRawStyle], [countDomTake[i]])
+                        splitBool.push(false)
+                      }
+                    } else {
+                      console.log('absolute指定:アウト', subKey, domRawStyle[key], [domRawStyle], [countDomTake[i]])
+                      splitBool.push(false)
+                    }
                   } else {
                     // trueをいれとく
                     splitBool.push(true)
@@ -221,11 +242,12 @@ export default {
                     break
                   }
                 }
-                if (continueBool) {
+                if (continueBool || splitBool.length == 0) {
                   continue
                 }
                 // false
                 this.checked = false
+                console.log('style:False', splitBool, take, [domTake])
                 return false
               }
             }
@@ -245,36 +267,46 @@ export default {
             const yDiff = yDiffs[i].y - (yDiffs[i - 1].y + yDiffs[i - 1].height)
             xDiffs[i - 1].xDiffRight = xDiff // 右側との差
             xDiffs[i].xDiffLeft = xDiff // 左側との差
-            yDiff[i - 1].yDiffBottom = yDiff // 下側との差
-            yDiff[i].yDiffTop = yDiff // 上側との差
+            yDiffs[i - 1].yDiffBottom = yDiff // 下側との差
+            yDiffs[i].yDiffTop = yDiff // 上側との差
           }
           let orders = Object.keys(diffStyleCheck)
+          console.log('orders', orders, diffStyles, countDomTake)
           for (let order of orders) {
-            let splitOrders = orders.split('_')
+            let splitOrders = order.split('_')
             const splitBool = []
+            console.log('order', order, xDiffs)
             for (let key of splitOrders) {
               const max = take.style[order].max
               const min = take.style[order].min
+              console.log('checcker', min, max, key)
               switch (key) {
                 case 'padding':
                 case 'margin':
                   // とりあえずこれらをまとめてお互いの距離感として処理する
                   // とりあえず左右だけ見るようにする -> 縦軸も一応取得してるから、見たい時は違う命令で
                   let marginCheck = true
+                  console.log('paddingOrMargin', xDiffs, key)
                   for (let i = 0; i < xDiffs.length; i++) {
-                    if (xDiffs[i].xDiffLeft) {
+                    console.log('xDiffs', xDiffs[i], xDiffs[i].xDiffLeft)
+                    if (xDiffs[i].xDiffLeft || typeof xDiffs[i].xDiffLeft === 'number') {
+                      console.log('xDiffLeft', xDiffs[i])
                       if (!(min <= xDiffs[i].xDiffLeft && xDiffs[i].xDiffLeft <= max)) {
-                        this.checked = false
-                        return false
+                        console.log('style:DiffFalseLeft', key, xDiffs[i], min, max, xDiffs[i].xDiffLeft)
+                        marginCheck = false
+                        break
                       }
                     }
-                    if (xDiffs[i].xDiffRight) {
+                    if (xDiffs[i].xDiffRight || typeof xDiffs[i].xDiffRight === 'number') {
+                      console.log('xDiffRight', xDiffs[i])
                       if (!(min <= xDiffs[i].xDiffRight && xDiffs[i].xDiffRight <= max)) {
-                        this.checked = false
-                        return false
+                        console.log('style:DiffFalseRight', key, xDiffs[i], min, max, xDiffs[i].xDiffRight)
+                        marginCheck = false
+                        break
                       }
                     }
                   }
+                  splitBool.push(marginCheck)
                   break
               }
             }
@@ -284,11 +316,21 @@ export default {
                 checkSplitBool = true
               }
             })
-            if (!checkSplitBool) {
+            if (!checkSplitBool && splitBool.length > 0) {
               this.checked = false
               return false
             }
           }
+        }
+        if (NextChild && NextChild.children) {
+          console.log('NextChild.children', NextChild.children)
+          domQue.push(...NextChild.children)
+        } else {
+          console.log('NextChild.children:none', [NextChild])
+        }
+        if (take.hasOwnProperty('children')) {
+          console.log('take.children', take.children)
+          que.push(...Object.values(take.children))
         }
       }
       console.log('previewDom:targetStyle', que, domQue)

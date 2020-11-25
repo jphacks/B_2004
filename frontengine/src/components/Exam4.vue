@@ -61,6 +61,7 @@ export default {
   margin-right: 50px;
   height: 300px;
   overflow-y: auto;
-  width: 150px;
+  width: 200px;
+  display: block;
 }
 </style>
