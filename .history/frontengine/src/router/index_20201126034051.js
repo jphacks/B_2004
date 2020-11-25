@@ -56,7 +56,7 @@ const routes = [
     path: '/test/:examId',
     name: 'Exam5Detail',
     component: Exam5Detail
-  }
+  },
 ]
 
 const router = new VueRouter({

@@ -1,7 +1,6 @@
 <template>
   <div class="home">
     <img alt="frontEngine logo" src="../assets/frontEngineLogo.png">
-    <b-button @click="testSakai()">テスト5（坂井）</b-button>
     <HomeDesign msg="frontEngineへようこそ"/>
     <Terminal @frontEngine="engine"/>
     <b-card><exam-4 :input="input"/></b-card>
@@ -24,11 +23,6 @@ export default {
   methods: {
     engine: function (abc) {
       console.log(abc.join(" "), 'Home')
-    },
-    testSakai: function () {
-      this.$router.push({
-        name: "Exam5"
-      })
     }
   },
   data () {
