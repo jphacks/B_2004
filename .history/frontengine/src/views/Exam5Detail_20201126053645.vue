@@ -1,10 +1,12 @@
 <template>
+<div class="answer-card">
     <answer-card bg-variant="white" text-variant="black" class="text-center">
       <div>
         <span>問題本文<br /></span>
         <span>{{ exist(this.$route.params.context) }}</span>
       </div>
     </answer-card>
+</div>
 </template>
 
 <script>
@@ -26,7 +28,7 @@ export default {
 </script>
 
 <style scoped>
-.text-center {
+.answer-card {
   width: 500px;
   max-height: 600px;
   overflow-y: scroll;

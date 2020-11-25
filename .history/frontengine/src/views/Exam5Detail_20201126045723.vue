@@ -2,7 +2,7 @@
     <answer-card bg-variant="white" text-variant="black" class="text-center">
       <div>
         <span>問題本文<br /></span>
-        <span>{{ exist(this.$route.params.context) }}</span>
+        <span>{{ this.$route.params.context ? this.$route.params.context : "" }}</span>
       </div>
     </answer-card>
 </template>
@@ -13,24 +13,22 @@ export default {
   name: "Exam5Detail",
   components: {
     AnswerCard
-  },
-  methods: {
-    exist: function (data) {
-      if (data || 0) {
-        return data
-      }
-      return {}
-    }
   }
 }
 </script>
 
 <style scoped>
-.text-center {
-  width: 500px;
-  max-height: 600px;
-  overflow-y: scroll;
-  margin-left: auto;
-  margin-right: auto;
+.problemArea {
+  margin: 40px 40px 40px;
+}
+.b-buttonArea {
+  text-align: center;
+}
+.AnswerCard {
+  border: solid 0.5px gray;
+  margin: auto;
+}
+.detail-buttons {
+  display: flex;
 }
 </style>

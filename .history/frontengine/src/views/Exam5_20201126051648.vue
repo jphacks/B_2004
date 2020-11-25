@@ -106,12 +106,12 @@ export default {
   width: 500px;
   max-height: 600px;
   overflow-y: scroll;
-  border: solid 2px gray;
+  border: solid 0.5px gray;
   margin-left: auto;
   margin-right: auto;
 }
 .answer-card {
-  margin: 18px;
-  border: solid 1px gray;
+  margin: 20px 20px ;
+  border: solid 0.5px gray;
 }
 </style>

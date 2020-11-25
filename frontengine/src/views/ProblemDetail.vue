@@ -23,7 +23,7 @@
               <b-card>
                 <b-card-text>
                   入力例1<br />
-                  {{ getSumpleInput.join(",") }}<br />
+                  {{ getSumpleInput }}<br />
                 </b-card-text>
                 <b-card-text>
                   出力例1<br />
@@ -66,11 +66,11 @@
           </div>
           <!-- <br><br><br><router-link :to="{name: 'ProblemResult', params: {examId: $route.params.examId}}">問題結果画面に遷移します。</router-link> -->
         </div>
-        <preview-field :dom="getDomTree" v-if="viewCheckBox.previewArea">
+        <preview-field :dom="parseToDom" v-if="viewCheckBox.previewArea" @vueDom="propagateDom" @style-check="emitDom">
         </preview-field>
       </b-tab>
       <b-tab title="プレビュー画面">
-        <preview-field :dom="getDomTree" unique="tabPage"> </preview-field>
+        <preview-field :dom="parseToDom" unique="tabPage"> </preview-field>
       </b-tab>
     </b-tabs>
   </div>
@@ -83,6 +83,8 @@ import { mapGetters, mapActions } from "vuex"
 import Exam1 from "@/components/Exam1.vue"
 import firebase from "firebase"
 import PreviewField from "@/components/preview/PreviewField"
+// import answerCard from "@/components/preview/answerCard"
+import { pureDomPreviewParse, domPreviewParse } from '@/process/ScriptUtility/domPreviewParse.js'
 // import Exam1 from '@/components/Exam1.vue'
 // import Exam2 from '@/components/Exam2.vue'
 export default {
@@ -108,6 +110,8 @@ export default {
       sumpleOutput: [],
       wait: false,
       getDomTree: {},
+      previewDom: {},
+      checkStyleDom: {},
       viewCheckBox: {
         exam: true,
         sumpleOutput: true,
@@ -119,7 +123,8 @@ export default {
         sumpleOutput: "サンプル出力",
         inputArea: "解答入力欄",
         previewArea: "プレビュー画面"
-      }
+      },
+      checked: false
     }
   },
   props: {
@@ -130,6 +135,216 @@ export default {
   },
   methods: {
     ...mapActions(["setExams"]),
+    emitDom: function () {
+      // console.log('previewDom', value, value.children, value.children[0])
+      const value = this.checkStyleDom
+      console.log('previewDom:func', value.children[0], value.children[0].children[1].children[0].getBoundingClientRect(), value.children[0].getBoundingClientRect(), [value.children[0]])
+      console.log('preview:style', value.children[0].children[0].children[0].getBoundingClientRect(), value.children[0].children[1].children[0].getBoundingClientRect(), value.children[0].children[2].children[0].getBoundingClientRect())
+      let targetStyle = this.getExam.examInfo
+      let targetBool = true
+      if (targetStyle && targetStyle.option && targetStyle.option.styleCheck) {
+        targetStyle = targetStyle.option.styleCheck
+      } else {
+        this.checked = true
+        return true
+      }
+      if (!targetStyle.hasOwnProperty('children')) {
+        // bugでroot層だけchildrenがないパターン(必要なのに)ないパターンがある
+        targetStyle.children = {}
+        Object.keys(targetStyle).forEach(key => {
+          if (key !== 'count' && key !== 'style' && key !== 'children') {
+            targetStyle.children[key] = targetStyle[key]
+          }
+        })
+      }
+      let que = [targetStyle]
+      let domQue = [value.children[0]]
+      while (que.length > 0) {
+        // 正答判定
+        let take = que.shift()
+        let countDomTake = []
+        if (take.count > 0) {
+          for (let i = 0; i < take.count; i++) {
+            countDomTake.push(domQue.shift())
+          }
+        }
+        console.log('ccck', take, countDomTake)
+        const diffStyleCheck = {}
+        const diffStyles = []
+        let NextChild = countDomTake[0]
+        for (let i = 0; i < countDomTake.length; i++) {
+          let domTake = countDomTake[i]
+          let domStyle = domTake.getBoundingClientRect()
+          let domRawStyle = countDomTake[i].style
+          if (!take.hasOwnProperty('name')) {
+            // noname
+          } else {
+            // nameつき
+            if (take.name === 'answerCard') {
+              domTake = countDomTake[i].children[0]
+              NextChild = countDomTake[0].children[0]
+            }
+          }
+          console.log('countDomTake', domTake, domStyle)
+          diffStyles.push(domStyle)
+          if (take.hasOwnProperty('style')) {
+            for (let parentKey of Object.keys(take.style)) {
+              // _区切りでor判定とする
+              console.log('take.style', parentKey, take.style)
+              const splitKeys = parentKey.split('_')
+              let splitBool = []
+              for (let i = 0; i < splitKeys.length; i++) {
+                const key = splitKeys[i]
+                for (let subKey of Object.keys(take.style[key])) {
+                  console.log('subKey', subKey, domStyle, key)
+                  if (subKey === 'max' || subKey === 'min') {
+                    // 幅指定
+                    if (subKey.match('max')) {
+                      // minの時だけ判定
+                      continue
+                    }
+                    if (domStyle[key]) {
+                      // 他に依存しない
+                      if (take.style[key].min <= domStyle[key] && domStyle[key] <= take.style[key].max) {
+                        continue
+                      } else {
+                        console.log('依存してないがアウト', take.style[key].min, take.style[key].max, domStyle[key], key)
+                        splitBool.push(false)
+                      }
+                    } else {
+                      // 他要素と依存関係にあるstylecheck
+                      diffStyleCheck[parentKey] = true
+                    }
+                  } else if (!(subKey === domRawStyle[key])) {
+                    // absolute指定
+                    if (key === 'overflow') {
+                      // 例外処理
+                      console.log('overflow', key)
+                      const upperSubKey = subKey.toUpperCase()
+                      if (domRawStyle[key + upperSubKey]) {
+                        console.log('overflow', domRawStyle[key + upperSubKey])
+                      } else {
+                        console.log('absolute指定:アウト', subKey, domRawStyle[key], [domRawStyle], [countDomTake[i]])
+                        splitBool.push(false)
+                      }
+                    } else {
+                      console.log('absolute指定:アウト', subKey, domRawStyle[key], [domRawStyle], [countDomTake[i]])
+                      splitBool.push(false)
+                    }
+                  } else {
+                    // trueをいれとく
+                    splitBool.push(true)
+                  }
+                }
+                let continueBool = false
+                for (let take of splitBool) {
+                  if (take) {
+                    continueBool = true
+                    break
+                  }
+                }
+                if (continueBool || splitBool.length == 0) {
+                  continue
+                }
+                // false
+                this.checked = false
+                console.log('style:False', splitBool, take, [domTake])
+                return false
+              }
+            }
+          }
+        }
+        if (diffStyles.length > 0) {
+          let xDiffs = [...diffStyles]
+          let yDiffs = [...diffStyles]
+          for (let i = 0; i < xDiffs.length; i++) {
+            xDiffs[i].index = i
+            yDiffs[i].index = i
+          }
+          xDiffs.sort((a, b) => a.x - b.x)
+          yDiffs.sort((a, b) => a.y - b.y)
+          for (let i = 1; i < xDiffs.length; i++) {
+            const xDiff = xDiffs[i].x - (xDiffs[i - 1].x + xDiffs[i - 1].width)
+            const yDiff = yDiffs[i].y - (yDiffs[i - 1].y + yDiffs[i - 1].height)
+            xDiffs[i - 1].xDiffRight = xDiff // 右側との差
+            xDiffs[i].xDiffLeft = xDiff // 左側との差
+            yDiffs[i - 1].yDiffBottom = yDiff // 下側との差
+            yDiffs[i].yDiffTop = yDiff // 上側との差
+          }
+          let orders = Object.keys(diffStyleCheck)
+          console.log('orders', orders, diffStyles, countDomTake)
+          for (let order of orders) {
+            let splitOrders = order.split('_')
+            const splitBool = []
+            console.log('order', order, xDiffs)
+            for (let key of splitOrders) {
+              const max = take.style[order].max
+              const min = take.style[order].min
+              console.log('checcker', min, max, key)
+              switch (key) {
+                case 'padding':
+                case 'margin':
+                  // とりあえずこれらをまとめてお互いの距離感として処理する
+                  // とりあえず左右だけ見るようにする -> 縦軸も一応取得してるから、見たい時は違う命令で
+                  let marginCheck = true
+                  console.log('paddingOrMargin', xDiffs, key)
+                  for (let i = 0; i < xDiffs.length; i++) {
+                    console.log('xDiffs', xDiffs[i], xDiffs[i].xDiffLeft)
+                    if (xDiffs[i].xDiffLeft || typeof xDiffs[i].xDiffLeft === 'number') {
+                      console.log('xDiffLeft', xDiffs[i])
+                      if (!(min <= xDiffs[i].xDiffLeft && xDiffs[i].xDiffLeft <= max)) {
+                        console.log('style:DiffFalseLeft', key, xDiffs[i], min, max, xDiffs[i].xDiffLeft)
+                        marginCheck = false
+                        break
+                      }
+                    }
+                    if (xDiffs[i].xDiffRight || typeof xDiffs[i].xDiffRight === 'number') {
+                      console.log('xDiffRight', xDiffs[i])
+                      if (!(min <= xDiffs[i].xDiffRight && xDiffs[i].xDiffRight <= max)) {
+                        console.log('style:DiffFalseRight', key, xDiffs[i], min, max, xDiffs[i].xDiffRight)
+                        marginCheck = false
+                        break
+                      }
+                    }
+                  }
+                  splitBool.push(marginCheck)
+                  break
+              }
+            }
+            let checkSplitBool = false
+            splitBool.forEach(flag => {
+              if (flag) {
+                checkSplitBool = true
+              }
+            })
+            if (!checkSplitBool && splitBool.length > 0) {
+              this.checked = false
+              return false
+            }
+          }
+        }
+        if (NextChild && NextChild.children) {
+          console.log('NextChild.children', NextChild.children)
+          domQue.push(...NextChild.children)
+        } else {
+          console.log('NextChild.children:none', [NextChild])
+        }
+        if (take.hasOwnProperty('children')) {
+          console.log('take.children', take.children)
+          que.push(...Object.values(take.children))
+        }
+      }
+      console.log('previewDom:targetStyle', que, domQue)
+      for (let child of value.children[0].children) {
+        console.log('previewDom:dom', child.children[0], child.children[0].getBoundingClientRect())
+      }
+      console.log('previewDom:style', value.children, targetStyle)
+      console.log('previewDom:exam', this.getExam)
+      this.previewDom = value
+    },
+    propagateDom: function (value) {
+      this.checkStyleDom = value
+    },
     getDom: function () {
       //  MainProcess(this.text)
       const submitExam = firebase.functions().httpsCallable("submitExam")
@@ -275,6 +490,9 @@ export default {
     getText () {
       return "''"
     },
+    parseToDom () {
+      return domPreviewParse(this.getDomTree, 'default')
+    },
     sumpleOutputText () {
       const out = []
       let k = 0
@@ -391,7 +609,7 @@ export default {
       if (!this.getExamInfo.testCases) {
         return []
       }
-      return this.getExamInfo.testCases.sampleCase.enter
+      return Array.isArray(this.getExamInfo.testCases.sampleCase.enter) ? this.getExamInfo.testCases.sampleCase.enter.join(",") : this.getExamInfo.testCases.sampleCase.enter
     },
     getTimeStamp () {
       return {}

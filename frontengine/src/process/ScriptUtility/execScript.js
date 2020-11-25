@@ -70,8 +70,17 @@ function execScript (body, array, preLocal) {
           const target = access.body[i].expression.callee
           if (target.object && target.object.type === 'ThisExpression') {
             execScript(global[target.property.name], access.body[i].expression.arguments)
+          } else {
+            const args = []
+            const getRawArgs = access.body[i].expression.arguments
+            for (let i = 0; i < getRawArgs.length; i++) {
+              args.push(getProperty(getRawArgs[i], local))
+            }
+            getProperty(target, local, args)
+            // console.log('getter', getter, args)
           }
         } else if (access.body[i].expression && access.body[i].expression.type === 'AssignmentExpression') {
+          // console.log('functionExpress::!!!:assign', body, array, preLocal)
           // console.lo('chhhhhh', access.body[i].expression)
           if (access.body[i].expression.left.name && local.hasOwnProperty(access.body[i].expression.left.name)) {
             local[access.body[i].expression.left.name] = calculation(access.body[i].expression.right, local)
@@ -152,7 +161,8 @@ function execScript (body, array, preLocal) {
             targetDo = targetGO
             break
           }
-          if (!isBool(targetGO.test, local)) {
+          let resultBool = isBool(targetGO.test, local)
+          if (!resultBool) {
             // false
             if (targetGO.alternate) {
               targetGO = targetGO.alternate
@@ -303,6 +313,10 @@ function isBool (body, local, params, err, type) {
         return isBool(body.left, local, params, err, type) && isBool(body.right, local, params, err, type)
       case '&':
         return isBool(body.left, local, params, err, type) & isBool(body.right, local, params, err, type)
+      case '!==':
+        return isBool(body.left, local, params, err, type) !== isBool(body.right, local, params, err, type)
+      case '!=':
+        return isBool(body.left, local, params, err, type) !== isBool(body.right, local, params, err, type)
     }
     return calculation(body, local, params, err, type)
   }

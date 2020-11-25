@@ -104,14 +104,13 @@ export default {
 <style scoped>
 .examList {
   width: 500px;
-  max-height: 600px;
+  max-height: 400px;
   overflow-y: scroll;
-  border: solid 2px gray;
+  border: solid 0.5px gray;
   margin-left: auto;
   margin-right: auto;
 }
 .answer-card {
-  margin: 18px;
-  border: solid 1px gray;
+  margin: 10px 10px ;
 }
 </style>

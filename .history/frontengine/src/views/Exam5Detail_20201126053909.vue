@@ -26,7 +26,7 @@ export default {
 </script>
 
 <style scoped>
-.text-center {
+.answer-card {
   width: 500px;
   max-height: 600px;
   overflow-y: scroll;

@@ -26,11 +26,17 @@ export default {
 </script>
 
 <style scoped>
-.text-center {
-  width: 500px;
-  max-height: 600px;
-  overflow-y: scroll;
-  margin-left: auto;
-  margin-right: auto;
+.problemArea {
+  margin: 40px 40px 40px;
+}
+.b-buttonArea {
+  text-align: center;
+}
+.AnswerCard {
+  border: solid 0.5px gray;
+  margin: auto;
+}
+.detail-buttons {
+  display: flex;
 }
 </style>

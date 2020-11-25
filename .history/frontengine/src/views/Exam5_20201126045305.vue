@@ -3,8 +3,8 @@
     <!--{{ exams }}-->
     <h6>
       例題１標準入力で受け取った例題（Object型）をWEBサイト上に実装してください。
-      手順としてはPloblemList上に受け取った問題の概要(name,diff)を表示し、
-      それをクリックしたときに問題の詳細(body)をProblemDetailによって表示できるようにしてください。
+      手順としてはPloblemList上に受け取った問題の概要をProblemCardで表示し、
+      それをクリックしたときに問題の詳細をProblemDetailによって表示できるようにしてください。
     </h6>
     <div class="bv-example-row">
       <div>
@@ -16,6 +16,7 @@
               :key="index"
             >
               <div class="answer-card" v-if="naiyou">
+                <h1>aaaaa</h1>
                 <answer-card
                   bg-variant="white"
                   text-variant="black"
@@ -50,9 +51,7 @@
 import AnswerCard from "@/components/preview/previewItem/AnswerCard.vue"
 export default {
   name: "Exam5",
-  components: {
-    AnswerCard
-  },
+  components: {},
   data () {
     return {
       exams: {
@@ -84,34 +83,25 @@ export default {
       }
     }
   },
-  methods: {
+  props: {},
+  mounted: function () {
+    console.log("hyouzi", this.exams)
+  },
+  computed: {
     exist: function (data) {
       if (data || 0) {
         return data
       }
       return {}
     }
-  },
-  props: {},
-  mounted: function () {
-    console.log("hyouzi", this.exams)
-  },
-  computed: {
   }
 }
 </script>
 
 <style scoped>
 .examList {
-  width: 500px;
-  max-height: 600px;
+  max-height: 800px;
   overflow-y: scroll;
-  border: solid 2px gray;
-  margin-left: auto;
-  margin-right: auto;
-}
-.answer-card {
-  margin: 18px;
-  border: solid 1px gray;
+  border: solid 0.5px gray;
 }
 </style>

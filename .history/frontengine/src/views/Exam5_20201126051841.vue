@@ -111,7 +111,7 @@ export default {
   margin-right: auto;
 }
 .answer-card {
-  margin: 18px;
+  margin: 15px 15px ;
   border: solid 1px gray;
 }
 </style>
