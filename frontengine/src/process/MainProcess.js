@@ -10,7 +10,7 @@ let globalStyle = {}
 let checkClear = 0
 let lastOutput = []
 let outputIndex = 0
-async function MainProcess (text, props, clear, option) {
+async function MainProcess (text, props, clear, option, pathName) {
   let toProps = {}
   if (Array.isArray(props)) {
     toProps.input = props

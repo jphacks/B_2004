@@ -348,7 +348,7 @@ export default {
       this.checkStyleDom = value
     },
     routerFilePush: function (val) {
-      this.routerProcess(val)
+      routerProcess(this.text)
     },
     getDom: function () {
       //  MainProcess(this.text)
