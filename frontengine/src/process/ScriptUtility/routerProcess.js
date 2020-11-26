@@ -13,6 +13,7 @@ function routerProcess (text) {
   })
   toPages.Home = 'home'
   toPages.ProblemList = 'ProblemList'
+  toPages.baseURL = earth.baseURL
   for (let i = 0; i < astList.length; i++) {
     const value = astList[i]
     console.log('value', value)
@@ -35,7 +36,9 @@ function routerProcess (text) {
             }
             childRouter[valInit.properties[i].key.name] = getProperty(valInit.properties[i].value, toPages)
           }
-          console.log('router', childRouter)
+          console.log('router', childRouter, decVal.id.name)
+          router[decVal.id.name] = childRouter
+          continue
         }
         const valRoute = getProperty(valInit, toPages)
         console.log('decVal.id.name', decVal.id.name, valRoute, decVal)
@@ -43,9 +46,11 @@ function routerProcess (text) {
         const toRouter = Object.assign({}, router)
         toPages[decVal.id.name] = toRouter
       }
+    } else if (value.type === 'ExportDefaultDeclaration') {
+      earth[value.declaration.name] = router[value.declaration.name]
     }
   }
-  console.log('routerjs', routerAst, router)
+  console.log('routerjs', routerAst, router, earth)
 }
 
 function routerCreateAST (script) {
