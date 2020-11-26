@@ -447,6 +447,7 @@ export default {
           this.sumpleOutput.pop()
           this.sumpleOutput.push("")
           this.getDomTree = res.domTree
+          console.log('getDomTree', this.getDomTree)
           if (res.reason === "noneClear") {
             this.sumpleOutput.push(res.reason)
             this.sumpleOutput.push(

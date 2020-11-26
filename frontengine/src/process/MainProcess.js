@@ -6,6 +6,7 @@ import { global } from './moduleProcess.js'
 import { domProperty } from './ScriptUtility/domUtility.js'
 import { execScript, getScript } from './ScriptUtility/execScript.js'
 import { styleProperty } from './styleProcess.js'
+import { earth, pageAdd } from '@/process/ProjectProcess.js'
 let globalStyle = {}
 let checkClear = 0
 let lastOutput = []
@@ -198,6 +199,7 @@ async function MainProcess (text, props, clear, option, pathName) {
     }
   }
   console.log('parse', parseOutput)
+
   if (option.existString) {
     let flag = true
     let noneTarget = []
@@ -245,9 +247,6 @@ async function MainProcess (text, props, clear, option, pathName) {
       fileInfo: fileInfo
     }
   }
-  // CreateAST(script)
-  // console.log('runcode:')
-  // return { status: 'WA', reason: 'why?runendCode', info: checkClear, domTree: domTree }
 }
 
 function runVueDom (targetDomTree, option) {
@@ -396,6 +395,7 @@ function runVueDom (targetDomTree, option) {
       // -- lastPrpagate
     }
   }
+
   return parseOutput
 }
 
