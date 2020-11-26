@@ -22,12 +22,15 @@ function CheckProperty (body, local, option) {
     }
   } else if (bodyType === 'ObjectExpression') {
     for (const property of bodyValue.properties) {
-      const get = getProperty(property, local)
-      for (const key of Object.keys(get || {})) {
-        if (key !== 'noneDataEDEKQWLDCOLASXMW') {
-          output[key] = get[key]
-        }
-      }
+      const get = getProperty(property.value, local)
+      const key = getProperty(property.key, local)
+      console.log('get:objectExpression', get, key, bodyValue)
+      output[key] = get
+      // for (const key of Object.keys(get || {})) {
+      //   if (key !== 'noneDataEDEKQWLDCOLASXMW') {
+      //     output[key] = get[key]
+      //   }
+      // }
     }
     if (bodyValue.properties.length === 0) {
       output.value = {}
@@ -88,6 +91,7 @@ function getProperty (body, local, funcArguments) {
     console.error('maybe body is null or undifiend?', body, local)
     return false
   }
+  console.log('getts', body, local)
   const key = Object.keys(body || {})[0]
   if (body && body.type === 'ThisExpression') {
     return global
@@ -112,6 +116,7 @@ function getProperty (body, local, funcArguments) {
         case 'Boolean':
           return Boolean
       }
+      return body.name
     }
   } else if (body.type && body.type === 'MemberExpression' && body.object) {
     if (body.name) {
