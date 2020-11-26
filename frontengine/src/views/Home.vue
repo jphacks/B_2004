@@ -19,9 +19,6 @@ export default {
     Exam4
   },
   methods: {
-    engine: function (abc) {
-      console.log(abc.join(" "), 'Home')
-    },
     testSakai: function () {
       this.$router.push({
         name: "Exam5"
