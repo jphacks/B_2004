@@ -75,9 +75,8 @@
       <b-tab title="プレビュー画面">
         <preview-field :dom="parseToDom" unique="tabPage"> </preview-field>
       </b-tab>
-      <b-tab title="new">
-        <!--v-for="(newpage, index) in page" :key="index" -->
-        <NewPage msg="fileName"/>
+      <b-tab :title="pageName" v-for="(pageName, index) in page" :key="index">
+        <NewPage :pageName="pageName" :exam="getExam"/>
       </b-tab>
       <b-tab title="+">
         <AddTab @fileName="newPageName"/>
@@ -140,7 +139,10 @@ export default {
         inputArea: "解答入力欄",
         previewArea: "プレビュー画面"
       },
-      checked: false
+      checked: false,
+      page: [
+
+      ]
     }
   },
   props: {
@@ -505,6 +507,7 @@ export default {
     },
     newPageName: function (fileName) {
       console.log(fileName)
+      this.page.push(fileName)
     }
   },
   computed: {

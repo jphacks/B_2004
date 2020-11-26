@@ -1,38 +1,32 @@
 <template>
   <div>
-    <span>{{msg}}</span>
+    <span>{{pageName}}</span>
     <div class="file-url">
       <b-form-textarea
         id="urltext"
         v-model="urltext"
         required
         placeholder="単一ファイルのURL"
+        rows="1"
+        no-resize
+        :disabled="true"
       ></b-form-textarea>
     </div>
-    <div class="sample-output">
-      <span>サンプル出力:testCase</span>
-      <b-form-textarea
-        v-model="sumpleOutputText"
-        :disabled="true"
-        :rows="8"
-      />
+    <div>
+      <preview-field :dom="parseToDom" @vueDom="propagateDom" @style-check="emitDom" :unique="pageName">
+      </preview-field>
     </div>
     <div class="problemdetail">
-      <b-button variant="outline-primary" @click="sumplePush()"
-        >サンプルを設置する</b-button
-      >
-      <!--<b-form-textarea
+      <b-form-textarea
         id="textarea"
         v-model="text"
         :state="text.length > 0"
         placeholder="解答を入力してください。"
         rows="6"
-      ></b-form-textarea>-->
+      ></b-form-textarea>
       <div class="detail-buttons">
         <b-button @click="sumpleTest()">サンプルを出力</b-button>
       </div>
-      <preview-field :dom="parseToDom" @vueDom="propagateDom" @style-check="emitDom">
-      </preview-field>
     </div>
   </div>
 </template>
@@ -42,11 +36,12 @@ import PreviewField from "@/components/preview/PreviewField"
 import { MainProcess } from "@/process/MainProcess.js"
 import { mapGetters, mapActions } from "vuex"
 import { pureDomPreviewParse, domPreviewParse } from '@/process/ScriptUtility/domPreviewParse.js'
-// import { component } from 'vue/types/umd'
+import firebase from "firebase"
 export default {
   name: "NewPage",
   props: {
-    msg: String
+    pageName: String,
+    exam: Object
   },
   components: {
     PreviewField
@@ -66,7 +61,7 @@ export default {
         mode: "answerDOM",
         existString: true
       },
-      exam: {},
+      // exam: {},
       sumpleOutput: [],
       wait: false,
       getDomTree: {},
@@ -291,20 +286,91 @@ export default {
       for (let child of value.children[0].children) {
         console.log('previewDom:dom', child.children[0], child.children[0].getBoundingClientRect())
       }
-      console.log('previewDom:style', value.children, targetStyle)
-      console.log('previewDom:exam', this.getExam)
+      // console.log('previewDom:style', value.children, targetStyle)
+      // console.log('previewDom:exam', this.getExam)
       this.previewDom = value
     },
-    sumplePush: function () {
-      this.text = this.getSumpleText
+    propagateDom: function (value) {
+      this.checkStyleDom = value
+    },
+    getDom: function () {
+      //  MainProcess(this.text)
+      const submitExam = firebase.functions().httpsCallable("submitExam")
+      const examId = this.$route.params.examId
+      submitExam({
+        userId: this.getLoginId,
+        examId: examId,
+        examText: this.text,
+        testCase: this.input,
+        outputSumple: this.clear,
+        optionSumple: this.option
+      })
+        .then((res) => {
+          console.log("res", res)
+          const self = this
+          firebase
+            .firestore()
+            .collection("users")
+            .doc(String(this.getLoginId))
+            .collection("join")
+            .doc(String(examId))
+            .get()
+            .then(function (doc) {
+              console.log("checkstartat", doc.data().endAt)
+              if (!doc.data().endAt) {
+                console.log("kiteruyo")
+                firebase
+                  .firestore()
+                  .collection("users")
+                  .doc(self.getLoginId)
+                  .collection("join")
+                  .doc(String(examId))
+                  .update({
+                    endAt: firebase.firestore.Timestamp.fromDate(new Date())
+                  })
+              }
+            })
+          this.$router.push({
+            name: "ProblemResult",
+            params: { examId: this.$route.params.examId, resOutput: res }
+          })
+        })
+        .catch((e) => {
+          // console.log("feiofjow", this.getLoginId, examId)
+          const self = this
+          firebase
+            .firestore()
+            .collection("users")
+            .doc(String(this.getLoginId))
+            .collection("join")
+            .doc(String(examId))
+            .get()
+            .then(function (doc) {
+              console.log("checkstartat", doc.data().endAt)
+              if (!doc.data().endAt) {
+                console.log("kiteruyo")
+                firebase
+                  .firestore()
+                  .collection("users")
+                  .doc(self.getLoginId)
+                  .collection("join")
+                  .doc(String(examId))
+                  .update({
+                    endAt: firebase.firestore.Timestamp.fromDate(new Date())
+                  })
+              }
+            })
+          console.log("e", e)
+        })
     },
     sumpleTest: function () {
       if (this.text.length > 0 && !this.wait) {
         this.sumpleOutput = []
-        const getExam = this.getExam
-        const sumpleInput = getExam.examInfo.testCases.sampleCase.enter
-        const sumpleClear = getExam.examInfo.testCases.sampleCase.exit
-        const option = getExam.examInfo.option
+        const exam = this.exam
+        console.log("exam", this.exam)
+        const sumpleInput = exam.examInfo.testCases.sampleCase.enter
+        const sumpleClear = exam.examInfo.testCases.sampleCase.exit
+        const option = exam.examInfo.option
         this.sumpleOutput.push("input testCases...")
         for (let i = 0; i < sumpleInput.length; i++) {
           this.sumpleOutput.push(sumpleInput[i])
@@ -319,6 +385,7 @@ export default {
           this.sumpleOutput.pop()
           this.sumpleOutput.push("")
           this.getDomTree = res.domTree
+          console.log(res.domTree, "aaaa")
           if (res.reason === "noneClear") {
             this.sumpleOutput.push(res.reason)
             this.sumpleOutput.push(
@@ -340,11 +407,33 @@ export default {
         })
       }
     },
-    propagateDom: function (value) {
-      this.checkStyleDom = value
-    }
+    setExam: function () {
+      const examId = this.$route.params.examId
+      return firebase
+        .firestore()
+        .collection("exams")
+        .get()
+        .then((snapsshot) => {
+          let output = {}
+          console.log("ss", snapsshot)
+          snapsshot.forEach((doc) => {
+            this.setExams(doc)
+            output[doc.id] = doc.data()
+          })
+          // console.log("this.exam", output[examId])
+          // this.exam = output[examId]
+        })
+    },
+    createEvent: function () {}
   },
   computed: {
+    ...mapGetters(["getExams", "getUserId"]),
+    getText () {
+      return "''"
+    },
+    parseToDom () {
+      return domPreviewParse(this.getDomTree, 'default')
+    },
     sumpleOutputText () {
       const out = []
       let k = 0
@@ -358,8 +447,46 @@ export default {
       }
       return out.join("\n")
     },
-    parseToDom () {
-      return domPreviewParse(this.getDomTree, 'default')
+    // getExam () {
+    //   return this.exam
+    // },
+    getClearModel () {
+      let output = {}
+      output.exists = [] // eventに対応したやつ
+      output.events = [] // event
+      output.events.push({ id: "sortButtonId", event: "click" })
+      output.events.push({ id: "sortButtonName", event: "click" })
+      return output
+    },
+    getEnter () {
+      if (!this.getExam || !this.getExam.examInfo) {
+        return {}
+      }
+      return this.getExam.examInfo.exEnter
+    },
+    getExplain () {
+      if (!this.getExam || !this.getExam.examInfo) {
+        return {}
+      }
+      return this.getExam.examInfo.explain
+    },
+    getExamInfo () {
+      if (!this.getExam || !this.getExam.examInfo) {
+        return {}
+      }
+      return this.getExam.examInfo
+    },
+    getSumpleOutput () {
+      if (!this.getExamInfo.testCases) {
+        return {}
+      }
+      return this.getExamInfo.testCases.sampleCase.exit
+    },
+    getSumpleInput () {
+      if (!this.getExamInfo.testCases) {
+        return []
+      }
+      return Array.isArray(this.getExamInfo.testCases.sampleCase.enter) ? this.getExamInfo.testCases.sampleCase.enter.join(",") : this.getExamInfo.testCases.sampleCase.enter
     }
   }
 }
