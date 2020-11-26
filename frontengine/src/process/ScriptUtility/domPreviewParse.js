@@ -59,7 +59,7 @@ function pureDomPreviewParse (domTree, fileName) {
         const targetDom = []
         if (take.others[i].type) {
           let otherRight = take.others[i].right
-          otherRight = otherRight.replace(/\'/g, '\\\'')
+          otherRight = otherRight.replace(/'/g, '\\\'')
           targetDom.push('\'' + otherRight + '\'')
           targetDom.push('\'' + fileName + '\'')
           // targetDom.push(Object.keys(parentParam))
@@ -178,7 +178,7 @@ function domPreviewParse (domTree, fileName) {
         const targetDom = []
         if (take.others[i].type) {
           let otherRight = take.others[i].right
-          otherRight = otherRight.replace(/\'/g, '\\\'')
+          otherRight = otherRight.replace(/'/g, '\\\'')
           targetDom.push('\'' + otherRight + '\'')
           targetDom.push('\'' + fileName + '\'')
           console.log('keey', key, key.match('click'))

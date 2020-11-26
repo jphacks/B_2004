@@ -1,115 +1,59 @@
 <template>
-  <div class="problemArea">
-    <div class="terminal">
-      <Terminal @frontEngine="engine"/>
+  <div>
+    <span>{{msg}}</span>
+    <div class="file-url">
+      <b-form-textarea
+        id="urltext"
+        v-model="urltext"
+        required
+        placeholder="単一ファイルのURL"
+      ></b-form-textarea>
     </div>
-    <b-tabs content-class="mt-3">
-      <b-tab title="ホーム" active>
-        <div class="checkBoxes">
-          <span v-for="(value, key) of viewCheckBox" :key="key">
-            <input :id="key" type="checkbox" v-model="viewCheckBox[key]" />
-            {{ checkBoxString[key] }}
-          </span>
-        </div>
-        <div class="problemView" v-if="viewCheckBox.exam">
-          <h1>問題：{{ getExam.name }}</h1>
-          <span v-if="!getLoginId">※ログインしていない場合提出できません</span>
-          <!--<h1>難易度：{{getExam.difficult}}</h1>-->
-          <b-card class="b-card">
-            <b-card-text>
-              <span v-for="value of getExplain" :key="value"
-                >{{ value }}<br /></span
-              ><br />
-              <span v-for="value of getEnter" :key="value"
-                >{{ value }}<br /></span
-              ><br />
-              <b-card>
-                <b-card-text>
-                  入力例1<br />
-                  {{ getSumpleInput }}<br />
-                </b-card-text>
-                <b-card-text>
-                  出力例1<br />
-                  <span
-                    v-for="(smCase, key) in Object.keys(getSumpleOutput || {})"
-                    :key="key"
-                  >
-                    {{ String(getSumpleOutput[key]) }}<br />
-                  </span>
-                </b-card-text>
-              </b-card>
-            </b-card-text>
-          </b-card>
-        </div>
-        <br />
-        <!-- Answer Form Area -->
-        <div class="sample-output" v-if="viewCheckBox.sumpleOutput">
-          <span>サンプル出力:testCase</span>
-          <b-form-textarea
-            v-model="sumpleOutputText"
-            :disabled="true"
-            :rows="8"
-          />
-        </div>
-        <div class="problemdetail" v-if="viewCheckBox.inputArea">
-          <b-button variant="outline-primary" @click="sumplePush()"
-            >サンプルを設置する</b-button
-          >
-          <b-form-textarea
-            id="textarea"
-            v-model="text"
-            :state="text.length > 0"
-            placeholder="解答を入力してください。"
-            rows="6"
-          ></b-form-textarea>
-          <div class="detail-buttons">
-            <b-button v-if="getLoginId" @click="getDom()">送信</b-button>
-            <b-button @click="sumpleSakai()">テスト（坂井）</b-button>
-            <b-button @click="sumpleTest()">サンプルを出力</b-button>
-          </div>
-          <!-- <br><br><br><router-link :to="{name: 'ProblemResult', params: {examId: $route.params.examId}}">問題結果画面に遷移します。</router-link> -->
-        </div>
-        <preview-field :dom="parseToDom" v-if="viewCheckBox.previewArea" @vueDom="propagateDom" @style-check="emitDom">
-        </preview-field>
-      </b-tab>
-      <b-tab title="プレビュー画面">
-        <preview-field :dom="parseToDom" unique="tabPage"> </preview-field>
-      </b-tab>
-      <b-tab title="new">
-        <!--v-for="(newpage, index) in page" :key="index" -->
-        <NewPage msg="fileName"/>
-      </b-tab>
-      <b-tab title="+">
-        <AddTab @fileName="newPageName"/>
-      </b-tab>
-    </b-tabs>
+    <div class="sample-output">
+      <span>サンプル出力:testCase</span>
+      <b-form-textarea
+        v-model="sumpleOutputText"
+        :disabled="true"
+        :rows="8"
+      />
+    </div>
+    <div class="problemdetail">
+      <b-button variant="outline-primary" @click="sumplePush()"
+        >サンプルを設置する</b-button
+      >
+      <!--<b-form-textarea
+        id="textarea"
+        v-model="text"
+        :state="text.length > 0"
+        placeholder="解答を入力してください。"
+        rows="6"
+      ></b-form-textarea>-->
+      <div class="detail-buttons">
+        <b-button @click="sumpleTest()">サンプルを出力</b-button>
+      </div>
+      <preview-field :dom="parseToDom" @vueDom="propagateDom" @style-check="emitDom">
+      </preview-field>
+    </div>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
+import PreviewField from "@/components/preview/PreviewField"
 import { MainProcess } from "@/process/MainProcess.js"
 import { mapGetters, mapActions } from "vuex"
-import Exam1 from "@/components/Exam1.vue"
-import firebase from "firebase"
-import PreviewField from "@/components/preview/PreviewField"
-// import answerCard from "@/components/preview/answerCard"
 import { pureDomPreviewParse, domPreviewParse } from '@/process/ScriptUtility/domPreviewParse.js'
-// import Exam1 from '@/components/Exam1.vue'
-// import Exam2 from '@/components/Exam2.vue'
-import Terminal from '@/components/Terminal.vue'
-import AddTab from '@/components/AddTab.vue'
-import NewPage from '@/components/NewPage.vue'
+// import { component } from 'vue/types/umd'
 export default {
-  name: "ProblemDetail",
+  name: "NewPage",
+  props: {
+    msg: String
+  },
   components: {
-    PreviewField,
-    Terminal,
-    AddTab,
-    NewPage
+    PreviewField
   },
   data () {
     return {
+      urltext: "",
       text: "",
       input: ["pen", "pineapple", "apple", "pen"],
       clear: [
@@ -143,14 +87,7 @@ export default {
       checked: false
     }
   },
-  props: {
-  },
-  mounted: function () {
-    this.setExam()
-    console.log("exam", this.exam)
-  },
   methods: {
-    ...mapActions(["setExams"]),
     emitDom: function () {
       // console.log('previewDom', value, value.children, value.children[0])
       const value = this.checkStyleDom
@@ -358,84 +295,8 @@ export default {
       console.log('previewDom:exam', this.getExam)
       this.previewDom = value
     },
-    propagateDom: function (value) {
-      this.checkStyleDom = value
-    },
-    getDom: function () {
-      //  MainProcess(this.text)
-      const submitExam = firebase.functions().httpsCallable("submitExam")
-      const examId = this.$route.params.examId
-      submitExam({
-        userId: this.getLoginId,
-        examId: examId,
-        examText: this.text,
-        testCase: this.input,
-        outputSumple: this.clear,
-        optionSumple: this.option
-      })
-        .then((res) => {
-          console.log("res", res)
-          const self = this
-          firebase
-            .firestore()
-            .collection("users")
-            .doc(String(this.getLoginId))
-            .collection("join")
-            .doc(String(examId))
-            .get()
-            .then(function (doc) {
-              console.log("checkstartat", doc.data().endAt)
-              if (!doc.data().endAt) {
-                console.log("kiteruyo")
-                firebase
-                  .firestore()
-                  .collection("users")
-                  .doc(self.getLoginId)
-                  .collection("join")
-                  .doc(String(examId))
-                  .update({
-                    endAt: firebase.firestore.Timestamp.fromDate(new Date())
-                  })
-              }
-            })
-          this.$router.push({
-            name: "ProblemResult",
-            params: { examId: this.$route.params.examId, resOutput: res }
-          })
-        })
-        .catch((e) => {
-          // console.log("feiofjow", this.getLoginId, examId)
-          const self = this
-          firebase
-            .firestore()
-            .collection("users")
-            .doc(String(this.getLoginId))
-            .collection("join")
-            .doc(String(examId))
-            .get()
-            .then(function (doc) {
-              console.log("checkstartat", doc.data().endAt)
-              if (!doc.data().endAt) {
-                console.log("kiteruyo")
-                firebase
-                  .firestore()
-                  .collection("users")
-                  .doc(self.getLoginId)
-                  .collection("join")
-                  .doc(String(examId))
-                  .update({
-                    endAt: firebase.firestore.Timestamp.fromDate(new Date())
-                  })
-              }
-            })
-          console.log("e", e)
-        })
-    },
-    sumpleSakai: function () {
-      this.$router.push({
-        name: "ProblemResult",
-        params: { examId: this.$route.params.examId }
-      })
+    sumplePush: function () {
+      this.text = this.getSumpleText
     },
     sumpleTest: function () {
       if (this.text.length > 0 && !this.wait) {
@@ -479,42 +340,11 @@ export default {
         })
       }
     },
-    sumplePush: function () {
-      this.text = this.getSumpleText
-    },
-    setExam: function () {
-      const examId = this.$route.params.examId
-      return firebase
-        .firestore()
-        .collection("exams")
-        .get()
-        .then((snapsshot) => {
-          let output = {}
-          console.log("ss", snapsshot)
-          snapsshot.forEach((doc) => {
-            this.setExams(doc)
-            output[doc.id] = doc.data()
-          })
-          console.log("this.exam", output[examId])
-          this.exam = output[examId]
-        })
-    },
-    createEvent: function () {},
-    engine: function (abc) {
-      console.log(abc.join(" "), 'ProblemDetail')
-    },
-    newPageName: function (fileName) {
-      console.log(fileName)
+    propagateDom: function (value) {
+      this.checkStyleDom = value
     }
   },
   computed: {
-    ...mapGetters(["getExams", "getUserId"]),
-    getText () {
-      return "''"
-    },
-    parseToDom () {
-      return domPreviewParse(this.getDomTree, 'default')
-    },
     sumpleOutputText () {
       const out = []
       let k = 0
@@ -528,133 +358,9 @@ export default {
       }
       return out.join("\n")
     },
-    getExam () {
-      return this.exam
-    },
-    getLoginId () {
-      console.log("check", this.getUserId)
-      return this.getUserId
-    },
-    getSumpleText () {
-      const output = []
-      output.push("<template>")
-      output.push('<div class="problemdetail">')
-      output.push(
-        '<answer v-for="(item, index) of input" :key="index">{{jointStr(input, index)}}<br/></answer>'
-      )
-      output.push("</div>")
-      output.push("</template>")
-      output.push("<script>")
-      // output.push('import MainProcess from \'@/process/MainProcess.js\'')
-      output.push("export default {")
-      output.push("  name: 'Home',")
-      output.push("  components: {")
-      output.push("  },")
-      output.push("props: {")
-      output.push("input: Array")
-      output.push("},")
-      output.push("  data () {")
-      output.push("    return {")
-      output.push("      text: '',")
-      output.push("      number: 0")
-      output.push("    }")
-      output.push("  },")
-      output.push("  methods: {")
-      output.push("    jointStr: function (items, index) {")
-      output.push("      let output = ''")
-      output.push("      for (let i = 0; i < index + 1; i = i + 1) {")
-      output.push("        output = output + items[i]")
-      output.push("      }")
-      output.push("      return output")
-      output.push("    }")
-      output.push("  },")
-      output.push("  computed: {")
-      output.push("    getText () {")
-      output.push("      return \"''\"")
-      output.push("    },")
-      output.push("    getMergeText () {")
-      output.push("     return this.input.join('')")
-      output.push("    }")
-      output.push("  }")
-      output.push("}")
-      output.push("</" + "script>")
-      output.push("<style scoped>")
-      output.push(".testClass {")
-      output.push("  display: flex;")
-      output.push("  width: 100px;")
-      output.push(" }")
-      output.push(" h1 {")
-      output.push("  height: 50px;")
-      output.push(" }")
-      output.push(" #targetId {")
-      output.push("   color: red;")
-      output.push("  }")
-      output.push(" .problemdetail {")
-      output.push("  width: 300px;")
-      output.push("}")
-      output.push("</style>")
-      return output.join("\n")
-    },
-    getClearModel () {
-      let output = {}
-      output.exists = [] // eventに対応したやつ
-      output.events = [] // event
-      output.events.push({ id: "sortButtonId", event: "click" })
-      output.events.push({ id: "sortButtonName", event: "click" })
-      return output
-    },
-    getEnter () {
-      if (!this.getExam || !this.getExam.examInfo) {
-        return {}
-      }
-      return this.getExam.examInfo.exEnter
-    },
-    getExplain () {
-      if (!this.getExam || !this.getExam.examInfo) {
-        return {}
-      }
-      return this.getExam.examInfo.explain
-    },
-    getExamInfo () {
-      if (!this.getExam || !this.getExam.examInfo) {
-        return {}
-      }
-      return this.getExam.examInfo
-    },
-    getSumpleOutput () {
-      if (!this.getExamInfo.testCases) {
-        return {}
-      }
-      return this.getExamInfo.testCases.sampleCase.exit
-    },
-    getSumpleInput () {
-      if (!this.getExamInfo.testCases) {
-        return []
-      }
-      return Array.isArray(this.getExamInfo.testCases.sampleCase.enter) ? this.getExamInfo.testCases.sampleCase.enter.join(",") : this.getExamInfo.testCases.sampleCase.enter
-    },
-    getTimeStamp () {
-      return {}
+    parseToDom () {
+      return domPreviewParse(this.getDomTree, 'default')
     }
   }
 }
 </script>
-
-<style scoped>
-.problemArea {
-  margin: 40px 40px 40px;
-}
-.b-buttonArea {
-  text-align: center;
-}
-.b-card {
-  border: solid 0.5px gray;
-  margin: auto;
-}
-.detail-buttons {
-  display: flex;
-}
-.terminal{
-  float: right;
-}
-</style>
