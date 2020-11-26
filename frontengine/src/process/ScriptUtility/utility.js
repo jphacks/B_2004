@@ -2,13 +2,14 @@ import { global } from '../moduleProcess.js'
 import { execScript, getScript } from './execScript.js'
 export { CheckProperty, getProperty }
 // データの代入を支援するfunction {name: value}の形で返される
+// checkPropertyのreserveしてるname
+const reserveName = 'reserveNameName'
 function CheckProperty (body, local, option) {
   // name,valueは予約されている??
   // output {name: name, value: value}
-
   const output = {}
   if (body && body.key && body.key.name) {
-    output.name = body.key.name
+    output[reserveName] = body.key.name
   }
   let bodyType = body.value && body.value.type ? body.value.type : body.type
   let bodyValue = body.value || body
@@ -74,13 +75,13 @@ function CheckProperty (body, local, option) {
   for (const key of Object.keys(output || {})) {
     if (key === 'd') {
     }
-    if (key !== 'name' && key !== 'value' && key !== 'noneDataEDEKQWLDCOLASXMW') {
+    if (key !== [reserveName] && key !== 'value' && key !== 'noneDataEDEKQWLDCOLASXMW') {
       out[key] = output[key]
     }
   }
 
-  if (output.name) {
-    return { [output.name || 'name']: out }
+  if (output[reserveName]) {
+    return { [output[reserveName] || [reserveName]]: out }
   } else {
     return { name: out }
   }
