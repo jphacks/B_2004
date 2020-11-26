@@ -11,7 +11,7 @@ let globalStyle = {}
 let checkClear = 0
 let lastOutput = []
 let outputIndex = 0
-async function MainProcess (text, props, clear, option, pathName) {
+async function MainProcess (text, props, clear, option, fileName, onlyPageAddFunc) {
   let toProps = {}
   if (Array.isArray(props)) {
     toProps.input = props
@@ -20,42 +20,39 @@ async function MainProcess (text, props, clear, option, pathName) {
     toProps = Object.assign(toProps, props)
   }
   const fileInfo = {} // ここに単一ファイル情報を記載
-  fileInfo.fileName = 'dafault'
+  let pageName = 'default'
+  if (fileName) {
+    pageName = fileName
+  }
+  fileInfo.fileName = pageName
   const templateLength = '<template>'.length
   const scriptLength = '<script>'.length
   const styleLength = '<style scoped>'.length
   const templates = text.substr(text.indexOf('<template>') + templateLength, text.indexOf('</template>') - templateLength)
   const script = text.substr(text.indexOf('<script>') + scriptLength, text.indexOf('</script>') - scriptLength - text.indexOf('<script>'))
   const style = text.substr(text.indexOf('<style scoped>') + styleLength, text.indexOf('</style>') - styleLength - text.indexOf('<style scoped>'))
-  // ('解析 template:', templates, 'script:', script, 'style:', style)
-  // ('解析script ', script)
   const domTree = DomProcess(templates)
   ScriptProcess(script, toProps)
   globalStyle = styleProperty(style)
-  // const data = execScript(global, ['userId'])
-  // console.lo('scriptRe', global, module, option, clear)
-  // console.lo('dom', domTree)
   const errors = []
-  // const getClear = clear
   const getClear = clear
   let targetIndex = 0
   let output = { status: 'WA', reason: '' }
   const vForGlobal = {}
   const parseOutput = []
-  // オブジェクト型で例題作ってなかった><
-  // const toProps = { input: props }
   if (props) {
     Object.keys(toProps || {}).forEach(key => {
       global[key] = toProps[key]
     })
   }
+  const snapShotFileGlobalInfo = Object.assign({}, global)
   console.log('global', global, toProps, props)
-  // console.log('outputtt', text, props, clear, option)
   let resultOutput = [] // 文字列型の場合は、outputが見れるはず
   let tooru = true
   // let target = domTree
   const targets = []
   targets.push(domTree)
+  pageAdd(pageName, templates, script, style, domTree, text, global)
   while (targets.length > 0) {
     const ifBool = true
     const getTar = targets.pop()

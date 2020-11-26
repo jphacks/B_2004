@@ -142,9 +142,7 @@ export default {
         previewArea: "プレビュー画面"
       },
       checked: false,
-      page: [
-
-      ]
+      page: ['hogehoge']
     }
   },
   props: {

@@ -25,7 +25,7 @@
         rows="6"
       ></b-form-textarea>
       <div class="detail-buttons">
-        <b-button @click="sumpleTest()">サンプルを出力</b-button>
+        <b-button @click="sumpleTest()">出力</b-button>
       </div>
     </div>
   </div>
@@ -35,6 +35,7 @@
 import PreviewField from "@/components/preview/PreviewField"
 import { MainProcess } from "@/process/MainProcess.js"
 import { mapGetters, mapActions } from "vuex"
+import { earth, pageAdd } from '@/process/ProjectProcess.js'
 import { pureDomPreviewParse, domPreviewParse } from '@/process/ScriptUtility/domPreviewParse.js'
 import firebase from "firebase"
 export default {
@@ -381,7 +382,7 @@ export default {
         })
         this.sumpleOutput.push("読み込み中...")
         this.wait = true
-        MainProcess(this.text, sumpleInput, sumpleClear, option).then((res) => {
+        MainProcess(this.text, sumpleInput, sumpleClear, option, this.pageName, true).then((res) => {
           this.sumpleOutput.pop()
           this.sumpleOutput.push("")
           this.getDomTree = res.domTree
