@@ -111,8 +111,8 @@ export default {
 <style scoped>
 .examList {
   width: 500px;
-  max-height: 600px;
-  overflow-y: scroll;
+  /* max-height: 600px; */
+  overflow-y: auto;
   border: solid 2px gray;
   margin-left: auto;
   margin-right: auto;

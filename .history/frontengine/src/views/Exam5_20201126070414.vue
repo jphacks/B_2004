@@ -12,7 +12,7 @@
     <div class="bv-example-row">
       <div>
         <div>
-          <answer>問題一覧</answer>
+          <h1>問題一覧</h1>
           <div class="examList" v-if="exams">
             <div
               v-for="(naiyou, index) in Object.values(exams || {})"
@@ -25,12 +25,10 @@
                   class="text-center"
                 >
                   <span
-                    >
-                    <answer>問題名：{{ exist(naiyou.name) }}</answer><br
+                    >問題名：{{ exist(naiyou.name) }}<br
                   /></span>
                   <span
-                    >
-                    <answer>難易度：{{ exist(naiyou.diff) }}</answer><br
+                    >難易度：{{ exist(naiyou.diff) }}<br
                   /></span>
                   <router-link
                     :to="{
@@ -53,12 +51,10 @@
 <script>
 // プロジェクト単位の例題１
 import AnswerCard from "@/components/preview/previewItem/AnswerCard.vue"
-import Answer from '../components/preview/answer.vue'
 export default {
   name: "Exam5",
   components: {
-    AnswerCard,
-    Answer
+    AnswerCard
   },
   data () {
     return {

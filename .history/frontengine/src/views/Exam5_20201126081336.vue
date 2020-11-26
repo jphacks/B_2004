@@ -57,7 +57,7 @@ import Answer from '../components/preview/answer.vue'
 export default {
   name: "Exam5",
   components: {
-    AnswerCard,
+    AnswerCard
     Answer
   },
   data () {

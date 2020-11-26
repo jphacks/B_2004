@@ -13,7 +13,7 @@ import Answer from '../components/preview/answer.vue'
 export default {
   name: "Exam5Detail",
   components: {
-    AnswerCard,
+    AnswerCard
     Answer
   },
   methods: {
