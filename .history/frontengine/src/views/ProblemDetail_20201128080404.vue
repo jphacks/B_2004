@@ -73,7 +73,8 @@
         <preview-field class="cardPreview" :dom="parseToDom" v-if="viewCheckBox.previewArea" @vueDom="propagateDom" @style-check="emitDom" @router-change="routerChange">
         </preview-field>
         <b-card v-if="this.clickFlug">
-          {{ this.checkFlug ? 'OK!' : this.checkFlug + " : " + checkData.reason }}
+
+          {{ this.checkFlag ? 'OK!': this.checkFlug + " : " + checkData.reason }}
         </b-card>
       </b-tab>
       <b-tab title="router設定">

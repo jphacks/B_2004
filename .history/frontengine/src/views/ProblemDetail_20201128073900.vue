@@ -70,10 +70,10 @@
           </div>
           <!-- <br><br><br><router-link :to="{name: 'ProblemResult', params: {examId: $route.params.examId}}">問題結果画面に遷移します。</router-link> -->
         </div>
-        <preview-field class="cardPreview" :dom="parseToDom" v-if="viewCheckBox.previewArea" @vueDom="propagateDom" @style-check="emitDom" @router-change="routerChange">
+        <preview-field :dom="parseToDom" v-if="viewCheckBox.previewArea" @vueDom="propagateDom" @style-check="emitDom" @router-change="routerChange">
         </preview-field>
         <b-card v-if="this.clickFlug">
-          {{ this.checkFlug ? 'OK!' : this.checkFlug + " : " + checkData.reason }}
+          {{ this.checkFlug + " : " + checkData }}
         </b-card>
       </b-tab>
       <b-tab title="router設定">
@@ -296,13 +296,13 @@ export default {
                         console.log('absolute指定:アウト', subKey, domRawStyle[key], [domRawStyle], [countDomTake[i]])
                         splitBool.push(false)
                         this.checkData.reason = "absolute指定:アウト"
-                        this.clickFlug = true
+                        this.checkFlug = true
                       }
                     } else {
                       console.log('absolute指定:アウト', subKey, domRawStyle[key], [domRawStyle], [countDomTake[i]])
                       splitBool.push(false)
                       this.checkData.reason = "absolute指定:アウト"
-                      this.clickFlug = true
+                      this.checkFlug = true
                     }
                   } else {
                     // trueをいれとく
@@ -415,7 +415,6 @@ export default {
       console.log('previewDom:exam', this.getExam)
       this.previewDom = value
       this.checkFlug = true
-      this.clickFlug = true
     },
     propagateDom: function (value) {
       this.checkStyleDom = value
@@ -825,8 +824,5 @@ export default {
 }
 .terminal{
   float: right;
-}
-.cardPreview {
-  width: 1500px;
 }
 </style>
