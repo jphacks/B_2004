@@ -73,10 +73,10 @@
         <preview-field class="cardPreview" :dom="parseToDom" v-if="viewCheckBox.previewArea" @vueDom="propagateDom" @style-check="emitDom" @router-change="routerChange">
         </preview-field>
         <b-card v-if="this.clickFlug">
-          {{ this.checkFlug ? 'OK!' : this.checkFlug + " : " + checkData.reason }}
+          {{ this.checkFlug + " : " + checkData.reason }}
         </b-card>
       </b-tab>
-      <b-tab title="router設定" :active="routerPage">
+      <b-tab title="router設定">
         <b-card>
         <span v-for="(value, key) of getReturnRouterStr" :key="key">{{ value }}<br/></span>
         </b-card>
@@ -92,9 +92,6 @@
       <div v-if="page">
       <b-tab :title="pageName" v-for="(pageName, index) in page" :key="index" :active="pageFlags[index]">
         <NewPage :pageName="pageName" :exam="getExam"/>
-        <b-button size="sm" variant="danger" class="float-right" @click="closePage(pageName)">
-          Close page
-        </b-button>
       </b-tab>
       </div>
       <b-tab title="+" :active="plus">
@@ -418,7 +415,6 @@ export default {
       console.log('previewDom:exam', this.getExam)
       this.previewDom = value
       this.checkFlug = true
-      this.clickFlug = true
     },
     propagateDom: function (value) {
       this.checkStyleDom = value
@@ -625,7 +621,6 @@ export default {
                 output.push(false)
               }
               this.home = false
-              this.routerPage = false
               this.plus = false
               if (target === 'home') {
                 this.home = true
@@ -643,15 +638,6 @@ export default {
               this.command = []
             }
             break
-          case 'delete':
-          case '-d':
-            for (let i = 0; i < this.page.length; i++) {
-              if (this.page[i] === this.command[2]) {
-                this.page.splice(i, 1)
-              }
-            }
-            this.command = []
-            break
           default:
             this.command = []
             break
@@ -664,13 +650,6 @@ export default {
       console.log(fileName)
       if (this.page.indexOf(fileName) === -1) {
         this.page.push(fileName)
-      }
-    },
-    closePage: function (pageName) {
-      for (let i = 0; i < this.page.length; i++) {
-        if (this.page[i] === pageName) {
-          this.page.splice(i, 1)
-        }
       }
     }
   },
@@ -846,7 +825,7 @@ export default {
 .terminal{
   float: right;
 }
-.cardPreview {
-  width: 1500px;
-}
+/* .cardPreview {
+  width: 1000px;
+} */
 </style>

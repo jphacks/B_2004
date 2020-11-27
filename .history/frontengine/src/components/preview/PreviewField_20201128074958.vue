@@ -164,3 +164,11 @@ export default {
   }
 }
 </script>
+<style scoped>
+.card {
+  width: 10px;
+}
+.PreviewField {
+  width: 10px;
+}
+</style>
