@@ -26,7 +26,7 @@
               <b-card>
                 <b-card-text>
                   入力例1<br />
-                  {{ snapShotSumpleCase }}<br />
+                  {{ getSumpleInput }}<br />
                 </b-card-text>
                 <b-card-text>
                   出力例1<br />
@@ -142,7 +142,6 @@ export default {
       plus: false,
       pageFlags: [],
       sumpleOutput: [],
-      snapShotSumpleCase: {},
       wait: false,
       getDomTree: {},
       previewDom: {},
@@ -492,8 +491,8 @@ export default {
       if (this.text.length > 0 && !this.wait) {
         this.sumpleOutput = []
         const getExam = this.getExam
-        let sumpleInput = Object.assign({}, getExam.examInfo.testCases.sampleCase.enter)
-        const sumpleClear = Object.assign({}, getExam.examInfo.testCases.sampleCase.exit)
+        let sumpleInput = getExam.examInfo.testCases.sampleCase.enter
+        const sumpleClear = getExam.examInfo.testCases.sampleCase.exit
         const option = getExam.examInfo.option
         this.sumpleOutput.push("input testCases...")
         for (let i = 0; i < sumpleInput.length; i++) {
@@ -549,19 +548,13 @@ export default {
         .get()
         .then((snapsshot) => {
           let output = {}
-          let testCase = {}
           console.log("ss", snapsshot)
           snapsshot.forEach((doc) => {
             this.setExams(doc)
             output[doc.id] = doc.data()
-            testCase[doc.id] = doc.data()
           })
           console.log("this.exam", output[examId])
           this.exam = output[examId]
-          let testCases = Object.assign({}, testCase)
-          const datas = []
-          const input = Object.assign({}, testCases[examId].examInfo.testCases.sampleCase)
-          this.snapShotSumpleCase = Object.assign({}, input.enter)
         })
     },
     createEvent: function () {},
@@ -585,6 +578,29 @@ export default {
             let target = this.command[2]
             if (this.command[2] === "-c") {
               target = this.command[3]
+              // this.page.push(this.command[3])
+              // // this.pageFlags.push(false)
+              // const output = []
+              // for (let i = 0; i < this.pageFlags.length; i++) {
+              //   output.push(false)
+              // }
+              // this.home = false
+              // this.plus = false
+              // if (this.command[3] === 'home') {
+              //   this.home = true
+              // } else if (this.command[3] === 'plus') {
+              //   this.plus = true
+              // } else {
+              //   const getIndex = this.page.indexOf(this.command[3])
+              //   if (getIndex >= 0) {
+              //     output[getIndex] = true
+              //   }
+              // }
+              // this.pageFlags = output
+              // // this.getActives[this.page.indexOf(this.command[3])+1] = true
+              // console.log(this.page, this.tabIndex, this.pageFlags, 'pageFlag見る', this.getActives)
+              // console.log(this.page.indexOf(target))
+              // this.command = []
               this.command = []
             } else {
               const output = []

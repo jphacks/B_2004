@@ -2,7 +2,7 @@
     <answer-card bg-variant="white" text-variant="black" class="text-center">
       <div>
         <span>問題本文</span>
-        <answer><span>{{ this.$route.params.context }}</span></answer>
+        <answer><span>{{ exist(this.$route.params.context) }}</span></answer>
       </div>
     </answer-card>
 </template>
