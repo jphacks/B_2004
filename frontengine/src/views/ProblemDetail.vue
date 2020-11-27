@@ -603,7 +603,14 @@ export default {
       if (!this.getExamInfo.testCases) {
         return {}
       }
-      return this.getExamInfo.testCases.sampleCase.exit
+      if (this.getExamInfo.option.project == true) {
+        console.log('checkProject', "true")
+        console.log('checkExits', this.getExamInfo.testCases.sampleCase.exits)
+        return Object.values(this.getExamInfo.testCases.sampleCase.exits)
+      } else {
+        console.log('checkProject', "false")
+        return this.getExamInfo.testCases.sampleCase.exit
+      }
     },
     getSumpleInput () {
       if (!this.getExamInfo.testCases) {
