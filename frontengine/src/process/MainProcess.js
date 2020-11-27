@@ -217,6 +217,7 @@ async function MainProcess (text, props, clear, option, fileName, onlyPageAddFun
         clear: clear,
         output: lastOutput,
         domTree: domTree,
+        earth: earth,
         fileInfo: fileInfo
       }
     } else {
@@ -229,6 +230,7 @@ async function MainProcess (text, props, clear, option, fileName, onlyPageAddFun
         output: lastOutput,
         noneTarget: noneTarget,
         domTree: domTree,
+        earth: earth,
         fileInfo: fileInfo
       }
     }
@@ -241,6 +243,7 @@ async function MainProcess (text, props, clear, option, fileName, onlyPageAddFun
       clear: clear,
       output: lastOutput,
       domTree: domTree,
+      earth: earth,
       fileInfo: fileInfo
     }
   }

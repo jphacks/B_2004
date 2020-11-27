@@ -5,6 +5,10 @@ function ProjectProcess () {
   // init
   earth = { pages: {}, targetURL: '/', baseURL: 'localhost:8080', router: {}, earchParam: {}, designChecker: {} }
 }
+function render () {
+  const nextEarth = Object.assign({}, earth)
+  earth = nextEarth
+}
 function outputRouterInfo () {
   // 画面上に出力させたい用
   const routes = []
@@ -56,6 +60,9 @@ function pageAdd (pageName, template, script, style, domTree, pure, global) {
     earth.pages[pageName].global = global
   }
   earth.pages[pageName].pageName = pageName
+  if (!earth.pages[pageName].hasOwnProperty('url')) {
+    earth.pages[pageName].url = ''
+  }
   console.log('done:PageAdd!!', earth)
 }
-export { earth, ProjectProcess, pageAdd, routerProcess, getMyPageInfo, CheckDesign, CheckClearDesign, outputRouterInfo }
+export { earth, ProjectProcess, pageAdd, routerProcess, getMyPageInfo, CheckDesign, CheckClearDesign, outputRouterInfo, render }

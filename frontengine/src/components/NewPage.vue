@@ -4,9 +4,7 @@
     <div class="file-url">
       <b-form-textarea
         id="urltext"
-        v-model="urltext"
-        required
-        placeholder="単一ファイルのURL"
+        v-model="pageInfo.url"
         rows="1"
         no-resize
         :disabled="true"
@@ -35,7 +33,7 @@
 import PreviewField from "@/components/preview/PreviewField"
 import { MainProcess } from "@/process/MainProcess.js"
 import { mapGetters, mapActions } from "vuex"
-import { earth, pageAdd } from '@/process/ProjectProcess.js'
+import { earth, pageAdd, getMyPageInfo } from '@/process/ProjectProcess.js'
 import { pureDomPreviewParse, domPreviewParse } from '@/process/ScriptUtility/domPreviewParse.js'
 import firebase from "firebase"
 export default {
@@ -80,7 +78,8 @@ export default {
         inputArea: "解答入力欄",
         previewArea: "プレビュー画面"
       },
-      checked: false
+      checked: false,
+      pageInfo: { url: '' }
     }
   },
   methods: {
@@ -404,7 +403,13 @@ export default {
           if (res.output) {
             this.sumpleOutput.push("output: " + res.output)
           }
+          console.log('res', res.earth)
+          if (res.earth) {
+            console.log('pageInfo:res', Object.assign({}, res.earth.pages[this.pageName]))
+            this.pageInfo = res.earth.pages[this.pageName]
+          }
           this.wait = false
+          console.log('res', res)
         })
       }
     },
@@ -431,6 +436,12 @@ export default {
     ...mapGetters(["getExams", "getUserId"]),
     getText () {
       return "''"
+    },
+    pageURL () {
+      if (this.pageInfo) {
+        return this.pageInfo.url
+      }
+      return 'localhost'
     },
     parseToDom () {
       return domPreviewParse(this.getDomTree, 'default')
@@ -492,3 +503,10 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.file-url {
+  height: 30px;
+  overflow-y: hidden;
+}
+</style>

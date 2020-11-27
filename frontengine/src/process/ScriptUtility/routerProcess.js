@@ -1,5 +1,6 @@
-import { ProjectProcess, earth } from '@/process/ProjectProcess.js'
+import { ProjectProcess, earth, render } from '@/process/ProjectProcess.js'
 import { getProperty } from '@/process/ScriptUtility/utility.js'
+import { assign } from 'core-js/fn/object'
 let outputRouterString = []
 function routerProcess (text) {
   const script = text
@@ -51,6 +52,18 @@ function routerProcess (text) {
       earth[value.declaration.name] = router[value.declaration.name]
       if (value.declaration.name === 'router') {
         // routerの時に特殊な処理
+        const routerVal = router.router
+        if (routerVal.routes && routerVal.routes.component) {
+          for (let i = 0; i < Object.keys(routerVal.routes.component).length; i++) {
+            const key = Object.keys(routerVal.routes.component)[i]
+            if (earth.pages[key]) {
+              const endpoint = routerVal.routes.component[key].path
+              earth.pages[key].endpoint = endpoint
+              earth.pages[key].url = routerVal.base + endpoint
+              render()
+            }
+          }
+        }
         outputRouterString = outputRouterInfo()
       }
     }

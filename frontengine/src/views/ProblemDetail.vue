@@ -157,13 +157,14 @@ export default {
       },
       routerSetArea: '',
       checked: false,
-      page: ['hogehoge']
+      page: ['hanoi']
     }
   },
   props: {
   },
   mounted: function () {
     this.setExam()
+    ProjectProcess()
     console.log("exam", this.exam)
   },
   methods: {
