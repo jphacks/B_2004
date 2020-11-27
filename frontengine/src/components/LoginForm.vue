@@ -26,10 +26,10 @@
       </b-form-group>
       <div class="loginReset">
         <div v-if="loginType === 'login'" >
-          <b-button type="ok" variant="primary" >submit</b-button>
+          <b-button type="ok" variant="primary" >ログイン</b-button>
         </div>
         <div v-else>
-          <b-button type="submit" variant="primary" >submit</b-button>
+          <b-button type="submit" variant="primary" >登録</b-button>
         </div>
       </div>
     </b-form>

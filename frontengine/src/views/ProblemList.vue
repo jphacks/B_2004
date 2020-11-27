@@ -7,7 +7,8 @@
           <br><br><br><br>
           <b-card class="leftList">
             <img alt="frontEngine logo" src="../assets/frontEngineLogo.png">
-            <h4><br>よく解かれる問題<br>No.1</h4>
+            <h6><br>右の問題一覧の中から解きたい問題に参加してください。<br>レートが更新されるのは一問につき一度なので注意<br></h6>
+            <h6 class="pleaseLogin">※ログインしていないと参加登録できません。</h6>
           </b-card>
         </b-col>
         <b-col>
@@ -106,5 +107,8 @@ export default {
   max-height: 400px ;
   overflow-y: scroll ;
   border: solid 0.5px gray;
+}
+.pleaseLogin {
+  color: #ff0000;
 }
 </style>

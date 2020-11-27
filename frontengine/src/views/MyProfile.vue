@@ -1,36 +1,42 @@
 <template>
-<b-container class="bv-example-row">
- <b-row>
-   <b-col class="userState" >
-     <b-img src="../assets/frontEngineIcon.png" width="160" height="160" alt="placeholder"></b-img>
-      <h2 class="nameSize">{{this.getEmailState}}</h2>
-      <ChangeForm/>
-     <h1 class="pointStyle">合計 {{ difficultSum }}点</h1>
-     <br>
-  </b-col>
-  <!-- <RatingPage/> -->
-  <b-col class="userPerform" cols="8">
-    <!-- <h2>実績</h2><br> -->
-    <RatingPage/>
-    <!-- <table>
-        <thead>
-            <tr>
+  <b-container class="bv-example-row">
+    <b-row>
+      <b-col class="userState" >
+        <b-img src="../assets/frontEngineIcon.png" width="160" height="160" alt="placeholder"></b-img>
+        <h2 class="nameSize">{{this.getEmailState}}</h2>
+        <ChangeForm/>
+        <h1 class="pointStyle">レート {{ "ここに最新のレート" }}</h1>
+        <br>
+        <div class="performanceTable">
+          <table>
+            <thead>
+              <tr>
                 <th>Date</th>
                 <th>Contest Name</th>
+                <th>Time</th>
                 <th>Score</th>
-            </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(examId,index) in Object.keys(userItems || {})" :key="examId" :index="index">
-            <td>{{isMoment(userItems[examId].startAt.seconds)}}</td>
-            <td>{{userItems[examId].name}}</td>
-            <td>{{userItems[examId].difficult}}</td>
-          </tr>
-        </tbody>
-    </table> -->
-    </b-col>
-  </b-row>
-</b-container>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(examId,index) in Object.keys(userItems || {})" :key="examId" :index="index">
+                <td>{{isMoment(userItems[examId].startAt.seconds)}}</td>
+                <td>{{userItems[examId].name}}</td>
+                <td>{{"かかった時間"}}</td>
+                <td>{{userItems[examId].difficult}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </b-col>
+      <!-- <RatingPage/> -->
+      <b-col class="userPerform" cols="8">
+        <!-- <h2>実績</h2><br> -->
+        <div class="rateCard">
+         <RatingPage/>
+        </div>
+      </b-col>
+    </b-row>
+  </b-container>
 </template>
 
 <script>
@@ -115,5 +121,8 @@ export default {
   text-align: left;
   font-size: 30px;
   font-weight: bold;
+}
+.rateCard {
+  float: left;
 }
 </style>

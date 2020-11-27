@@ -1,5 +1,5 @@
 <template>
-  <div class="problemResult">
+  <div class="problemResult" style="text-align: center;">
     <h1>結果</h1>
     <span>
       <h3>今回の結果はこちら：{{ name }}</h3>
@@ -7,6 +7,12 @@
       {{ this.problemInfo.rating }} -->
       {{ this.userFlag }}
     </span>
+    <div v-if="this.execFin" style="border: 1px solid gray; margin: 0px 600px 0px 600px;">
+      <h3 style="text-align: center;">{{ "レート変化" }}</h3>
+      <h1>
+        {{ Math.floor(this.userInfo.rating) - 400 }} → {{ Math.floor(this.userNewRating.r) - 400 }}
+      </h1>
+    </div>
     <div v-if="output.length > 0">
       <b-container class="bv-example-row">
         <b-row cols="2" cols-sm="1" cols-md="1" cols-lg="2">
@@ -74,7 +80,8 @@ export default {
       problemInfo: {},
       userInfo: {},
       userFlag: false,
-      solveTime: 0
+      solveTime: 0,
+      execFin: false
     }
   },
   mounted: function () {
@@ -351,6 +358,7 @@ export default {
       // culcRating
     },
     setNewUserRate: function () {
+      this.execFin = true
       const userId = this.getLoginId
       const examId = this.examId
       const self = this
@@ -443,3 +451,7 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.rateChangeArea {}
+</style>
