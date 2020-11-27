@@ -11,6 +11,7 @@
           id="input-1"
           v-model="form.fileName"
           required
+          :state="form.fileName.length > 0"
           placeholder="Enter filename"
         ></b-form-input>
       </b-form-group>
@@ -33,8 +34,10 @@ export default {
   },
   methods: {
     sendPageName: function () {
-      this.$emit('fileName', this.form.fileName)
-      console.log(this.form.fileName)
+      if (this.form.fileName.length > 0) {
+        this.$emit('fileName', this.form.fileName)
+        console.log(this.form.fileName)
+      }
     }
   }
 }
