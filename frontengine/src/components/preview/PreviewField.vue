@@ -95,6 +95,14 @@ export default {
       console.log('class', path, orders, globalStyle, outputObj)
       return outputObj
     },
+    parseEvent: function (param) {
+      const splits = param.split('[')
+      const gets = splits[0]
+      console.log('param.split()', splits)
+      const index = Number(splits[1].split(']')[0])
+      console.log('globaltete', global[gets][index], gets, index)
+      return global[gets][index]
+    },
     previewParse: function () {
       // const getDDD = domPreviewParse(this.dom, 'default')
       console.log('outputdom', this.dom, this.outputDom)
@@ -102,6 +110,7 @@ export default {
       const self = this
       const domEvent = this.domEvent
       const classEvent = this.classEvent
+      const parseEvent = this.parseEvent
       const testSumple = getDDD
       console.log('checce', getDDD, importBootstrap, bootstrapImports)
       bootstrapImports()
@@ -109,7 +118,8 @@ export default {
         template: getDDD,
         methods: {
           domEvent: domEvent,
-          classEvent: classEvent
+          classEvent: classEvent,
+          parseEvent: parseEvent
         },
         components: {
           Answer,

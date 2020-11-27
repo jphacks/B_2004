@@ -32,6 +32,7 @@ function pureDomPreviewParse (domTree, fileName) {
         targetValue.push(take['v-for'].target.index)
         yoyaku[take['v-for'].target.index] = 'index'
       }
+      console.log('yoyaku', yoyaku)
       let targetInput = ''
       const targetDom = []
       if (take['v-for'].type) {
@@ -58,6 +59,7 @@ function pureDomPreviewParse (domTree, fileName) {
         let targetInput = ''
         const targetDom = []
         if (take.others[i].type) {
+          console.log('otherright', take.others[i])
           let otherRight = take.others[i].right
           otherRight = otherRight.replace(/\'/g, '\\\'')
           targetDom.push('\'' + otherRight + '\'')
@@ -68,6 +70,7 @@ function pureDomPreviewParse (domTree, fileName) {
           })
           targetInput = 'domEvent(' + targetDom.join(',') + ')'
         }
+        console.log('targetInput', targetInput)
         parseDom[key] = targetInput
       }
     }
@@ -154,6 +157,7 @@ function domPreviewParse (domTree, fileName) {
     const take = runVueCode[i]
     const parseDom = {}
     const yoyaku = {}
+    console.log('taker', take)
     if (take.hasOwnProperty('class')) {
       let targetDom = []
       targetDom.push('\'' + fileName + '\'')
@@ -177,6 +181,7 @@ function domPreviewParse (domTree, fileName) {
         let targetInput = ''
         const targetDom = []
         if (take.others[i].type) {
+          console.log('otherRight', take.others[i], take.others[i].right)
           let otherRight = take.others[i].right
           otherRight = otherRight.replace(/\'/g, '\\\'')
           targetDom.push('\'' + otherRight + '\'')
@@ -187,19 +192,50 @@ function domPreviewParse (domTree, fileName) {
           } else {
             targetDom.push('false')
           }
+          console.log('takeer', targetDom)
           // targetDom.push(Object.keys(parentParam))
           if (take.parseParams) {
             Object.keys(take.parseParams).forEach(key => {
               let value = take.parseParams[key]
               const valueType = typeof value
-              if (valueType !== 'number' && valueType !== 'boolean') {
+              console.log('vallue', value, valueType)
+              if (valueType !== 'number' && valueType !== 'boolean' && valueType !== 'object' && value && (!value.indexOf('[') > 0 && !value.indexOf(']') > 0)) {
                 value = '\'' + value + '\''
               }
-              targetDom.push('{' + key + ': ' + value + '}')
+              if (typeof value === 'string' && value.indexOf('[') > 0) {
+                value = 'parseEvent(' + '\'' + value + '\'' + ')'
+              }
+              if (valueType === 'object') {
+                const output = []
+                let stack = [...Object.keys(value)]
+                // while (stack.length > 0) {
+                //   const takeKey = stack.pop()
+                //   output.push(takeKey + ': ')
+                //   output.push(value[takeKey] + ', ')
+                // }
+                for (let i = 0; i < stack.length; i++) {
+                  output.push(stack[i] + ': ')
+                  let outVal = value[stack[i]]
+                  const typeVal = typeof outVal
+                  console.log('typeee', typeVal)
+                  if (typeof outVal === 'string') {
+                    outVal = '\'' + outVal + '\' '
+                  }
+                  if (i !== stack.length - 1) {
+                    output.push(outVal + ', ')
+                  } else {
+                    output.push(outVal)
+                  }
+                }
+                value = output.join('')
+                value = '\{ ' + value + '\}'
+              }
+              targetDom.push('\{' + key + ': ' + value + '\}')
             })
           }
           targetInput = 'domEvent(' + targetDom.join(',') + ')'
         }
+        console.log('targetInput', targetInput)
         parseDom[key] = targetInput
       }
     }
@@ -218,14 +254,41 @@ function domPreviewParse (domTree, fileName) {
             Object.keys(take.parseParams).forEach(key => {
               let value = take.parseParams[key]
               const valueType = typeof value
-              if (valueType !== 'number' && valueType !== 'boolean') {
+              console.log('targetDom:vif', valueType, value)
+              if (valueType !== 'number' && valueType !== 'boolean' && valueType !== 'object' && value && (!value.indexOf('[') > 0 && !value.indexOf(']') > 0)) {
                 value = '\'' + value + '\''
               }
-              console.log('targetDom', key, value, take.parentParam)
-              targetDom.push('{' + key + ': ' + value + '}')
+              if (typeof value === 'string' && value.indexOf('[') > 0) {
+                value = 'parseEvent(' + '\'' + value + '\'' + ')'
+              }
+              if (valueType === 'object') {
+                const output = []
+                let stack = [...Object.keys(value)]
+                output.push('{ ')
+
+                for (let i = 0; i < stack.length; i++) {
+                  output.push(stack[i] + ': ')
+                  let outVal = value[stack[i]]
+                  const typeVal = typeof outVal
+                  console.log('typeee', typeVal)
+                  if (typeof outVal === 'string') {
+                    outVal = '\'' + outVal + '\''
+                  }
+                  if (i !== stack.length - 1) {
+                    output.push(outVal + ', ')
+                  } else {
+                    output.push(outVal)
+                  }
+                }
+                output.push(' }')
+                value = output.join('')
+              }
+              console.log('targetDom:v-if', key, value, take.parentParam, valueType)
+              targetDom.push('\{' + key + ': ' + value + '\}')
             })
           }
-          textOutput.push('{{ domEvent(' + targetDom.join(',') + ') }}')
+          console.log('targetDom', targetDom, targetDom.join(','))
+          textOutput.push('\{\{ domEvent\(' + targetDom.join(', ') + '\) \}\}')
         }
       }
       parseDom.reserveText = textOutput.join('')

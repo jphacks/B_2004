@@ -72,14 +72,19 @@ async function MainProcess (text, props, clear, option, fileName, onlyPageAddFun
             // tar.params = {}
             let nextTarget = Object.assign({}, tar)
             const params = {}
+            const textParams = {}
             const keys = Object.values(target.target)
             params[keys[0]] = data[i]
+            textParams[keys[0]] = String(keys[0] + '[' + i + ']')
+            console.log('chh', data[i], data, target)
             if (keys.length === 2) {
               params[keys[1]] = i
+              textParams[keys[1]] = i
             }
             nextTarget.paramIndex = i
             nextTarget.paramValue = data[i]
             nextTarget.params = Object.assign({}, params)
+            nextTarget.textParams = Object.assign({}, params)
             // console.lo('nextTarget', nextTarget)
             delete nextTarget['v-for']
             targets.push(nextTarget)
@@ -92,8 +97,11 @@ async function MainProcess (text, props, clear, option, fileName, onlyPageAddFun
             // tar.params = {}
             let nextTarget = Object.assign({}, tar)
             const params = {}
+            const textParams = {}
             const keys = Object.values(target.target)
             params[keys[0]] = data[i]
+            console.log('chh', data[i], data)
+            // textParams[key[0]] =
             if (keys.length === 2) {
               params[keys[1]] = keys[i]
             }
@@ -177,6 +185,9 @@ async function MainProcess (text, props, clear, option, fileName, onlyPageAddFun
           nextObject = Object.assign({}, value)
           if (tar.hasOwnProperty('params')) {
             nextObject.params = Object.assign({}, tar.params)
+          }
+          if (tar.hasOwnProperty('textParams')) {
+            nextObject.textParams = Object.assign({}, tar.textParams)
           }
           if (tar.hasOwnProperty('paramIndex')) {
             nextObject.paramIndex = tar.paramIndex
@@ -280,11 +291,13 @@ function runVueDom (targetDomTree, option) {
             const parseParams = {}
             const keys = Object.values(target.target)
             params[keys[0]] = data[i]
-            parseParams[keys[0]] = data[i]
+            // parseParams[keys[0]] = data[i]
+            parseParams[keys[0]] = target.right + '[' + i + ']'
             if (keys.length === 2) {
               params[keys[1]] = i
               parseParams[keys[1]] = i
             }
+            console.log('parrrr', params, parseParams, keys)
             nextTarget.paramIndex = i
             nextTarget.paramValue = data[i]
             nextTarget.params = Object.assign({}, params)
@@ -304,7 +317,7 @@ function runVueDom (targetDomTree, option) {
             const parseParams = {}
             const keys = Object.values(target.target)
             params[keys[0]] = data[i]
-            parseParams[keys[0]] = data[i]
+            parseParams[keys[0]] = target.right + '[' + i + ']'
             if (keys.length === 2) {
               params[keys[1]] = keys[i]
               parseParams[keys[1]] = keys[i]
