@@ -1,7 +1,7 @@
 <template>
   <b-container class="bv-example-row">
     <b-row>
-      <h2>Rating</h2>
+      <h2>レーティング</h2>
       <!-- {{ Object.keys(this.userRate) }} -->
       <div v-if="this.flag">
         <b-card>
