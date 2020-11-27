@@ -3,14 +3,14 @@
  <b-row>
    <b-col class="userState" >
      <b-img src="../assets/frontEngineIcon.png" width="160" height="160" alt="placeholder"></b-img>
-      <h2 class="nameSize">{{this.getEmailState}}</h2><br>
-      <ChangeForm/><br><br>
-     <b>合計 {{ difficultSum }}点</b>
+      <h2 class="nameSize">{{this.getEmailState}}</h2>
+      <ChangeForm/>
+     <h1 class="pointStyle">合計 {{ difficultSum }}点</h1>
      <br>
   </b-col>
-  <RatingPage/>
+  <!-- <RatingPage/> -->
   <b-col class="userPerform" cols="8">
-    <h2>実績</h2><br>
+    <!-- <h2>実績</h2><br> -->
     <RatingPage/>
     <!-- <table>
         <thead>
@@ -95,6 +95,10 @@ export default {
 </script>
 
 <style scoped>
+.bv-example-row {
+    margin-top: 0px;
+    margin-left: 50px;
+}
 .userState {
     text-align: left;
 }
@@ -103,6 +107,13 @@ export default {
 }
 .nameSize {
     padding-top: 25px;
-    font-size: 25px;
+    font-size: 30px;
+}
+.pointStyle {
+  margin: 0px;
+  margin-top: 10px;
+  text-align: left;
+  font-size: 30px;
+  font-weight: bold;
 }
 </style>

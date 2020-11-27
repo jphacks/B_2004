@@ -1,14 +1,16 @@
 <template>
   <b-container class="bv-example-row">
     <b-row>
-      <h2>e</h2>
+      <h2>Rating</h2>
       <!-- {{ Object.keys(this.userRate) }} -->
       <div v-if="this.flag">
-        <rate-chart
-          class="ratechart"
-          :datas="this.setTate"
-          :label="this.setYoko"
-        />
+        <b-card>
+          <rate-chart
+            class="ratechart"
+            :datas="this.setTate"
+            :label="this.setYoko"
+          />
+        </b-card>
       </div>
     </b-row>
   </b-container>
@@ -116,6 +118,6 @@ export default {
   font-size: 25px;
 }
 .ratechart {
-  padding: 100px;
+  padding: auto;
 }
 </style>
