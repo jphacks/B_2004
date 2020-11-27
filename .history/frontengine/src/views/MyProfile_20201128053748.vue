@@ -5,7 +5,10 @@
         <b-img src="../assets/frontEngineIcon.png" width="160" height="160" alt="placeholder"></b-img>
         <h2 class="nameSize">{{this.getEmailState}}</h2>
         <ChangeForm/>
-        <h1 class="pointStyle" v-if="tootta">レート {{ this.nowRate.rating ? Math.floor(this.nowRate.rating - 400) + "±" + Math.floor(this.nowRate.ratingDiviation * 3) : ""}}</h1>
+        <div v-if="tootta">
+          {{ Object.keys(this.userRate)[0] }}
+        </div>
+        <h1 class="pointStyle">レート {{ "ここに最新のレート" }}</h1>
         <br>
         <div class="performanceTable">
           <table>

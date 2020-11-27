@@ -5,7 +5,10 @@
         <b-img src="../assets/frontEngineIcon.png" width="160" height="160" alt="placeholder"></b-img>
         <h2 class="nameSize">{{this.getEmailState}}</h2>
         <ChangeForm/>
-        <h1 class="pointStyle" v-if="tootta">レート {{ this.nowRate.rating ? Math.floor(this.nowRate.rating - 400) + "±" + Math.floor(this.nowRate.ratingDiviation * 3) : ""}}</h1>
+        <div v-if="tootta">
+          {{ this.userRate }}
+        </div>
+        <h1 class="pointStyle">レート {{ "ここに最新のレート" }}</h1>
         <br>
         <div class="performanceTable">
           <table>
@@ -60,24 +63,13 @@ export default {
       userItems: {},
       difficultSum: 0,
       userRate: {},
-      tootta: false,
-      nowRate: {}
+      tootta: false
     }
   },
   mounted: function () {
     console.log('check', this.fetchFirebaseUsers)
     this.fetchFirebaseUsers()
-    let promise = new Promise((resolve, reject) => {
-      this.problemInfo = this.getExam
-      resolve(this.getResult())
-    })
-    promise.then((data) => {
-      this.tootta = true
-      console.log("AAAAAAAA")
-      const arra = Object.values(this.userRate)
-      this.nowRate = arra[arra.length - 1]
-      this.tootta = true
-    })
+    this.getResult()
   },
   methods: {
     ...mapActions(['setUserItems']),
@@ -114,13 +106,14 @@ export default {
         .orderBy("time")
         .get()
         .then((snapshot) => {
-          snapshot.forEach((doc) => {
-            const output = {}
-            output.rating = doc.data().rating
-            output.ratingDiviation = doc.data().ratingDiviation
-            output.time = doc.data().time
-            this.userRate[doc.id] = output
-          })
+          const output = {}
+          console.log("kfoekofAAAAAAAA", snapshot[0])
+          output.rating = snapshot[0].data().rating
+          output.ratingDiviation = snapshot[0].data().ratingDiviation
+          output.time = snapshot[0].data().time
+          this.userRate = output
+          this.tootta = true
+          return {}
         })
     }
   },
