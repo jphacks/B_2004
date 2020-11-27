@@ -10,7 +10,7 @@
             ×
           </i>
         </div>
-        <v-shell
+        <v-shell class="shell"
           :banner = "banner"
           :shell_input = "send_to_terminal"
           :commands = "commands"
@@ -68,7 +68,7 @@ export default {
       }
       var commandArray = value.split(' ')
       console.log(commandArray, 'Terminal')
-      this.$emit('frontEngine', commandArray)
+      this.$emit('frontEngineCommand', commandArray)
     },
     dialogToggle: function () {
       this.isShow = !this.isShow
@@ -97,5 +97,9 @@ export default {
 .terminal-close {
   color: #ff0000;
   font-size: 25px;
+}
+.shell {
+  max-height: 300px;
+  overflow-y: scroll;
 }
 </style>

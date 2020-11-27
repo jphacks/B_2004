@@ -8,6 +8,7 @@
      <b>合計 {{ difficultSum }}点</b>
      <br>
   </b-col>
+  <RatingPage/>
   <b-col class="userPerform" cols="8">
     <h2>実績</h2><br>
     <RatingPage/>
