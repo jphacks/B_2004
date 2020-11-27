@@ -7,12 +7,12 @@ exports.CheckProperty = CheckProperty
 exports.getProperty = getProperty
 // データの代入を支援するfunction {name: value}の形で返される
 function CheckProperty (body, option) {
-  // name,valueは予約されている??
-  // output {name: name, value: value}
-
+  // reserveNAMEname,valueは予約されている??
+  // output {reserveNAMEname: reserveNAMEname, value: value}
+  // 2020/11/26 nameをreserveNAMEnameに変えました... -> 致命的なerrでたらこれかも...?
   const output = {}
   if (body && body.key && body.key.name) {
-    output.name = body.key.name
+    output.reserveNAMEname = body.key.name
   }
   let bodyType = body.value && body.value.type ? body.value.type : body.type
   let bodyValue = body.value || body
@@ -75,15 +75,15 @@ function CheckProperty (body, option) {
   for (const key of Object.keys(output || {})) {
     if (key === 'd') {
     }
-    if (key !== 'name' && key !== 'value' && key !== 'noneDataEDEKQWLDCOLASXMW') {
+    if (key !== 'reserveNAMEname' && key !== 'value' && key !== 'noneDataEDEKQWLDCOLASXMW') {
       out[key] = output[key]
     }
   }
 
-  if (output.name) {
-    return { [output.name || 'name']: out }
+  if (output.reserveNAMEname) {
+    return { [output.reserveNAMEname || 'reserveNAMEname']: out }
   } else {
-    return { name: out }
+    return { reserveNAMEname: out }
   }
 }
 

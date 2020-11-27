@@ -65,12 +65,26 @@
           <div class="detail-buttons">
             <b-button v-if="getLoginId" @click="getDom()">送信</b-button>
             <b-button @click="sumpleSakai()">テスト（坂井）</b-button>
+            <b-btn @click="routerFilePush()">router提出</b-btn>
             <b-button @click="sumpleTest()">サンプルを出力</b-button>
           </div>
           <!-- <br><br><br><router-link :to="{name: 'ProblemResult', params: {examId: $route.params.examId}}">問題結果画面に遷移します。</router-link> -->
         </div>
-        <preview-field :dom="parseToDom" v-if="viewCheckBox.previewArea" @vueDom="propagateDom" @style-check="emitDom">
+        <preview-field :dom="parseToDom" v-if="viewCheckBox.previewArea" @vueDom="propagateDom" @style-check="emitDom" @router-change="routerChange">
         </preview-field>
+      </b-tab>
+      <b-tab title="router設定">
+        <b-card>
+        <span v-for="(value, key) of getReturnRouterStr" :key="key">{{ value }}<br/></span>
+        </b-card>
+        <b-form-textarea
+          id="routerArea"
+          v-model="routerSetArea"
+          :state="routerSetArea.length > 0"
+          placeholder="解答を入力してください。"
+          rows="6"
+        ></b-form-textarea>
+        <b-btn @click="routerFilePush()">router提出</b-btn>
       </b-tab>
       <div v-if="page">
       <b-tab :title="pageName" v-for="(pageName, index) in page" :key="index" :active="pageFlags[index]">
@@ -91,8 +105,10 @@ import { mapGetters, mapActions } from "vuex"
 import Exam1 from "@/components/Exam1.vue"
 import firebase from "firebase"
 import PreviewField from "@/components/preview/PreviewField"
-// import answerCard from "@/components/preview/answerCard"
+// import AnswerCard from "@/components/preview/AnswerCard"
 import { pureDomPreviewParse, domPreviewParse } from '@/process/ScriptUtility/domPreviewParse.js'
+import { routerProcess, outputRouterString } from '@/process/ScriptUtility/routerProcess.js'
+import { earth, ProjectProcess, outputRouterInfo } from '@/process/ProjectProcess.js'
 // import Exam1 from '@/components/Exam1.vue'
 // import Exam2 from '@/components/Exam2.vue'
 import Terminal from '@/components/Terminal.vue'
@@ -122,6 +138,7 @@ export default {
       },
       exam: {},
       home: true,
+      routerPage: false,
       plus: false,
       pageFlags: [],
       sumpleOutput: [],
@@ -141,13 +158,10 @@ export default {
         inputArea: "解答入力欄",
         previewArea: "プレビュー画面"
       },
+      routerSetArea: '',
       checked: false,
-      page: [
-
-      ],
-      command: [
-
-      ],
+      page: [],
+      command: [],
       tabIndex: 0
     }
   },
@@ -155,10 +169,36 @@ export default {
   },
   mounted: function () {
     this.setExam()
+    ProjectProcess()
     console.log("exam", this.exam)
   },
   methods: {
     ...mapActions(["setExams"]),
+    routerChange: function (param) {
+      // name か pathか調べる
+      const keys = Object.keys(param)
+      let params = {}
+      if (keys.indexOf('params')) {
+        params.$route = {}
+        params.$route.params = param.params
+      }
+      console.log('params', param)
+      if (keys.indexOf('name') >= 0 && keys.indexOf('path') >= 0) {
+        console.error('both name and path exist.')
+        return false
+      } else if (keys.indexOf('name') >= 0) {
+        console.log('name', keys, earth)
+        if (earth && earth.router && earth.router.routes && earth.router.routes.name[param.name]) {
+          const routeInfo = earth.router.routes.name[param.name]
+          console.log('routeInfo', routeInfo)
+          const componentName = routeInfo.component
+          if (earth.pages[componentName]) {
+            this.sumpleTest(earth.pages[componentName].pure, params)
+          }
+        }
+      } else if (keys.indexOf('path') >= 0) {
+      }
+    },
     emitDom: function () {
       // console.log('previewDom', value, value.children, value.children[0])
       const value = this.checkStyleDom
@@ -204,7 +244,7 @@ export default {
             // noname
           } else {
             // nameつき
-            if (take.name === 'answerCard') {
+            if (take.name === 'AnswerCard') {
               domTake = countDomTake[i].children[0]
               NextChild = countDomTake[0].children[0]
             }
@@ -232,7 +272,6 @@ export default {
                       if (take.style[key].min <= domStyle[key] && domStyle[key] <= take.style[key].max) {
                         continue
                       } else {
-                        console.log('依存してないがアウト', take.style[key].min, take.style[key].max, domStyle[key], key)
                         splitBool.push(false)
                       }
                     } else {
@@ -369,6 +408,9 @@ export default {
     propagateDom: function (value) {
       this.checkStyleDom = value
     },
+    routerFilePush: function (val) {
+      routerProcess(this.routerSetArea)
+    },
     getDom: function () {
       //  MainProcess(this.text)
       const submitExam = firebase.functions().httpsCallable("submitExam")
@@ -445,11 +487,11 @@ export default {
         params: { examId: this.$route.params.examId }
       })
     },
-    sumpleTest: function () {
+    sumpleTest: function (routerText, routerInput) {
       if (this.text.length > 0 && !this.wait) {
         this.sumpleOutput = []
         const getExam = this.getExam
-        const sumpleInput = getExam.examInfo.testCases.sampleCase.enter
+        let sumpleInput = getExam.examInfo.testCases.sampleCase.enter
         const sumpleClear = getExam.examInfo.testCases.sampleCase.exit
         const option = getExam.examInfo.option
         this.sumpleOutput.push("input testCases...")
@@ -462,10 +504,18 @@ export default {
         })
         this.sumpleOutput.push("読み込み中...")
         this.wait = true
+        if (routerText) {
+          this.text = routerText
+        }
+        if (routerInput) {
+          sumpleInput = routerInput
+        }
+        console.log('sumpleOutput', sumpleInput, this.text)
         MainProcess(this.text, sumpleInput, sumpleClear, option).then((res) => {
           this.sumpleOutput.pop()
           this.sumpleOutput.push("")
           this.getDomTree = res.domTree
+          console.log('getDomTree', this.getDomTree)
           if (res.reason === "noneClear") {
             this.sumpleOutput.push(res.reason)
             this.sumpleOutput.push(
@@ -509,6 +559,7 @@ export default {
     },
     createEvent: function () {},
     terminalCommand: function (commandArray) {
+      const reserveWords = ['home', 'plus', 'router']
       console.log(commandArray.join(" "), 'ProblemDetail')
       this.command.push(...commandArray)
       console.log(this.command)
@@ -516,7 +567,7 @@ export default {
         switch (this.command[1]) {
           case 'create':
           case '-c':
-            if (this.page.indexOf(this.command[2]) === -1 && this.command[2] != null) {
+            if (this.page.indexOf(this.command[2]) === -1 && this.command[2] != null && reserveWords.indexOf(this.command[2]) < 0) {
               this.page.push(this.command[2])
               this.pageFlags.push(false)
             }
@@ -562,6 +613,8 @@ export default {
                 this.home = true
               } else if (target === 'plus') {
                 this.plus = true
+              } else if (target === 'router') {
+                this.routerPage = true
               } else {
                 const getIndex = this.page.indexOf(target)
                 if (getIndex >= 0) {
@@ -592,12 +645,20 @@ export default {
     getText () {
       return "''"
     },
+    getReturnRouterStr () {
+      if (outputRouterString) {
+        return outputRouterString
+      }
+      return []
+    },
     getActives () {
       const home = this.home
       const plus = this.plus
+      const routerPage = this.routerPage
       const pageActives = this.pageFlags
       let output = []
       output.push(home)
+      output.push(routerPage)
       output.push(...pageActives)
       output.push(plus)
       console.log(output, "getActives")
@@ -621,6 +682,9 @@ export default {
     },
     getExam () {
       return this.exam
+    },
+    getProjectStatus () {
+      return this.exam && this.exam.examInfo && this.exam.examInfo.option && this.exam.examInfo.option.project
     },
     getLoginId () {
       console.log("check", this.getUserId)

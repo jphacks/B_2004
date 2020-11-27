@@ -42,33 +42,3 @@ function strict (text) {
   'use strict'
   eval(text)
 }
-
-// ---
-// map = {c: 0, aPLUSb: astaPLUSb, cPlusd: astcPlusd}
-// function aPLUSb(text) {
-//   let a = 30
-//   let b = 50
-//   this.c = a + b
-//   this.aPlusb()
-// }
-// function cPLUSd(text) {
-//   let c = 30
-//   let d = 50
-//   this.e = c + d
-// }
-// ast <- 引数, 'function'
-
-// function functionAnlysis (ast) {
-//   let cari = {}
-//   for (let text of ast) {
-//     if (text=== 'thisのやつ') {
-//       if (text === 'function') {
-//         functionAnlysis(global[text.functionName])
-//       }
-//     }
-//     if ( text === 'variant') {
-//       cari[text.varinatName] = text.vlue
-//     }
-
-//   }
-// }

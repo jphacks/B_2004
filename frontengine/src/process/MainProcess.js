@@ -6,11 +6,12 @@ import { global } from './moduleProcess.js'
 import { domProperty } from './ScriptUtility/domUtility.js'
 import { execScript, getScript } from './ScriptUtility/execScript.js'
 import { styleProperty } from './styleProcess.js'
+import { earth, pageAdd } from '@/process/ProjectProcess.js'
 let globalStyle = {}
 let checkClear = 0
 let lastOutput = []
 let outputIndex = 0
-async function MainProcess (text, props, clear, option) {
+async function MainProcess (text, props, clear, option, fileName, onlyPageAddFunc) {
   let toProps = {}
   if (Array.isArray(props)) {
     toProps.input = props
@@ -19,42 +20,39 @@ async function MainProcess (text, props, clear, option) {
     toProps = Object.assign(toProps, props)
   }
   const fileInfo = {} // ここに単一ファイル情報を記載
-  fileInfo.fileName = 'dafault'
+  let pageName = 'default'
+  if (fileName) {
+    pageName = fileName
+  }
+  fileInfo.fileName = pageName
   const templateLength = '<template>'.length
   const scriptLength = '<script>'.length
   const styleLength = '<style scoped>'.length
   const templates = text.substr(text.indexOf('<template>') + templateLength, text.indexOf('</template>') - templateLength)
   const script = text.substr(text.indexOf('<script>') + scriptLength, text.indexOf('</script>') - scriptLength - text.indexOf('<script>'))
   const style = text.substr(text.indexOf('<style scoped>') + styleLength, text.indexOf('</style>') - styleLength - text.indexOf('<style scoped>'))
-  // ('解析 template:', templates, 'script:', script, 'style:', style)
-  // ('解析script ', script)
   const domTree = DomProcess(templates)
   ScriptProcess(script, toProps)
   globalStyle = styleProperty(style)
-  // const data = execScript(global, ['userId'])
-  // console.lo('scriptRe', global, module, option, clear)
-  // console.lo('dom', domTree)
   const errors = []
-  // const getClear = clear
   const getClear = clear
   let targetIndex = 0
   let output = { status: 'WA', reason: '' }
   const vForGlobal = {}
   const parseOutput = []
-  // オブジェクト型で例題作ってなかった><
-  // const toProps = { input: props }
   if (props) {
     Object.keys(toProps || {}).forEach(key => {
       global[key] = toProps[key]
     })
   }
+  const snapShotFileGlobalInfo = Object.assign({}, global)
   console.log('global', global, toProps, props)
-  // console.log('outputtt', text, props, clear, option)
   let resultOutput = [] // 文字列型の場合は、outputが見れるはず
   let tooru = true
   // let target = domTree
   const targets = []
   targets.push(domTree)
+  pageAdd(pageName, templates, script, style, domTree, text, global)
   while (targets.length > 0) {
     const ifBool = true
     const getTar = targets.pop()
@@ -74,14 +72,19 @@ async function MainProcess (text, props, clear, option) {
             // tar.params = {}
             let nextTarget = Object.assign({}, tar)
             const params = {}
+            const textParams = {}
             const keys = Object.values(target.target)
             params[keys[0]] = data[i]
+            textParams[keys[0]] = String(keys[0] + '[' + i + ']')
+            console.log('chh', data[i], data, target)
             if (keys.length === 2) {
               params[keys[1]] = i
+              textParams[keys[1]] = i
             }
             nextTarget.paramIndex = i
             nextTarget.paramValue = data[i]
             nextTarget.params = Object.assign({}, params)
+            nextTarget.textParams = Object.assign({}, params)
             // console.lo('nextTarget', nextTarget)
             delete nextTarget['v-for']
             targets.push(nextTarget)
@@ -94,8 +97,11 @@ async function MainProcess (text, props, clear, option) {
             // tar.params = {}
             let nextTarget = Object.assign({}, tar)
             const params = {}
+            const textParams = {}
             const keys = Object.values(target.target)
             params[keys[0]] = data[i]
+            console.log('chh', data[i], data)
+            // textParams[key[0]] =
             if (keys.length === 2) {
               params[keys[1]] = keys[i]
             }
@@ -180,6 +186,9 @@ async function MainProcess (text, props, clear, option) {
           if (tar.hasOwnProperty('params')) {
             nextObject.params = Object.assign({}, tar.params)
           }
+          if (tar.hasOwnProperty('textParams')) {
+            nextObject.textParams = Object.assign({}, tar.textParams)
+          }
           if (tar.hasOwnProperty('paramIndex')) {
             nextObject.paramIndex = tar.paramIndex
           }
@@ -198,6 +207,7 @@ async function MainProcess (text, props, clear, option) {
     }
   }
   console.log('parse', parseOutput)
+
   if (option.existString) {
     let flag = true
     let noneTarget = []
@@ -218,6 +228,7 @@ async function MainProcess (text, props, clear, option) {
         clear: clear,
         output: lastOutput,
         domTree: domTree,
+        earth: earth,
         fileInfo: fileInfo
       }
     } else {
@@ -230,6 +241,7 @@ async function MainProcess (text, props, clear, option) {
         output: lastOutput,
         noneTarget: noneTarget,
         domTree: domTree,
+        earth: earth,
         fileInfo: fileInfo
       }
     }
@@ -242,12 +254,10 @@ async function MainProcess (text, props, clear, option) {
       clear: clear,
       output: lastOutput,
       domTree: domTree,
+      earth: earth,
       fileInfo: fileInfo
     }
   }
-  // CreateAST(script)
-  // console.log('runcode:')
-  // return { status: 'WA', reason: 'why?runendCode', info: checkClear, domTree: domTree }
 }
 
 function runVueDom (targetDomTree, option) {
@@ -281,11 +291,13 @@ function runVueDom (targetDomTree, option) {
             const parseParams = {}
             const keys = Object.values(target.target)
             params[keys[0]] = data[i]
-            parseParams[keys[0]] = data[i]
+            // parseParams[keys[0]] = data[i]
+            parseParams[keys[0]] = target.right + '[' + i + ']'
             if (keys.length === 2) {
               params[keys[1]] = i
               parseParams[keys[1]] = i
             }
+            console.log('parrrr', params, parseParams, keys)
             nextTarget.paramIndex = i
             nextTarget.paramValue = data[i]
             nextTarget.params = Object.assign({}, params)
@@ -305,7 +317,7 @@ function runVueDom (targetDomTree, option) {
             const parseParams = {}
             const keys = Object.values(target.target)
             params[keys[0]] = data[i]
-            parseParams[keys[0]] = data[i]
+            parseParams[keys[0]] = target.right + '[' + i + ']'
             if (keys.length === 2) {
               params[keys[1]] = keys[i]
               parseParams[keys[1]] = keys[i]
@@ -396,6 +408,7 @@ function runVueDom (targetDomTree, option) {
       // -- lastPrpagate
     }
   }
+
   return parseOutput
 }
 

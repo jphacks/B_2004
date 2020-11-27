@@ -23,6 +23,7 @@ import AnswerCard from "@/components/preview/previewItem/AnswerCard"
 import BootstrapVue from 'bootstrap-vue'
 import { globalStyle } from '@/process/MainProcess.js'
 import { importBootstrap, bootstrapImports } from '@/process/addBootstrapComponents.js'
+import Item from '@/components/preview/previewItem/Item'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
@@ -95,6 +96,22 @@ export default {
       console.log('class', path, orders, globalStyle, outputObj)
       return outputObj
     },
+    parseEvent: function (param) {
+      const splits = param.split('[')
+      const gets = splits[0]
+      console.log('param.split()', splits)
+      const index = Number(splits[1].split(']')[0])
+      // console.log('globaltete', global[gets][index], gets, index)
+      if (global[gets]) {
+        return global[gets][index]
+      } else {
+        return false
+      }
+    },
+    routerEvent: function (param) {
+      console.log('routerEvent', param)
+      this.$emit('router-change', param)
+    },
     previewParse: function () {
       // const getDDD = domPreviewParse(this.dom, 'default')
       console.log('outputdom', this.dom, this.outputDom)
@@ -102,6 +119,8 @@ export default {
       const self = this
       const domEvent = this.domEvent
       const classEvent = this.classEvent
+      const parseEvent = this.parseEvent
+      const routerEvent = this.routerEvent
       const testSumple = getDDD
       console.log('checce', getDDD, importBootstrap, bootstrapImports)
       bootstrapImports()
@@ -109,12 +128,15 @@ export default {
         template: getDDD,
         methods: {
           domEvent: domEvent,
-          classEvent: classEvent
+          classEvent: classEvent,
+          parseEvent: parseEvent,
+          routerEvent: routerEvent
         },
         components: {
           Answer,
           PreviewCard,
           AnswerCard,
+          'router-link': Item,
           ...importBootstrap
         },
         style: {

@@ -103,7 +103,7 @@ export default {
   margin: 10px 10px ;
 }
 .rightList {
-  max-height: 400px ;
+  max-height: 800px ;
   overflow-y: scroll ;
   border: solid 0.5px gray;
 }

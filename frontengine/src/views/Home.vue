@@ -23,6 +23,9 @@ export default {
       this.$router.push({
         name: "Exam5"
       })
+    },
+    getter: function (params) {
+      console.log('params', params)
     }
   },
   data () {

@@ -2,13 +2,14 @@ import { global } from '../moduleProcess.js'
 import { execScript, getScript } from './execScript.js'
 export { CheckProperty, getProperty }
 // データの代入を支援するfunction {name: value}の形で返される
+// checkPropertyのreserveしてるname
+const reserveName = 'reserveNameName'
 function CheckProperty (body, local, option) {
   // name,valueは予約されている??
   // output {name: name, value: value}
-
   const output = {}
   if (body && body.key && body.key.name) {
-    output.name = body.key.name
+    output[reserveName] = body.key.name
   }
   let bodyType = body.value && body.value.type ? body.value.type : body.type
   let bodyValue = body.value || body
@@ -22,12 +23,15 @@ function CheckProperty (body, local, option) {
     }
   } else if (bodyType === 'ObjectExpression') {
     for (const property of bodyValue.properties) {
-      const get = getProperty(property, local)
-      for (const key of Object.keys(get || {})) {
-        if (key !== 'noneDataEDEKQWLDCOLASXMW') {
-          output[key] = get[key]
-        }
-      }
+      const get = getProperty(property.value, local)
+      const key = getProperty(property.key, local)
+      console.log('get:objectExpression', get, key, bodyValue)
+      output[key] = get
+      // for (const key of Object.keys(get || {})) {
+      //   if (key !== 'noneDataEDEKQWLDCOLASXMW') {
+      //     output[key] = get[key]
+      //   }
+      // }
     }
     if (bodyValue.properties.length === 0) {
       output.value = {}
@@ -71,13 +75,13 @@ function CheckProperty (body, local, option) {
   for (const key of Object.keys(output || {})) {
     if (key === 'd') {
     }
-    if (key !== 'name' && key !== 'value' && key !== 'noneDataEDEKQWLDCOLASXMW') {
+    if (key !== [reserveName] && key !== 'value' && key !== 'noneDataEDEKQWLDCOLASXMW') {
       out[key] = output[key]
     }
   }
 
-  if (output.name) {
-    return { [output.name || 'name']: out }
+  if (output[reserveName]) {
+    return { [output[reserveName] || [reserveName]]: out }
   } else {
     return { name: out }
   }
@@ -88,6 +92,7 @@ function getProperty (body, local, funcArguments) {
     console.error('maybe body is null or undifiend?', body, local)
     return false
   }
+  console.log('getts', body, local)
   const key = Object.keys(body || {})[0]
   if (body && body.type === 'ThisExpression') {
     return global
@@ -112,12 +117,17 @@ function getProperty (body, local, funcArguments) {
         case 'Boolean':
           return Boolean
       }
+      return body.name
     }
   } else if (body.type && body.type === 'MemberExpression' && body.object) {
     if (body.name) {
       return getProperty(body.object, local)[body.name]
     } else if (body.property) {
       const outputData = getProperty(body.object, local)
+      console.log('outputData', outputData, body)
+      if (!outputData) {
+        return outputData
+      }
       // // console.log('join?', body, outputData, body.property.name, outputData[body.property.name](''), funcArguments)
       // // console.log('join', outputData[body.property.name](...funcArguments), !!funcArguments)
       // const testGlobal = Object.assign({}, global)

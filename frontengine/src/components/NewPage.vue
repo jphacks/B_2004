@@ -4,9 +4,7 @@
     <div class="file-url">
       <b-form-textarea
         id="urltext"
-        v-model="urltext"
-        required
-        placeholder="単一ファイルのURL"
+        v-model="pageInfo.url"
         rows="1"
         no-resize
         :disabled="true"
@@ -25,7 +23,7 @@
         rows="6"
       ></b-form-textarea>
       <div class="detail-buttons">
-        <b-button @click="sumpleTest()">サンプルを出力</b-button>
+        <b-button @click="sumpleTest()">出力</b-button>
       </div>
     </div>
   </div>
@@ -35,6 +33,7 @@
 import PreviewField from "@/components/preview/PreviewField"
 import { MainProcess } from "@/process/MainProcess.js"
 import { mapGetters, mapActions } from "vuex"
+import { earth, pageAdd, getMyPageInfo } from '@/process/ProjectProcess.js'
 import { pureDomPreviewParse, domPreviewParse } from '@/process/ScriptUtility/domPreviewParse.js'
 import firebase from "firebase"
 export default {
@@ -79,7 +78,8 @@ export default {
         inputArea: "解答入力欄",
         previewArea: "プレビュー画面"
       },
-      checked: false
+      checked: false,
+      pageInfo: { url: '' }
     }
   },
   methods: {
@@ -381,7 +381,7 @@ export default {
         })
         this.sumpleOutput.push("読み込み中...")
         this.wait = true
-        MainProcess(this.text, sumpleInput, sumpleClear, option).then((res) => {
+        MainProcess(this.text, sumpleInput, sumpleClear, option, this.pageName, true).then((res) => {
           this.sumpleOutput.pop()
           this.sumpleOutput.push("")
           this.getDomTree = res.domTree
@@ -403,7 +403,13 @@ export default {
           if (res.output) {
             this.sumpleOutput.push("output: " + res.output)
           }
+          console.log('res', res.earth)
+          if (res.earth) {
+            console.log('pageInfo:res', Object.assign({}, res.earth.pages[this.pageName]))
+            this.pageInfo = res.earth.pages[this.pageName]
+          }
           this.wait = false
+          console.log('res', res)
         })
       }
     },
@@ -430,6 +436,12 @@ export default {
     ...mapGetters(["getExams", "getUserId"]),
     getText () {
       return "''"
+    },
+    pageURL () {
+      if (this.pageInfo) {
+        return this.pageInfo.url
+      }
+      return 'localhost'
     },
     parseToDom () {
       return domPreviewParse(this.getDomTree, 'default')
@@ -491,3 +503,10 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.file-url {
+  height: 30px;
+  overflow-y: hidden;
+}
+</style>
