@@ -111,6 +111,7 @@ function DOMAnalysis (dom) {
     tags.push(...tag.split('\n'))
   }
 
+  console.log('tagssss', tags)
   // const info = {}
   if (tags.length === 1) {
     // tag一つのみ
