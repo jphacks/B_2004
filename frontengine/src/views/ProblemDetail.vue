@@ -74,7 +74,20 @@
         </preview-field>
       </b-tab>
       <b-tab title="プレビュー画面">
-        <preview-field :dom="parseToDom" unique="tabPage"> </preview-field>
+        <preview-field :dom="parseToDom" unique="tabPage"></preview-field>
+      </b-tab>
+      <b-tab title="router設定">
+        <b-card>
+        <span v-for="(value, key) of getReturnRouterStr" :key="key">{{ value }}<br/></span>
+        </b-card>
+        <b-form-textarea
+          id="routerArea"
+          v-model="routerSetArea"
+          :state="routerSetArea.length > 0"
+          placeholder="解答を入力してください。"
+          rows="6"
+        ></b-form-textarea>
+        <b-btn @click="routerFilePush()">router提出</b-btn>
       </b-tab>
       <b-tab :title="pageName" v-for="(pageName, index) in page" :key="index">
         <NewPage :pageName="pageName" :exam="getExam"/>
@@ -95,7 +108,8 @@ import firebase from "firebase"
 import PreviewField from "@/components/preview/PreviewField"
 // import AnswerCard from "@/components/preview/AnswerCard"
 import { pureDomPreviewParse, domPreviewParse } from '@/process/ScriptUtility/domPreviewParse.js'
-import { routerProcess } from '@/process/ScriptUtility/routerProcess.js'
+import { routerProcess, outputRouterString } from '@/process/ScriptUtility/routerProcess.js'
+import { earth, ProjectProcess, outputRouterInfo } from '@/process/ProjectProcess.js'
 // import Exam1 from '@/components/Exam1.vue'
 // import Exam2 from '@/components/Exam2.vue'
 import Terminal from '@/components/Terminal.vue'
@@ -141,6 +155,7 @@ export default {
         inputArea: "解答入力欄",
         previewArea: "プレビュー画面"
       },
+      routerSetArea: '',
       checked: false,
       page: ['hogehoge']
     }
@@ -226,7 +241,6 @@ export default {
                       if (take.style[key].min <= domStyle[key] && domStyle[key] <= take.style[key].max) {
                         continue
                       } else {
-                        console.log('依存してないがアウト', take.style[key].min, take.style[key].max, domStyle[key], key)
                         splitBool.push(false)
                       }
                     } else {
@@ -364,7 +378,7 @@ export default {
       this.checkStyleDom = value
     },
     routerFilePush: function (val) {
-      routerProcess(this.text)
+      routerProcess(this.routerSetArea)
     },
     getDom: function () {
       //  MainProcess(this.text)
@@ -519,6 +533,12 @@ export default {
     getText () {
       return "''"
     },
+    getReturnRouterStr () {
+      if (outputRouterString) {
+        return outputRouterString
+      }
+      return []
+    },
     parseToDom () {
       return domPreviewParse(this.getDomTree, 'default')
     },
@@ -537,6 +557,9 @@ export default {
     },
     getExam () {
       return this.exam
+    },
+    getProjectStatus () {
+      return this.exam && this.exam.examInfo && this.exam.examInfo.option && this.exam.examInfo.option.project
     },
     getLoginId () {
       console.log("check", this.getUserId)

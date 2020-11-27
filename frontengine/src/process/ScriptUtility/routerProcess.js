@@ -1,5 +1,6 @@
 import { ProjectProcess, earth } from '@/process/ProjectProcess.js'
 import { getProperty } from '@/process/ScriptUtility/utility.js'
+let outputRouterString = []
 function routerProcess (text) {
   const script = text
   const routerAst = routerCreateAST(script)
@@ -11,7 +12,7 @@ function routerProcess (text) {
   Object.keys(pages).forEach(key => {
     toPages[key] = key
   })
-  toPages.Home = 'home'
+  toPages.Home = 'Home'
   toPages.ProblemList = 'ProblemList'
   toPages.baseURL = earth.baseURL
   for (let i = 0; i < astList.length; i++) {
@@ -48,6 +49,10 @@ function routerProcess (text) {
       }
     } else if (value.type === 'ExportDefaultDeclaration') {
       earth[value.declaration.name] = router[value.declaration.name]
+      if (value.declaration.name === 'router') {
+        // routerの時に特殊な処理
+        outputRouterString = outputRouterInfo()
+      }
     }
   }
   console.log('routerjs', routerAst, router, earth)
@@ -64,6 +69,7 @@ function routerCreateAST (script) {
 function routerPushFunc (arg) {
   const path = {}
   const name = {}
+  const component = {}
   let pure = []
   pure = [...arg]
   for (let i = 0; i < arg.length; i++) {
@@ -74,8 +80,28 @@ function routerPushFunc (arg) {
     if (arg[i].hasOwnProperty('path')) {
       path[val.path] = val
     }
+    if (arg[i].hasOwnProperty('component')) {
+      component[val.component] = val
+    }
   }
-  return { path: path, name: name, pure: pure }
+  return { path: path, name: name, component: component, pure: pure }
 }
 
-export { routerProcess }
+function outputRouterInfo () {
+  // 画面上に出力させたい用
+  const routes = []
+  if (earth && earth.router && earth.router.routes) {
+    routes.push(...earth.router.routes.pure)
+  }
+  const outputStr = []
+  for (let i = 0; i < routes.length; i++) {
+    Object.keys(routes[i]).forEach(key => {
+      outputStr.push(key + ': ' + routes[i][key])
+    })
+    outputStr.push('---------')
+  }
+  console.log('outputStr', outputStr)
+  return outputStr
+}
+
+export { routerProcess, outputRouterString }
