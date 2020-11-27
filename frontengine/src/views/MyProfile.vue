@@ -2,15 +2,17 @@
 <b-container class="bv-example-row">
  <b-row>
    <b-col class="userState" >
-     <img src="../assets/frontEngineIcon.png">
+     <b-img src="../assets/frontEngineIcon.png" width="160" height="160" alt="placeholder"></b-img>
       <h2 class="nameSize">{{this.getEmailState}}</h2>
-     <b>合計 {{ difficultSum }}点</b>
+      <ChangeForm/>
+     <h1 class="pointStyle">合計 {{ difficultSum }}点</h1>
      <br>
   </b-col>
-  <RatingPage/>
+  <!-- <RatingPage/> -->
   <b-col class="userPerform" cols="8">
-    <h2>実績</h2><br>
-    <table>
+    <!-- <h2>実績</h2><br> -->
+    <RatingPage/>
+    <!-- <table>
         <thead>
             <tr>
                 <th>Date</th>
@@ -18,14 +20,14 @@
                 <th>Score</th>
             </tr>
         </thead>
-        <!-- <tbody>
+        <tbody>
           <tr v-for="(examId,index) in Object.keys(userItems || {})" :key="examId" :index="index">
             <td>{{isMoment(userItems[examId].startAt.seconds)}}</td>
             <td>{{userItems[examId].name}}</td>
             <td>{{userItems[examId].difficult}}</td>
           </tr>
-        </tbody> -->
-    </table>
+        </tbody>
+    </table> -->
     </b-col>
   </b-row>
 </b-container>
@@ -37,9 +39,11 @@ import firebase from 'firebase'
 import { mapActions, mapGetters } from 'vuex'
 import moment from 'moment'
 import RatingPage from "@/components/RatingPage.vue"
+import ChangeForm from "@/components/ChangeForm.vue"
 export default {
   components: {
-    RatingPage
+    RatingPage,
+    ChangeForm
   },
   name: 'MyProfile',
   conponents: {
@@ -91,6 +95,10 @@ export default {
 </script>
 
 <style scoped>
+.bv-example-row {
+    margin-top: 0px;
+    margin-left: 50px;
+}
 .userState {
     text-align: left;
 }
@@ -99,6 +107,13 @@ export default {
 }
 .nameSize {
     padding-top: 25px;
-    font-size: 25px;
+    font-size: 30px;
+}
+.pointStyle {
+  margin: 0px;
+  margin-top: 10px;
+  text-align: left;
+  font-size: 30px;
+  font-weight: bold;
 }
 </style>
