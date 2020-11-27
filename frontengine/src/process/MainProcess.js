@@ -2,8 +2,9 @@
 import CreateAST from './CreateAST.js'
 import ScriptProcess from './ScriptProcess.js'
 import DomProcess from './DomProcess.js'
-import { global } from './moduleProcess.js'
+import { global, initGlobal } from './moduleProcess.js'
 import { domProperty } from './ScriptUtility/domUtility.js'
+import { getProperty } from './ScriptUtility/utility.js'
 import { execScript, getScript } from './ScriptUtility/execScript.js'
 import { styleProperty } from './styleProcess.js'
 import { earth, pageAdd } from '@/process/ProjectProcess.js'
@@ -11,8 +12,11 @@ let globalStyle = {}
 let checkClear = 0
 let lastOutput = []
 let outputIndex = 0
-async function MainProcess (text, props, clear, option, fileName, onlyPageAddFunc) {
+async function MainProcess (text, props, clear, option, fileName, event, eventIndex, init) {
   let toProps = {}
+  if (init) {
+    initGlobal()
+  }
   if (Array.isArray(props)) {
     toProps.input = props
   } else {
@@ -207,7 +211,53 @@ async function MainProcess (text, props, clear, option, fileName, onlyPageAddFun
     }
   }
   console.log('parse', parseOutput)
-
+  console.log('!!event!!', event)
+  console.log('domTree', domTree, event, eventIndex)
+  const getEvent = event[eventIndex]
+  let count = 0
+  let openCount = 0
+  const clickEvent = getEvent.click
+  let Target = clickEvent.point
+  if (getEvent.hasOwnProperty('click')) {
+    if (!Target) {
+      Target = clickEvent.component
+    } else {
+      Target = Target.component
+    }
+  }
+  for (let i = 0; i < parseOutput.length; i++) {
+    let target = parseOutput[i]
+    console.log('!!event!!', Target, target, count, Target.depth, target.depth)
+    if (target.name === Target.name && target.depth === Target.depth) {
+      count++
+      console.log('!!event!!:click!!', target, Target)
+      console.log('click:tansaku', count)
+      if (count === Target.count) {
+        count = 0
+        console.log('click', count)
+        if (Target.hasOwnProperty('component')) {
+          console.log('seni: !!event!!', Target, Target.component)
+          Target = Target.component
+        } else {
+          console.log('!!event!!: target', target, target.others)
+          for (let k = 0; k < target.others.length; k++) {
+            const other = target.others[k]
+            if (other.left.indexOf('click') >= 0) {
+              const arrays = []
+              let toGlobal = Object.assign({}, global)
+              toGlobal = Object.assign({}, target.params)
+              for (let p = 0; p < other.functionArgument.length; p++) {
+                arrays.push(getProperty(other.functionArgument[p], toGlobal))
+              }
+              getScript(global[other.functionTarget], arrays, toGlobal)
+              console.log('!!event!!returnMainProcess', eventIndex, init)
+              return MainProcess(text, props, clear, option, fileName, event, eventIndex + 1, false)
+            }
+          }
+        }
+      }
+    }
+  }
   if (option.existString) {
     let flag = true
     let noneTarget = []

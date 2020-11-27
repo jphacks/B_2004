@@ -381,36 +381,35 @@ export default {
         })
         this.sumpleOutput.push("読み込み中...")
         this.wait = true
-        MainProcess(this.text, sumpleInput, sumpleClear, option, this.pageName, true).then((res) => {
-          this.sumpleOutput.pop()
-          this.sumpleOutput.push("")
-          this.getDomTree = res.domTree
-          console.log(res.domTree, "aaaa")
-          if (res.reason === "noneClear") {
-            this.sumpleOutput.push(res.reason)
-            this.sumpleOutput.push(
-              "failed: [" + res.targetIndex + "]: " + res.targetNone
-            )
-            this.sumpleOutput.push(
-              "clearCase: [" + res.targetIndex + "]: " + res.target
-            )
-          } else {
-            this.sumpleOutput.push(res.reason)
-          }
-          if (res.noneTarget) {
-            this.sumpleOutput.push("failedIndex: " + res.noneTarget)
-          }
-          if (res.output) {
-            this.sumpleOutput.push("output: " + res.output)
-          }
-          console.log('res', res.earth)
-          if (res.earth) {
-            console.log('pageInfo:res', Object.assign({}, res.earth.pages[this.pageName]))
-            this.pageInfo = res.earth.pages[this.pageName]
-          }
-          this.wait = false
-          console.log('res', res)
-        })
+        const res = MainProcess(this.text, sumpleInput, sumpleClear, option, this.pageName, true)
+        this.sumpleOutput.pop()
+        this.sumpleOutput.push("")
+        this.getDomTree = res.domTree
+        console.log(res.domTree, "aaaa")
+        if (res.reason === "noneClear") {
+          this.sumpleOutput.push(res.reason)
+          this.sumpleOutput.push(
+            "failed: [" + res.targetIndex + "]: " + res.targetNone
+          )
+          this.sumpleOutput.push(
+            "clearCase: [" + res.targetIndex + "]: " + res.target
+          )
+        } else {
+          this.sumpleOutput.push(res.reason)
+        }
+        if (res.noneTarget) {
+          this.sumpleOutput.push("failedIndex: " + res.noneTarget)
+        }
+        if (res.output) {
+          this.sumpleOutput.push("output: " + res.output)
+        }
+        console.log('res', res.earth)
+        if (res.earth) {
+          console.log('pageInfo:res', Object.assign({}, res.earth.pages[this.pageName]))
+          this.pageInfo = res.earth.pages[this.pageName]
+        }
+        this.wait = false
+        console.log('res', res)
       }
     },
     setExam: function () {

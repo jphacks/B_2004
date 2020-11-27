@@ -414,73 +414,21 @@ export default {
     },
     getDom: function () {
       //  MainProcess(this.text)
-      const submitExam = firebase.functions().httpsCallable("submitExam")
       const examId = this.$route.params.examId
-      submitExam({
+      const data = {
         userId: this.getLoginId,
         examId: examId,
         examText: this.text,
         testCase: this.input,
         outputSumple: this.clear,
         optionSumple: this.option
+      }
+      const res = this.submitFunc(data)
+      console.log('res', res)
+      this.$router.push({
+        name: "ProblemResult",
+        params: { examId: this.$route.params.examId, resOutput: res }
       })
-        .then((res) => {
-          console.log("res", res)
-          const self = this
-          firebase
-            .firestore()
-            .collection("users")
-            .doc(String(this.getLoginId))
-            .collection("join")
-            .doc(String(examId))
-            .get()
-            .then(function (doc) {
-              console.log("checkstartat", doc.data().endAt)
-              if (!doc.data().endAt) {
-                console.log("kiteruyo")
-                firebase
-                  .firestore()
-                  .collection("users")
-                  .doc(self.getLoginId)
-                  .collection("join")
-                  .doc(String(examId))
-                  .update({
-                    endAt: firebase.firestore.Timestamp.fromDate(new Date())
-                  })
-              }
-            })
-          this.$router.push({
-            name: "ProblemResult",
-            params: { examId: this.$route.params.examId, resOutput: res }
-          })
-        })
-        .catch((e) => {
-          // console.log("feiofjow", this.getLoginId, examId)
-          const self = this
-          firebase
-            .firestore()
-            .collection("users")
-            .doc(String(this.getLoginId))
-            .collection("join")
-            .doc(String(examId))
-            .get()
-            .then(function (doc) {
-              console.log("checkstartat", doc.data().endAt)
-              if (!doc.data().endAt) {
-                console.log("kiteruyo")
-                firebase
-                  .firestore()
-                  .collection("users")
-                  .doc(self.getLoginId)
-                  .collection("join")
-                  .doc(String(examId))
-                  .update({
-                    endAt: firebase.firestore.Timestamp.fromDate(new Date())
-                  })
-              }
-            })
-          console.log("e", e)
-        })
     },
     sumpleSakai: function () {
       this.$router.push({
@@ -495,6 +443,7 @@ export default {
         let sumpleInput = Object.assign({}, getExam.examInfo.testCases.sampleCase.enter)
         const sumpleClear = Object.assign({}, getExam.examInfo.testCases.sampleCase.exit)
         const option = getExam.examInfo.option
+        const sumpleEvent = Object.assign({}, getExam.examInfo.testCases.sampleCase.event)
         this.sumpleOutput.push("input testCases...")
         for (let i = 0; i < sumpleInput.length; i++) {
           this.sumpleOutput.push(sumpleInput[i])
@@ -512,30 +461,29 @@ export default {
           sumpleInput = routerInput
         }
         console.log('sumpleOutput', sumpleInput, this.text)
-        MainProcess(this.text, sumpleInput, sumpleClear, option).then((res) => {
-          this.sumpleOutput.pop()
-          this.sumpleOutput.push("")
-          this.getDomTree = res.domTree
-          console.log('getDomTree', this.getDomTree)
-          if (res.reason === "noneClear") {
-            this.sumpleOutput.push(res.reason)
-            this.sumpleOutput.push(
-              "failed: [" + res.targetIndex + "]: " + res.targetNone
-            )
-            this.sumpleOutput.push(
-              "clearCase: [" + res.targetIndex + "]: " + res.target
-            )
-          } else {
-            this.sumpleOutput.push(res.reason)
-          }
-          if (res.noneTarget) {
-            this.sumpleOutput.push("failedIndex: " + res.noneTarget)
-          }
-          if (res.output) {
-            this.sumpleOutput.push("output: " + res.output)
-          }
-          this.wait = false
-        })
+        const res = MainProcess(this.text, sumpleInput, sumpleClear, option, undefined, sumpleEvent, 0, true)
+        this.sumpleOutput.pop()
+        this.sumpleOutput.push("")
+        this.getDomTree = res.domTree
+        console.log('getDomTree', this.getDomTree)
+        if (res.reason === "noneClear") {
+          this.sumpleOutput.push(res.reason)
+          this.sumpleOutput.push(
+            "failed: [" + res.targetIndex + "]: " + res.targetNone
+          )
+          this.sumpleOutput.push(
+            "clearCase: [" + res.targetIndex + "]: " + res.target
+          )
+        } else {
+          this.sumpleOutput.push(res.reason)
+        }
+        if (res.noneTarget) {
+          this.sumpleOutput.push("failedIndex: " + res.noneTarget)
+        }
+        if (res.output) {
+          this.sumpleOutput.push("output: " + res.output)
+        }
+        this.wait = false
       }
     },
     sumplePush: function () {
@@ -622,6 +570,35 @@ export default {
       if (this.page.indexOf(fileName) === -1) {
         this.page.push(fileName)
       }
+    },
+    submitFunc: function (data) {
+      const getId = data.examId
+      const userId = data.userId
+      const db = firebase.firestore()
+      const examRef = db.collection('exams').doc(getId)
+      // Initialize
+      if (userId) {
+        db.collection('exams').doc(getId).collection('users').doc(userId).set({ output: [] })
+      }
+      console.log('submitFunc', data)
+      return examRef.get().then(snapsshot => {
+        const doc = snapsshot
+        if (!doc.exists) {
+          return { status: 'WA', reason: 'none firebase data' }
+        } else {
+          const acData = doc.data()
+          let output = []
+          Object.values(doc.data().examInfo.testCases || {}).forEach(value => {
+            console.log('value,value', value)
+            output.push(MainProcess(data.examText, value.enter, value.exit, acData.examInfo.option))
+          })
+          if (userId) {
+            db.collection('exams').doc(getId).collection('users').doc(userId).set({ output: output, inputScript: data.examText })
+          }
+          console.log('submitFunc:output', output)
+          return output
+        }
+      })
     }
   },
   computed: {

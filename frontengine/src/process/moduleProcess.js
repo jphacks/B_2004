@@ -4,7 +4,11 @@ import methodsProcess from './ScriptUtility/methodsProcess.js'
 import computedProcess from './ScriptUtility/computedProcess.js'
 import { execScript } from './ScriptUtility/execScript.js'
 let global = {}
-export { global }
+export { global, initGlobal }
+function initGlobal () {
+  global = {}
+}
+
 export default function (ast, props) {
   // console.log('ast', ast)
   global = {}

@@ -93,13 +93,11 @@ export default {
       orders.forEach(key => {
         outputObj = Object.assign(outputObj, globalStyle[path].class[key])
       })
-      console.log('class', path, orders, globalStyle, outputObj)
       return outputObj
     },
     parseEvent: function (param) {
       const splits = param.split('[')
       const gets = splits[0]
-      console.log('param.split()', splits)
       const index = Number(splits[1].split(']')[0])
       // console.log('globaltete', global[gets][index], gets, index)
       if (global[gets]) {
@@ -109,7 +107,6 @@ export default {
       }
     },
     routerEvent: function (param) {
-      console.log('routerEvent', param)
       this.$emit('router-change', param)
     },
     previewParse: function () {
