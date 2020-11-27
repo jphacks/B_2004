@@ -12,12 +12,14 @@
         </b-col>
         <b-col>
           <h1>問題一覧</h1>
-          <ProblemCard :problemNumber="'No.' + 'test'" :problemId="'vho02QWOCy9IsjgqhiEG'"/>
-          <div v-if="getExamViews.length !== 0">
-          <ProblemCard v-for="(problemId, index) in Object.keys(exams || {})" :key="index" :problemNumber="'No.' + String(index+1)" :problemId="problemId" :exam="exams[problemId]" />
-          </div>
-          <div v-else>
-          読み込み中...
+          <div class="rightList">
+            <ProblemCard :problemNumber="'No.' + 'test'" :problemId="'vho02QWOCy9IsjgqhiEG'"/>
+            <div v-if="getExamViews.length !== 0">
+              <ProblemCard v-for="(problemId, index) in Object.keys(exams || {})" :key="index" :problemNumber="'No.' + String(index+1)" :problemId="problemId" :exam="exams[problemId]" />
+            </div>
+            <div v-else>
+              読み込み中...
+            </div>
           </div>
         </b-col>
       </b-row>
@@ -99,5 +101,10 @@ export default {
 .leftList {
   border: 0px ;
   margin: 10px 10px ;
+}
+.rightList {
+  max-height: 400px ;
+  overflow-y: scroll ;
+  border: solid 0.5px gray;
 }
 </style>
