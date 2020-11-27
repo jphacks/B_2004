@@ -68,7 +68,7 @@ export default {
       }
       var commandArray = value.split(' ')
       console.log(commandArray, 'Terminal')
-      this.$emit('frontEngine', commandArray)
+      this.$emit('frontEngineCommand', commandArray)
     },
     dialogToggle: function () {
       this.isShow = !this.isShow

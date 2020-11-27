@@ -1,10 +1,10 @@
 <template>
   <div class="problemArea">
     <div class="terminal">
-      <Terminal @frontEngine="engine"/>
+      <Terminal @frontEngineCommand="terminalCommand"/>
     </div>
-    <b-tabs content-class="mt-3">
-      <b-tab title="ホーム" active>
+    <b-tabs content-class="mt-3" v-model="tabIndex">
+      <b-tab title="ホーム" :active="getActives[0]">
         <div class="checkBoxes">
           <span v-for="(value, key) of viewCheckBox" :key="key">
             <input :id="key" type="checkbox" v-model="viewCheckBox[key]" />
@@ -72,13 +72,12 @@
         <preview-field :dom="parseToDom" v-if="viewCheckBox.previewArea" @vueDom="propagateDom" @style-check="emitDom">
         </preview-field>
       </b-tab>
-      <b-tab title="プレビュー画面">
-        <preview-field :dom="parseToDom" unique="tabPage"> </preview-field>
-      </b-tab>
-      <b-tab :title="pageName" v-for="(pageName, index) in page" :key="index">
+      <div v-if="page">
+      <b-tab :title="pageName" v-for="(pageName, index) in page" :key="index" :active="pageFlags[index]">
         <NewPage :pageName="pageName" :exam="getExam"/>
       </b-tab>
-      <b-tab title="+">
+      </div>
+      <b-tab title="+" :active="plus">
         <AddTab @fileName="newPageName"/>
       </b-tab>
     </b-tabs>
@@ -122,6 +121,9 @@ export default {
         existString: true
       },
       exam: {},
+      home: true,
+      plus: false,
+      pageFlags: [],
       sumpleOutput: [],
       wait: false,
       getDomTree: {},
@@ -142,7 +144,11 @@ export default {
       checked: false,
       page: [
 
-      ]
+      ],
+      command: [
+
+      ],
+      tabIndex: 0
     }
   },
   props: {
@@ -502,18 +508,100 @@ export default {
         })
     },
     createEvent: function () {},
-    engine: function (abc) {
-      console.log(abc.join(" "), 'ProblemDetail')
+    terminalCommand: function (commandArray) {
+      console.log(commandArray.join(" "), 'ProblemDetail')
+      this.command.push(...commandArray)
+      console.log(this.command)
+      if (this.command[0] === "page") {
+        switch (this.command[1]) {
+          case 'create':
+          case '-c':
+            if (this.page.indexOf(this.command[2]) === -1 && this.command[2] != null) {
+              this.page.push(this.command[2])
+              this.pageFlags.push(false)
+            }
+            this.command = []
+            break
+          case 'change':
+          case '-ch':
+            let target = this.command[2]
+            if (this.command[2] === "-c") {
+              target = this.command[3]
+              // this.page.push(this.command[3])
+              // // this.pageFlags.push(false)
+              // const output = []
+              // for (let i = 0; i < this.pageFlags.length; i++) {
+              //   output.push(false)
+              // }
+              // this.home = false
+              // this.plus = false
+              // if (this.command[3] === 'home') {
+              //   this.home = true
+              // } else if (this.command[3] === 'plus') {
+              //   this.plus = true
+              // } else {
+              //   const getIndex = this.page.indexOf(this.command[3])
+              //   if (getIndex >= 0) {
+              //     output[getIndex] = true
+              //   }
+              // }
+              // this.pageFlags = output
+              // // this.getActives[this.page.indexOf(this.command[3])+1] = true
+              // console.log(this.page, this.tabIndex, this.pageFlags, 'pageFlag見る', this.getActives)
+              // console.log(this.page.indexOf(target))
+              // this.command = []
+              this.command = []
+            } else {
+              const output = []
+              for (let i = 0; i < this.pageFlags.length; i++) {
+                output.push(false)
+              }
+              this.home = false
+              this.plus = false
+              if (target === 'home') {
+                this.home = true
+              } else if (target === 'plus') {
+                this.plus = true
+              } else {
+                const getIndex = this.page.indexOf(target)
+                if (getIndex >= 0) {
+                  output[getIndex] = true
+                }
+              }
+              this.pageFlags = output
+              this.command = []
+            }
+            break
+          default:
+            this.command = []
+            break
+        }
+      } else {
+        this.command = []
+      }
     },
     newPageName: function (fileName) {
       console.log(fileName)
-      this.page.push(fileName)
+      if (this.page.indexOf(fileName) === -1) {
+        this.page.push(fileName)
+      }
     }
   },
   computed: {
     ...mapGetters(["getExams", "getUserId"]),
     getText () {
       return "''"
+    },
+    getActives () {
+      const home = this.home
+      const plus = this.plus
+      const pageActives = this.pageFlags
+      let output = []
+      output.push(home)
+      output.push(...pageActives)
+      output.push(plus)
+      console.log(output, "getActives")
+      return output
     },
     parseToDom () {
       return domPreviewParse(this.getDomTree, 'default')
