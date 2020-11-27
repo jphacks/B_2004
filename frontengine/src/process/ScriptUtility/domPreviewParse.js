@@ -158,6 +158,10 @@ function domPreviewParse (domTree, fileName) {
     const parseDom = {}
     const yoyaku = {}
     console.log('taker', take)
+    if (take.name === 'router-link') {
+      take.routerPush = true
+      parseDom.routerPush = '@router'
+    }
     if (take.hasOwnProperty('class')) {
       let targetDom = []
       targetDom.push('\'' + fileName + '\'')
@@ -298,6 +302,20 @@ function domPreviewParse (domTree, fileName) {
       const pushOutput = []
       for (let i = 0; i < Object.keys(parseDom).length; i++) {
         const key = Object.keys(parseDom)[i]
+        if (key === 'routerPush') {
+          let toParam = {}
+          if (Object.keys(parseDom).indexOf(':to') >= 0) {
+            toParam = parseDom[':to']
+          }
+          if (Object.keys(parseDom).indexOf('to') >= 0) {
+            toParam = parseDom['to']
+          }
+          if (Object.keys(toParam).length == 0) {
+            continue
+          }
+          pushOutput.push('@click' + '="' + 'routerEvent(' + toParam + ')' + '"')
+          continue
+        }
         pushOutput.push(key + '="' + parseDom[key] + '"')
       }
       let endBlock = '>'

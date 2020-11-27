@@ -14,6 +14,9 @@ function domProperty (text, params) {
   } else if (script && script.value) {
     const returnBool = isBool(script.value, toDomScript)
     return returnBool
+  } else {
+    const returnBool = isBool(script, toDomScript)
+    return returnBool
   }
   // console.lo('checcer', script)
   // console.lo('scriptDom', script, toDomScript, isBool(script.expression, toDomScript))

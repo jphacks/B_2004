@@ -70,7 +70,7 @@
           </div>
           <!-- <br><br><br><router-link :to="{name: 'ProblemResult', params: {examId: $route.params.examId}}">問題結果画面に遷移します。</router-link> -->
         </div>
-        <preview-field :dom="parseToDom" v-if="viewCheckBox.previewArea" @vueDom="propagateDom" @style-check="emitDom">
+        <preview-field :dom="parseToDom" v-if="viewCheckBox.previewArea" @vueDom="propagateDom" @style-check="emitDom" @router-change="routerChange">
         </preview-field>
       </b-tab>
       <b-tab title="プレビュー画面">
@@ -90,7 +90,7 @@
         <b-btn @click="routerFilePush()">router提出</b-btn>
       </b-tab>
       <b-tab :title="pageName" v-for="(pageName, index) in page" :key="index">
-        <NewPage :pageName="pageName" :exam="getExam"/>
+        <NewPage :pageName="pageName" :exam="getExam" />
       </b-tab>
       <b-tab title="+">
         <AddTab @fileName="newPageName"/>
@@ -157,7 +157,7 @@ export default {
       },
       routerSetArea: '',
       checked: false,
-      page: ['hanoi']
+      page: ['Exam5Detail']
     }
   },
   props: {
@@ -169,6 +169,31 @@ export default {
   },
   methods: {
     ...mapActions(["setExams"]),
+    routerChange: function (param) {
+      // name か pathか調べる
+      const keys = Object.keys(param)
+      let params = {}
+      if (keys.indexOf('params')) {
+        params.$route = {}
+        params.$route.params = param.params
+      }
+      console.log('params', param)
+      if (keys.indexOf('name') >= 0 && keys.indexOf('path') >= 0) {
+        console.error('both name and path exist.')
+        return false
+      } else if (keys.indexOf('name') >= 0) {
+        console.log('name', keys, earth)
+        if (earth && earth.router && earth.router.routes && earth.router.routes.name[param.name]) {
+          const routeInfo = earth.router.routes.name[param.name]
+          console.log('routeInfo', routeInfo)
+          const componentName = routeInfo.component
+          if (earth.pages[componentName]) {
+            this.sumpleTest(earth.pages[componentName].pure, params)
+          }
+        }
+      } else if (keys.indexOf('path') >= 0) {
+      }
+    },
     emitDom: function () {
       // console.log('previewDom', value, value.children, value.children[0])
       const value = this.checkStyleDom
@@ -457,11 +482,11 @@ export default {
         params: { examId: this.$route.params.examId }
       })
     },
-    sumpleTest: function () {
+    sumpleTest: function (routerText, routerInput) {
       if (this.text.length > 0 && !this.wait) {
         this.sumpleOutput = []
         const getExam = this.getExam
-        const sumpleInput = getExam.examInfo.testCases.sampleCase.enter
+        let sumpleInput = getExam.examInfo.testCases.sampleCase.enter
         const sumpleClear = getExam.examInfo.testCases.sampleCase.exit
         const option = getExam.examInfo.option
         this.sumpleOutput.push("input testCases...")
@@ -474,6 +499,13 @@ export default {
         })
         this.sumpleOutput.push("読み込み中...")
         this.wait = true
+        if (routerText) {
+          this.text = routerText
+        }
+        if (routerInput) {
+          sumpleInput = routerInput
+        }
+        console.log('sumpleOutput', sumpleInput, this.text)
         MainProcess(this.text, sumpleInput, sumpleClear, option).then((res) => {
           this.sumpleOutput.pop()
           this.sumpleOutput.push("")

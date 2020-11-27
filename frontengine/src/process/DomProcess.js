@@ -121,8 +121,14 @@ function DOMAnalysis (dom) {
       info.open = false
       info.name = tag.substr(1 + nameLength, tag.length - 3 - nameLength)
     }
+    if (info.name === 'router-link') {
+      info.routerPush = true
+    }
   } else {
     info.name = tags[0].substr(1 + nameLength, tags[0].length - nameLength)
+    if (info.name === 'router-link') {
+      info.routerPush = true
+    }
     // let blank = false
     // let blanckCount = []
     //
@@ -227,6 +233,7 @@ function DOMAnalysis (dom) {
     }
   }
   //
+  console.log('info', info)
   return info
 }
 

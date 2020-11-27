@@ -124,6 +124,10 @@ function getProperty (body, local, funcArguments) {
       return getProperty(body.object, local)[body.name]
     } else if (body.property) {
       const outputData = getProperty(body.object, local)
+      console.log('outputData', outputData, body)
+      if (!outputData) {
+        return outputData
+      }
       // // console.log('join?', body, outputData, body.property.name, outputData[body.property.name](''), funcArguments)
       // // console.log('join', outputData[body.property.name](...funcArguments), !!funcArguments)
       // const testGlobal = Object.assign({}, global)
