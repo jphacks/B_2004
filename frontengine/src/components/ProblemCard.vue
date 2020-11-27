@@ -7,7 +7,7 @@
         <!--<b-card-text>{{ getLoginId }}</b-card-text>-->
         <b-card-text>難易度：{{ this.exam.rating ? Math.floor(this.exam.rating) + "±" + Math.floor(this.exam.ratingDiviation * 3) : "" }}<br /></b-card-text>
         <b-card-text>平均解答時間：{{ this.exam.aveSolveTime ? viewTime() : "" }}<br /></b-card-text>
-        <b-card-text>正答率：{{ this.exam.kaisuu ? (this.exam.winNum/this.exam.kaisuu) * 100 + "%" : "0%" }}<br /></b-card-text>
+        <b-card-text>正答率：{{ this.exam.kaisuu ? ((this.exam.winNum/this.exam.kaisuu) * 100).toFixed(2) + "%" : "0%" }}<br /></b-card-text>
         <router-link
           :to="{ name: 'ProblemDetail', params: { examId: problemId } }"
           @click.native="setExamInfo()"
