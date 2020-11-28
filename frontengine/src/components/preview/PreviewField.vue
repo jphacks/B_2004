@@ -8,6 +8,7 @@
       </div>
     </b-card>
     <b-btn primary @click="$emit('style-check')">デザインチェック</b-btn>
+    <b-btn @click="previewParse()">レンダリング</b-btn>
   </div>
 </template>
 
