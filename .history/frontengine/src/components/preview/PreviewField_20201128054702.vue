@@ -1,7 +1,7 @@
 <template>
   <div class="PreviewField">
     <!--<b-button v-if="dom" @click="previewParse()">プレビューを表示する</b-button>-->
-    <b-card class="card">
+    <b-card>
       <div :id="uniqueKey" class="targetPreviewFiled">
         <div>
         </div>

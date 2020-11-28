@@ -70,13 +70,14 @@
           </div>
           <!-- <br><br><br><router-link :to="{name: 'ProblemResult', params: {examId: $route.params.examId}}">問題結果画面に遷移します。</router-link> -->
         </div>
-        <preview-field class="cardPreview" :dom="parseToDom" v-if="viewCheckBox.previewArea" @vueDom="propagateDom" @style-check="emitDom" @router-change="routerChange">
+        <preview-field :dom="parseToDom" v-if="viewCheckBox.previewArea" @vueDom="propagateDom" @style-check="emitDom" @router-change="routerChange">
         </preview-field>
+        {{ this.checkFlug + " : " + checkData }}
         <b-card v-if="this.clickFlug">
-          {{ this.checkFlug ? 'OK!' : this.checkFlug + " : " + checkData.reason }}
+          {{ this.checkFlug + " : " + checkData }}
         </b-card>
       </b-tab>
-      <b-tab title="router設定" :active="routerPage">
+      <b-tab title="router設定">
         <b-card>
         <span v-for="(value, key) of getReturnRouterStr" :key="key">{{ value }}<br/></span>
         </b-card>
@@ -92,9 +93,6 @@
       <div v-if="page">
       <b-tab :title="pageName" v-for="(pageName, index) in page" :key="index" :active="pageFlags[index]">
         <NewPage :pageName="pageName" :exam="getExam"/>
-        <b-button size="sm" variant="danger" class="float-right" @click="closePage(pageName)">
-          Close page
-        </b-button>
       </b-tab>
       </div>
       <b-tab title="+" :active="plus">
@@ -299,13 +297,13 @@ export default {
                         console.log('absolute指定:アウト', subKey, domRawStyle[key], [domRawStyle], [countDomTake[i]])
                         splitBool.push(false)
                         this.checkData.reason = "absolute指定:アウト"
-                        this.clickFlug = true
+                        this.checkFlug = true
                       }
                     } else {
                       console.log('absolute指定:アウト', subKey, domRawStyle[key], [domRawStyle], [countDomTake[i]])
                       splitBool.push(false)
                       this.checkData.reason = "absolute指定:アウト"
-                      this.clickFlug = true
+                      this.checkFlug = true
                     }
                   } else {
                     // trueをいれとく
@@ -418,7 +416,6 @@ export default {
       console.log('previewDom:exam', this.getExam)
       this.previewDom = value
       this.checkFlug = true
-      this.clickFlug = true
     },
     propagateDom: function (value) {
       this.checkStyleDom = value
@@ -430,7 +427,7 @@ export default {
       //  MainProcess(this.text)
       const submitExam = firebase.functions().httpsCallable("submitExam")
       const examId = this.$route.params.examId
-      this.submitFunc({
+      submitExam({
         userId: this.getLoginId,
         examId: examId,
         examText: this.text,
@@ -439,7 +436,7 @@ export default {
         optionSumple: this.option
       })
         .then((res) => {
-          console.log("resaaaa", res)
+          console.log("res", res)
           const self = this
           firebase
             .firestore()
@@ -625,7 +622,6 @@ export default {
                 output.push(false)
               }
               this.home = false
-              this.routerPage = false
               this.plus = false
               if (target === 'home') {
                 this.home = true
@@ -643,15 +639,6 @@ export default {
               this.command = []
             }
             break
-          case 'delete':
-          case '-d':
-            for (let i = 0; i < this.page.length; i++) {
-              if (this.page[i] === this.command[2]) {
-                this.page.splice(i, 1)
-              }
-            }
-            this.command = []
-            break
           default:
             this.command = []
             break
@@ -665,46 +652,7 @@ export default {
       if (this.page.indexOf(fileName) === -1) {
         this.page.push(fileName)
       }
-    },
-    submitFunc: async function (data) {
-      const getId = data.examId
-      const userId = data.userId
-      const db = firebase.firestore()
-      const examRef = db.collection('exams').doc(getId)
-      // Initialize
-      if (userId) {
-        db.collection('exams').doc(getId).collection('users').doc(userId).set({ output: [] })
-      }
-      console.log('submitFunc', data)
-      return examRef.get().then(snapsshot => {
-        const doc = snapsshot
-        console.log('doccc', doc)
-        if (!doc.exists) {
-          return { status: 'WA', reason: 'none firebase data' }
-        } else {
-          const acData = doc.data()
-          console.log('doccc', acData)
-          let output = []
-          Object.values(acData.examInfo.testCases || {}).forEach(value => {
-            console.log('value,value', value)
-            output.push(MainProcess(data.examText, value.enter, value.exit, acData.examInfo.option))
-          })
-          return Promise.all(output).then(res => {
-            console.log('output', res)
-            // db.collection('exams').doc(getId).collection('users').doc(userId).set({ output: res, inputScript: data.examText })
-            return res
-          })
-        }
-      })
-    },
-    closePage: function (pageName) {
-      for (let i = 0; i < this.page.length; i++) {
-        if (this.page[i] === pageName) {
-          this.page.splice(i, 1)
-        }
-      }
     }
-
   },
   computed: {
     ...mapGetters(["getExams", "getUserId"]),
@@ -877,8 +825,5 @@ export default {
 }
 .terminal{
   float: right;
-}
-.cardPreview {
-  width: 1500px;
 }
 </style>

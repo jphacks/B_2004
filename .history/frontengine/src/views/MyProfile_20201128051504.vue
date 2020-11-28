@@ -5,7 +5,8 @@
         <b-img src="../assets/frontEngineIcon.png" width="160" height="160" alt="placeholder"></b-img>
         <h2 class="nameSize">{{this.getEmailState}}</h2>
         <ChangeForm/>
-        <h1 class="pointStyle" v-if="tootta">レート {{ this.nowRate.rating ? Math.floor(this.nowRate.rating - 400) + "±" + Math.floor(this.nowRate.ratingDiviation * 3) : ""}}</h1>
+        <h1 class="pointStyle">レート {{ "ここに最新のレート" }}</h1>
+        {{ this.userItems }}
         <br>
         <div class="performanceTable">
           <table>
@@ -21,7 +22,7 @@
               <tr v-for="(examId,index) in Object.keys(userItems || {})" :key="examId" :index="index">
                 <td>{{isMoment(userItems[examId].startAt.seconds)}}</td>
                 <td>{{userItems[examId].name}}</td>
-                <td>{{setTime(userItems[examId].solveTime)}}</td>
+                <td>{{isMoment(userItems[examId].solveTime)}}</td>
                 <td>{{userItems[examId].difficult}}</td>
               </tr>
             </tbody>
@@ -60,24 +61,12 @@ export default {
       userItems: {},
       difficultSum: 0,
       userRate: {},
-      tootta: false,
-      nowRate: {}
+      tootta: false
     }
   },
   mounted: function () {
     console.log('check', this.fetchFirebaseUsers)
     this.fetchFirebaseUsers()
-    let promise = new Promise((resolve, reject) => {
-      this.problemInfo = this.getExam
-      resolve(this.getResult())
-    })
-    promise.then((data) => {
-      this.tootta = true
-      console.log("AAAAAAAA")
-      const arra = Object.values(this.userRate)
-      this.nowRate = arra[arra.length - 1]
-      this.tootta = true
-    })
   },
   methods: {
     ...mapActions(['setUserItems']),
@@ -103,7 +92,7 @@ export default {
     setTime: function (date) {
       console.log("f")
       const momentDAte = moment.unix(date)
-      return momentDAte.format('H時間mm分')
+      return momentDAte.format('HH時間mm分')
     },
     getResult: function () {
       return firebase
@@ -121,8 +110,11 @@ export default {
             output.time = doc.data().time
             this.userRate[doc.id] = output
           })
+          console.log("ou777tputdata", this.userRate)
+          // console.log("jijfiowejop77777", this.setYoko, this.setTate)
         })
-    }
+        this.tootta = true
+    },
   },
   computed: {
     ...mapGetters(['getUserId', 'getEmailState']),
