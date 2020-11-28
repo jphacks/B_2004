@@ -364,9 +364,9 @@ export default {
       const self = this
       const times = String(new Date())
       // console.log("nanndekounaruno", self.userInfo.challenged)
-      if (self.userFlag || 0) {
-        return ""
-      }
+      // if (self.userFlag || 0) {
+      //   return ""
+      // }
       console.log("nanndekounaruno", self.userFlag)
       firebase
         .firestore()
