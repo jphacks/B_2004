@@ -10,7 +10,7 @@
     <div v-if="this.execFin" style="border: 1px solid gray; margin: 0px 600px 0px 600px;">
       <h3 style="text-align: center;">{{ "レート変化" }}</h3>
       <h1>
-        {{ Math.floor(this.userInfo.rating) - 400 }} → {{ Math.floor(this.userNewRating.r) - 400 }}
+        {{ Math.floor(this.userInfo.rating || 0) - 400 }} → {{ Math.floor(this.userNewRating.r) - 400 }}
       </h1>
     </div>
     <div v-if="output.length > 0">
