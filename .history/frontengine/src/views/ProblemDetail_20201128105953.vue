@@ -73,7 +73,7 @@
         <preview-field class="cardPreview" :dom="parseToDom" v-if="viewCheckBox.previewArea" @vueDom="propagateDom" @style-check="emitDom" @router-change="routerChange">
         </preview-field>
         <b-card v-if="this.clickFlug">
-          {{ this.checkFlug ? 'OK!' : this.checkFlug + ":" + this.reason }}
+          {{ this.checkFlug ? 'OK!' : this.checkFlug + " : " + checkData.reason }}
         </b-card>
       </b-tab>
       <b-tab title="router設定" :active="routerPage">
@@ -171,8 +171,7 @@ export default {
       tabIndex: 0,
       clickFlug: false,
       checkFlug: false,
-      checkData: {},
-      reason: ""
+      checkData: {}
     }
   },
   props: {
@@ -302,14 +301,12 @@ export default {
                         splitBool.push(false)
                         this.checkData.reason = "absolute指定:アウト"
                         this.clickFlug = true
-                        this.reason = "absolute指定:アウト"
                       }
                     } else {
                       console.log('absolute指定:アウト', subKey, domRawStyle[key], [domRawStyle], [countDomTake[i]])
                       splitBool.push(false)
                       this.checkData.reason = "absolute指定:アウト"
                       this.clickFlug = true
-                      this.reason = "absolute指定:アウト"
                     }
                   } else {
                     // trueをいれとく
