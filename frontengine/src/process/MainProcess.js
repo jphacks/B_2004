@@ -8,10 +8,13 @@ import { execScript, getScript } from './ScriptUtility/execScript.js'
 import { styleProperty } from './styleProcess.js'
 import { earth, pageAdd } from '@/process/ProjectProcess.js'
 let globalStyle = {}
-let checkClear = 0
 let lastOutput = []
+let checkClear = 0
 let outputIndex = 0
 async function MainProcess (text, props, clear, option, fileName, onlyPageAddFunc) {
+  lastOutput = []
+  checkClear = 0
+  outputIndex = 0
   let toProps = {}
   if (Array.isArray(props)) {
     toProps.input = props
@@ -209,6 +212,7 @@ async function MainProcess (text, props, clear, option, fileName, onlyPageAddFun
   console.log('parse', parseOutput)
 
   if (option.existString) {
+    console.log
     let flag = true
     let noneTarget = []
     if (clear && Array.isArray(clear)) {

@@ -424,7 +424,7 @@ export default {
         optionSumple: this.option
       })
         .then((res) => {
-          console.log("res", res)
+          console.log("resaaaa", res)
           const self = this
           firebase
             .firestore()
@@ -651,20 +651,22 @@ export default {
       console.log('submitFunc', data)
       return examRef.get().then(snapsshot => {
         const doc = snapsshot
+        console.log('doccc', doc)
         if (!doc.exists) {
           return { status: 'WA', reason: 'none firebase data' }
         } else {
           const acData = doc.data()
+          console.log('doccc', acData)
           let output = []
-          Object.values(doc.data().examInfo.testCases || {}).forEach(value => {
+          Object.values(acData.examInfo.testCases || {}).forEach(value => {
             console.log('value,value', value)
             output.push(MainProcess(data.examText, value.enter, value.exit, acData.examInfo.option))
           })
-          if (userId) {
-            db.collection('exams').doc(getId).collection('users').doc(userId).set({ output: output, inputScript: data.examText })
-          }
-          console.log('submitFunc:output', output)
-          return output
+          return Promise.all(output).then(res => {
+            console.log('output', res)
+            // db.collection('exams').doc(getId).collection('users').doc(userId).set({ output: res, inputScript: data.examText })
+            return res
+          })
         }
       })
     }
