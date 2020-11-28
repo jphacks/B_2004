@@ -2,15 +2,15 @@
   <div class="problemResult" style="text-align: center;">
     <h1>結果</h1>
     <span>
-      <h3>今回の結果はこちら：{{ name }}</h3><br>
+      <h3>今回の結果はこちら：{{ name }}</h3>
       <!-- {{ userInfo.challenged }} <br>
       {{ this.problemInfo.rating }} -->
-      <h3>{{ this.userStatus ? "Complete！！！" : "残念・・・"}}</h3>
+      {{ this.userFlag }}
     </span>
     <div v-if="this.execFin" style="border: 1px solid gray; margin: 0px 600px 0px 600px;">
       <h3 style="text-align: center;">{{ "レート変化" }}</h3>
       <h1>
-        {{ Math.floor(this.userInfo.rating || 0) - 400 }} → {{ Math.floor(this.userNewRating.r) - 400 }}
+        {{ Math.floor(this.userInfo.rating) - 400 }} → {{ Math.floor(this.userNewRating.r) - 400 }}
       </h1>
     </div>
     <div v-if="output.length > 0">
@@ -85,14 +85,6 @@ export default {
     }
   },
   mounted: function () {
-    this.testCase()
-    console.log("param", this.$route.params, this.$route)
-    if (this.$route.params.resOutput) {
-      this.output = this.$route.params.resOutput
-    } else {
-      this.getResult()
-    }
-    console.log("output", this.output, this.keys)
     const self = this
     let promise = new Promise((resolve, reject) => {
       this.problemInfo = this.getExam
@@ -118,6 +110,14 @@ export default {
     }).catch(() => { // エラーハンドリング
       console.error('Something wrong!')
     })
+    this.testCase()
+    console.log("param", this.$route.params, this.$route)
+    if (this.$route.params.resOutput) {
+      this.output = this.$route.params.resOutput
+    } else {
+      this.getResult()
+    }
+    console.log("output", this.output, this.keys)
   },
   props: {
     // examId: String,
@@ -171,11 +171,6 @@ export default {
     getUserInfo: function () {
       const userId = this.getLoginId
       const self = this
-      this.output.forEach((doc) => {
-        if (doc.status == 'WA') {
-          this.userStatus = false
-        }
-      })
       return firebase
         .firestore()
         .collection("users")
@@ -369,9 +364,9 @@ export default {
       const self = this
       const times = String(new Date())
       // console.log("nanndekounaruno", self.userInfo.challenged)
-      // if (self.userFlag || 0) {
-      //   return ""
-      // }
+      /* if (self.userFlag || 0) {
+        return ""
+      } */
       console.log("nanndekounaruno", self.userFlag)
       firebase
         .firestore()

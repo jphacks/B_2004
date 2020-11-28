@@ -2,10 +2,10 @@
   <div class="problemResult" style="text-align: center;">
     <h1>結果</h1>
     <span>
-      <h3>今回の結果はこちら：{{ name }}</h3><br>
+      <h3>今回の結果はこちら：{{ name }}</h3>
       <!-- {{ userInfo.challenged }} <br>
       {{ this.problemInfo.rating }} -->
-      <h3>{{ this.userStatus ? "Complete！！！" : "残念・・・"}}</h3>
+      {{ this.userFlag }}
     </span>
     <div v-if="this.execFin" style="border: 1px solid gray; margin: 0px 600px 0px 600px;">
       <h3 style="text-align: center;">{{ "レート変化" }}</h3>
