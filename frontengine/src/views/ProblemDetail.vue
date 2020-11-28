@@ -430,7 +430,7 @@ export default {
       //  MainProcess(this.text)
       const submitExam = firebase.functions().httpsCallable("submitExam")
       const examId = this.$route.params.examId
-      submitExam({
+      this.submitFunc({
         userId: this.getLoginId,
         examId: examId,
         examText: this.text,
@@ -439,7 +439,7 @@ export default {
         optionSumple: this.option
       })
         .then((res) => {
-          console.log("res", res)
+          console.log("resaaaa", res)
           const self = this
           firebase
             .firestore()
@@ -666,6 +666,37 @@ export default {
         this.page.push(fileName)
       }
     },
+    submitFunc: async function (data) {
+      const getId = data.examId
+      const userId = data.userId
+      const db = firebase.firestore()
+      const examRef = db.collection('exams').doc(getId)
+      // Initialize
+      if (userId) {
+        db.collection('exams').doc(getId).collection('users').doc(userId).set({ output: [] })
+      }
+      console.log('submitFunc', data)
+      return examRef.get().then(snapsshot => {
+        const doc = snapsshot
+        console.log('doccc', doc)
+        if (!doc.exists) {
+          return { status: 'WA', reason: 'none firebase data' }
+        } else {
+          const acData = doc.data()
+          console.log('doccc', acData)
+          let output = []
+          Object.values(acData.examInfo.testCases || {}).forEach(value => {
+            console.log('value,value', value)
+            output.push(MainProcess(data.examText, value.enter, value.exit, acData.examInfo.option))
+          })
+          return Promise.all(output).then(res => {
+            console.log('output', res)
+            // db.collection('exams').doc(getId).collection('users').doc(userId).set({ output: res, inputScript: data.examText })
+            return res
+          })
+        }
+      })
+    },
     closePage: function (pageName) {
       for (let i = 0; i < this.page.length; i++) {
         if (this.page[i] === pageName) {
@@ -673,6 +704,7 @@ export default {
         }
       }
     }
+
   },
   computed: {
     ...mapGetters(["getExams", "getUserId"]),
