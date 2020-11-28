@@ -22,17 +22,13 @@ exports.submitExam = functions.https.onCall((data, context) => {
       return {status: 'WA', reason: 'none firebase data'}
     } else {
     const acData = doc.data()
-    console.log('data', acData, doc.data().testCasses)
-    console.log('datadata', doc.data().testCases, userId)
     let output = []
     Object.values(doc.data().examInfo.testCases || {}).forEach( value => {
-      console.log('value,value', value)
       output.push(MainProcess(data.examText, value.enter, value.exit, acData.examInfo.option))
     })
     if (userId) {
       db.collection('exams').doc(getId).collection('users').doc(userId).set({output: output, inputScript: data.examText})
     }
-    console.log('output', output)
     return output;
     }
   })
@@ -1124,7 +1120,6 @@ function methodsProcess(body) {
 
 function propsProcess(body) {
   const output = {}
-  console.log('take', body)
   if (body.value.type === 'ObjectExpression') {
     // オブジェクト??
     for (const take of body.value.properties) {

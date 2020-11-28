@@ -70,9 +70,6 @@ export default {
   },
   methods: {
     domEvent: function (order, path, userAction, ...arg) {
-      // domのfunction系を一旦ここに噛ませる
-      // orderはfunction名
-      // pathはcomponentファイル名
       console.log('orderPPP', order, path, userAction, arg, global)
       let toParam = Object.assign({}, global)
       arg.forEach(x => {

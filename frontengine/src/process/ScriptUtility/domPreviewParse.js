@@ -32,7 +32,6 @@ function pureDomPreviewParse (domTree, fileName) {
         targetValue.push(take['v-for'].target.index)
         yoyaku[take['v-for'].target.index] = 'index'
       }
-      console.log('yoyaku', yoyaku)
       let targetInput = ''
       const targetDom = []
       if (take['v-for'].type) {
@@ -59,7 +58,6 @@ function pureDomPreviewParse (domTree, fileName) {
         let targetInput = ''
         const targetDom = []
         if (take.others[i].type) {
-          console.log('otherright', take.others[i])
           let otherRight = take.others[i].right
           otherRight = otherRight.replace(/\'/g, '\\\'')
           targetDom.push('\'' + otherRight + '\'')
@@ -70,7 +68,6 @@ function pureDomPreviewParse (domTree, fileName) {
           })
           targetInput = 'domEvent(' + targetDom.join(',') + ')'
         }
-        console.log('targetInput', targetInput)
         parseDom[key] = targetInput
       }
     }
@@ -141,7 +138,6 @@ function pureDomPreviewParse (domTree, fileName) {
     // --子供に対する作用
     // --whileEnd
   }
-  console.log('output', output)
   output.push('</div>')
   return output.join('')
 }
@@ -151,13 +147,11 @@ function domPreviewParse (domTree, fileName) {
   saveDomTree = domTree
   output.push('<div id="previewDOM">')
   const runVueCode = runVueDom(domTree)
-  console.log('runVueCode', runVueCode)
   // ループが起きると困るので、userアクション(v-on:clickとか@clickとか)の時に最描画するようにする
   for (let i = 0; i < runVueCode.length; i++) {
     const take = runVueCode[i]
     const parseDom = {}
     const yoyaku = {}
-    console.log('taker', take)
     if (take.name === 'router-link') {
       take.routerPush = true
       parseDom.routerPush = '@router'
@@ -185,24 +179,20 @@ function domPreviewParse (domTree, fileName) {
         let targetInput = ''
         const targetDom = []
         if (take.others[i].type) {
-          console.log('otherRight', take.others[i], take.others[i].right)
           let otherRight = take.others[i].right
           otherRight = otherRight.replace(/\'/g, '\\\'')
           targetDom.push('\'' + otherRight + '\'')
           targetDom.push('\'' + fileName + '\'')
-          console.log('keey', key, key.match('click'))
           if (key.indexOf('click') >= 0) {
             targetDom.push('true')
           } else {
             targetDom.push('false')
           }
-          console.log('takeer', targetDom)
           // targetDom.push(Object.keys(parentParam))
           if (take.parseParams) {
             Object.keys(take.parseParams).forEach(key => {
               let value = take.parseParams[key]
               const valueType = typeof value
-              console.log('vallue', value, valueType)
               if (valueType !== 'number' && valueType !== 'boolean' && valueType !== 'object' && value && (!value.indexOf('[') > 0 && !value.indexOf(']') > 0)) {
                 value = '\'' + value + '\''
               }
@@ -221,7 +211,6 @@ function domPreviewParse (domTree, fileName) {
                   output.push(stack[i] + ': ')
                   let outVal = value[stack[i]]
                   const typeVal = typeof outVal
-                  console.log('typeee', typeVal)
                   if (typeof outVal === 'string') {
                     outVal = '\'' + outVal + '\' '
                   }
@@ -239,7 +228,6 @@ function domPreviewParse (domTree, fileName) {
           }
           targetInput = 'domEvent(' + targetDom.join(',') + ')'
         }
-        console.log('targetInput', targetInput)
         parseDom[key] = targetInput
       }
     }
@@ -258,7 +246,6 @@ function domPreviewParse (domTree, fileName) {
             Object.keys(take.parseParams).forEach(key => {
               let value = take.parseParams[key]
               const valueType = typeof value
-              console.log('targetDom:vif', valueType, value)
               if (valueType !== 'number' && valueType !== 'boolean' && valueType !== 'object' && value && (!value.indexOf('[') > 0 && !value.indexOf(']') > 0)) {
                 value = '\'' + value + '\''
               }
@@ -274,7 +261,6 @@ function domPreviewParse (domTree, fileName) {
                   output.push(stack[i] + ': ')
                   let outVal = value[stack[i]]
                   const typeVal = typeof outVal
-                  console.log('typeee', typeVal)
                   if (typeof outVal === 'string') {
                     outVal = '\'' + outVal + '\''
                   }
@@ -287,11 +273,9 @@ function domPreviewParse (domTree, fileName) {
                 output.push(' }')
                 value = output.join('')
               }
-              console.log('targetDom:v-if', key, value, take.parentParam, valueType)
               targetDom.push('\{' + key + ': ' + value + '\}')
             })
           }
-          console.log('targetDom', targetDom, targetDom.join(','))
           textOutput.push('\{\{ domEvent\(' + targetDom.join(', ') + '\) \}\}')
         }
       }
