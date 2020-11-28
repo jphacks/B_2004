@@ -111,9 +111,9 @@ export default {
       console.error('Something wrong!')
     })
     this.testCase()
-    console.log("param", this.$route.params)
+    console.log("param", this.$route.params, this.$route)
     if (this.$route.params.resOutput) {
-      this.output = this.$route.params.resOutput.data
+      this.output = this.$route.params.resOutput
     } else {
       this.getResult()
     }
